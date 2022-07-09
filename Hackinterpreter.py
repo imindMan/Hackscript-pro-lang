@@ -150,3 +150,33 @@ class Interpreter:
         elif condition.value == 0:
             false = res.register(self.visit(node.value_if_false, context))
             return res.success(false.set_pos(node.pos_start, node.pos_end))
+
+    def visit_WhileNode(self, node, context):
+        res = RuntimeResult()
+
+        while True:
+            condition = res.register(self.visit(node.condition, context))
+            if res.error:
+                return res
+
+            if condition.value != 1:
+                break
+
+            res.register(self.visit(node.do, context))
+            if res.error:
+                return res
+        return res.success(None)
+
+    def visit_DoNode(self, node, context):
+        res = RuntimeResult()
+        while True:
+            res.register(self.visit(node.do, context))
+            if res.error:
+                return res
+            condition = res.register(self.visit(node.condition, context))
+            if res.error:
+                return res
+            if condition.value != 1:
+                break
+
+        return res.success(None)
