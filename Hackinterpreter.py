@@ -165,7 +165,7 @@ class Interpreter:
             res.register(self.visit(node.do, context))
             if res.error:
                 return res
-        return res.success(None)
+        return res.success(Number.null)
 
     def visit_DoNode(self, node, context):
         res = RuntimeResult()
@@ -179,4 +179,4 @@ class Interpreter:
             if condition.value != 1:
                 break
 
-        return res.success(None)
+        return res.success(Number.null)
