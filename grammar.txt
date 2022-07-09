@@ -1,0 +1,33 @@
+ALL symbols : `~!@#$%^&*()–_=+[]{}\|;:‘“,./<>?
+
+expr 				: comp-expr (AND|OR comp-expr)*
+
+comp-expr 			: arith-expr (EQUAL|NOT_EQUAL|LESS|LESS_EQUAL
+					|GREATER|GREATER_EQUAL arith-expr)*
+					: NOT arith-expr
+
+arith-expr   		: term ((PLUS|MINUS|ASSIGN) term)*
+
+term    			: factor ((MUL|DIV|SLASH) factor)*
+
+factor				: (PLUS|MINUS) factor
+					: power
+					: data
+		
+
+power				: sqrt
+					: atom (POW factor)*
+
+atom 				: INT|FLOAT|IDENTIFIER
+					: LPAREN expr RPAREN
+					: check
+
+sqrt    			: SQRT factor
+
+data				: POINTER atom
+					: data (PLUS|MINUS factor)*
+
+check 				: KEYWORD:CHECK atom KEYWORD:THEN 
+					  LEFT_PAREN IDENTIFIER:TRUE KEYWORD:THEN atom 
+					  			 IDENTIFIER:FALSE KEYWORD:THEN atom 
+					  RIGHT_PAREN
