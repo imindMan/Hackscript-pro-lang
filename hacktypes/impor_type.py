@@ -494,7 +494,7 @@ class Identifier(Value):
         self.value = value
 
     def not_to(self):
-        return Number(int(not self.value)).set_context(self.context), None
+        return self.value.not_to()[0], None
 
 ###################################
 # ALL THE NODES
@@ -580,3 +580,25 @@ class CondNode:
 
     def __repr__(self):
         return f"check -> ({self.condition}) true: {self.value_if_true} false {self.value_if_false}"
+
+
+class WhileNode:
+    def __init__(self, condition, do):
+        self.condition = condition
+        self.do = do
+        self.pos_start = self.condition.pos_start
+        self.pos_end = self.do.pos_end
+
+    def __repr__(self):
+        return f"while-loop: ({self.condition}, {self.do})"
+
+
+class DoNode:
+    def __init__(self, condition, do):
+        self.condition = condition
+        self.do = do
+        self.pos_start = self.do.pos_start
+        self.pos_end = self.condition.pos_end
+
+    def __repr__(self):
+        return f"do-while-loop: ({self.condition}, {self.do})"
