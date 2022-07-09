@@ -82,9 +82,6 @@ class Parser:
         ))
 
     def power(self):
-        token = self.curr_token
-        if token.type == datatypes.SQRT_OPE:
-            return self.sqrt()
         return self.bin_op(self.atom, (datatypes.POW_OPE,), self.factor)
 
     def factor(self):
@@ -98,6 +95,8 @@ class Parser:
             return res.success(UnaryOpNode(token, factor))
         elif token.type in (datatypes.POINTER, ):
             return self.data()
+        elif token.type == datatypes.SQRT_OPE:
+            return self.sqrt()
 
         return self.power()
 
