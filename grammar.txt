@@ -29,9 +29,8 @@ data				: POINTER atom
 					: data (PLUS|MINUS factor)*
 
 check 				: KEYWORD:CHECK atom KEYWORD:THEN 
-					  LEFT_PAREN IDENTIFIER:TRUE KEYWORD:THEN atom 
+					  IDENTIFIER:TRUE KEYWORD:THEN atom 
 					  			 IDENTIFIER:FALSE KEYWORD:THEN atom 
-					  RIGHT_PAREN
 
 while-loop 			: KEYWORD:WHILE atom KEYWORD:THEN 
 						KEYWORD:DO KEYWORD:THEN atom
