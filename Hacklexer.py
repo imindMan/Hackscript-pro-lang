@@ -99,7 +99,9 @@ class Lexer:
                 tokens.append(
                     Token(datatypes.POINTER, pos_start=self.position))
                 continue
-
+            elif self.curr_char == ",":
+                tokens.append(Token(datatypes.COMMA, pos_start=self.position))
+                self.advance()
             elif self.curr_char == ":":
                 tokens.append(Token(datatypes.THEN, pos_start=self.position))
                 self.advance()
