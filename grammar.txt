@@ -14,9 +14,10 @@ factor				: (PLUS|MINUS) factor
 					: power
 					: data
 					: sqrt
-		
+	
+call-ins 			: atom (expr KEYWORD:COMMA expr)*
 
-power				: atom (POW factor)*
+power				: call-ins (POW factor)*
 
 atom 				: INT|FLOAT|IDENTIFIER
 					: LPAREN expr RPAREN
@@ -39,4 +40,3 @@ while-loop 			: KEYWORD:WHILE atom KEYWORD:THEN
 						KEYWORD:WHILE atom
 
 ins					: KEYWORD:INST IDENTIFIER LEFT_PAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RIGHT_PAREN KEYWORD:THEN atom
-call-ins 			: IDENTIFIER (expr KEYWORD:COMMA expr)*
