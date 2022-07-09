@@ -3,11 +3,15 @@ import Hackparser
 import Hackinterpreter
 from hacktypes.impor_type import *
 
+
+Number.null = Number(0)
+Number.true = Number(1)
+Number.false = Number(0)
 symbol_table = SymbolTable()
 memory = ListofMemory(symbol_table)
-symbol_table.set("null", 0)
-symbol_table.set("false", 0)
-symbol_table.set("true", 1)
+symbol_table.set("null", Number.null)
+symbol_table.set("false", Number.false)
+symbol_table.set("true", Number.true)
 
 
 def run(text, fn):
