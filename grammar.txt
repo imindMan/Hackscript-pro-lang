@@ -13,15 +13,16 @@ term    			: factor ((MUL|DIV|SLASH) factor)*
 factor				: (PLUS|MINUS) factor
 					: power
 					: data
+					: sqrt
 		
 
-power				: sqrt
-					: atom (POW factor)*
+power				: atom (POW factor)*
 
 atom 				: INT|FLOAT|IDENTIFIER
 					: LPAREN expr RPAREN
 					: check
 					: while-loop
+					: ins
 
 sqrt    			: SQRT factor
 
@@ -36,3 +37,6 @@ while-loop 			: KEYWORD:WHILE atom KEYWORD:THEN
 						KEYWORD:DO KEYWORD:THEN atom
 					: KEYWORD:DO KEYWORD:THEN atom 
 						KEYWORD:WHILE atom
+
+ins					: KEYWORD:INST IDENTIFIER LEFT_PAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RIGHT_PAREN KEYWORD:THEN atom
+call-ins 			: IDENTIFIER (expr KEYWORD:COMMA expr)*
