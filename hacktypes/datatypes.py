@@ -15,7 +15,7 @@ THEN = "then"
 
 KEYWORD = "keyword"
 IDENTIFIER = "identifier"
-
+COMMA = "comma"
 
 LEFT_PAREN = "left_paren"
 RIGHT_PAREN = "right_paren"
@@ -44,5 +44,6 @@ KEYWORDS = {
     "!=": "not_equ",
     "check": "check",
     "while": "while",
-    "do": "do"
+    "do": "do",
+    "inst": "set_instruction",
 }
