@@ -43,4 +43,6 @@ KEYWORDS = {
     ">=": "less_equ",
     "!=": "not_equ",
     "check": "check",
+    "while": "while",
+    "do": "do"
 }
