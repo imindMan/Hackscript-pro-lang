@@ -496,6 +496,10 @@ class Identifier(Value):
     def not_to(self):
         return self.value.not_to()[0], None
 
+
+Number.null = Number(0)
+Number.true = Number(1)
+Number.false = Number(0)
 ###################################
 # ALL THE NODES
 ###################################
