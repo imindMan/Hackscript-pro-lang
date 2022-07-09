@@ -4,9 +4,6 @@ import Hackinterpreter
 from hacktypes.impor_type import *
 
 
-Number.null = Number(0)
-Number.true = Number(1)
-Number.false = Number(0)
 symbol_table = SymbolTable()
 memory = ListofMemory(symbol_table)
 symbol_table.set("null", Number.null)
