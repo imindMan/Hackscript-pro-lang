@@ -73,6 +73,8 @@ class Parser:
                 )
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["check"]):
             return self.check()
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["while"]) or token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
+            return self.while_loop()
 
         return res.failure(error.SyntaxError(
             token.pos_start, token.pos_end,
@@ -243,6 +245,60 @@ class Parser:
                 ))
             res.register(self.advance())
             return res.success(CondNode(condition, cond_true, cond_false))
+
+    def while_loop(self):
+        res = ParserResult()
+        token = self.curr_token
+
+        if token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["while"]):
+            res.register(self.advance())
+            condition = res.register(self.atom())
+            if res.error:
+                return res
+
+            if not self.curr_token.type == datatypes.THEN:
+
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ':'"
+                ))
+
+            res.register(self.advance())
+            if not self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected 'do'"
+                ))
+
+            res.register(self.advance())
+            if not self.curr_token.type == datatypes.THEN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ':'"
+                ))
+
+            res.register(self.advance())
+            what_to_do = res.register(self.atom())
+            return res.success(WhileNode(condition, what_to_do))
+
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
+            res.register(self.advance())
+            if not self.curr_token.type == datatypes.THEN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ':'"
+                ))
+            res.register(self.advance())
+            do = res.register(self.atom())
+
+            if not self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["while"]):
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected 'while'"
+                ))
+            res.register(self.advance())
+            cond = res.register(self.atom())
+            return res.success(DoNode(cond, do))
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:
