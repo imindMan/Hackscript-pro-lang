@@ -606,3 +606,27 @@ class DoNode:
 
     def __repr__(self):
         return f"do-while-loop: ({self.condition}, {self.do})"
+
+
+class InsNode:
+    def __init__(self, name, args, body):
+        self.name = name
+        self.args = args
+        self.body = body
+
+        self.pos_start = self.name.pos_start
+        self.pos_end = self.name.pos_end
+
+    def __repr__(self):
+        return f"<ins {self.name} get {self.args} ({self.body})>"
+
+
+class CallNode:
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+        self.pos_start = self.name.pos_start
+        self.pos_end = self.name.pos_end
+
+    def __repr__(self):
+        return f"<get {self.name} #{self.args}>"
