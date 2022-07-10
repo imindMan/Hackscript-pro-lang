@@ -15,7 +15,7 @@ factor				: (PLUS|MINUS) factor
 					: data
 					: sqrt
 	
-call-ins 			: atom (expr KEYWORD:COMMA expr)*
+call-ins 			: atom (KEYWORD:PARA_ADD (expr (KEYWORD:COMMA expr)*)? KEYWORD:PARA_ADD?)?
 
 power				: call-ins (POW factor)*
 
@@ -41,4 +41,6 @@ while-loop 			: KEYWORD:WHILE atom KEYWORD:THEN
 					RIGHT_PAREN
 					: KEYWORD:DO KEYWORD:THEN atom 
 						KEYWORD:WHILE atom
-ins					: KEYWORD:INST IDENTIFIER LEFT_PAREN (IDENTIFIER (COMMA IDENTIFIER)*)? RIGHT_PAREN KEYWORD:THEN atom
+ins					: KEYWORD:INST IDENTIFIER 
+					LEFT_PAREN (IDENTIFIER (COMMA IDENTIFIER)*)? 
+					RIGHT_PAREN KEYWORD:THEN atom
