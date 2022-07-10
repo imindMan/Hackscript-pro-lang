@@ -23,7 +23,7 @@ RIGHT_PAREN = "right_paren"
 
 EOF_TYPE = "eof"
 # SYMBOLS = r"`~!@#$%^&*()–_=+[]{}\|;:‘“,./<>?"
-SYMBOLS = r"<>-=!"
+SYMBOLS = r"<>-=!_"
 LETTERS = string.ascii_letters
 DIGITS = "0123456789"
 
