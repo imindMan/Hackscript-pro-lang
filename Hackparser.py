@@ -190,8 +190,14 @@ class Parser:
             res.register(self.advance())
             if res.error:
                 return res
+            if not self.curr_token.type == datatypes.LEFT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected '('"
+                ))
             if res.error:
                 return res
+            res.register(self.advance())
             if not self.curr_token.matches(datatypes.IDENTIFIER, "true"):
                 return res.failure(error.SyntaxError(
                     self.curr_token.pos_start, self.curr_token.pos_end,
@@ -229,6 +235,12 @@ class Parser:
             cond_false = res.register(self.atom())
             if res.error:
                 return res
+            if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ')'"
+                ))
+            res.register(self.advance())
             return res.success(CondNode(condition, cond_true, cond_false))
 
     def while_loop(self):
@@ -249,6 +261,12 @@ class Parser:
                 ))
 
             res.register(self.advance())
+            if not self.curr_token.type == datatypes.LEFT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected '('"
+                ))
+            res.register(self.advance())
             if not self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
                 return res.failure(error.SyntaxError(
                     self.curr_token.pos_start, self.curr_token.pos_end,
@@ -264,6 +282,12 @@ class Parser:
 
             res.register(self.advance())
             what_to_do = res.register(self.atom())
+            if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ')'"
+                ))
+            res.register(self.advance())
             return res.success(WhileNode(condition, what_to_do))
 
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
