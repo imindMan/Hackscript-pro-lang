@@ -105,6 +105,10 @@ class Lexer:
             elif self.curr_char == ":":
                 tokens.append(Token(datatypes.THEN, pos_start=self.position))
                 self.advance()
+            elif self.curr_char == "#":
+                tokens.append(Token(datatypes.ADD_PARA,
+                              pos_start=self.position))
+                self.advance()
             elif self.curr_char in datatypes.LETTERS + datatypes.SYMBOLS:
                 tokens.append(self.make_word())
 
