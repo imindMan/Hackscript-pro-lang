@@ -75,6 +75,8 @@ class Parser:
             return self.check()
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["while"]) or token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
             return self.while_loop()
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["inst"]):
+            return self.ins()
 
         return res.failure(error.SyntaxError(
             token.pos_start, token.pos_end,
@@ -82,7 +84,38 @@ class Parser:
         ))
 
     def power(self):
-        return self.bin_op(self.atom, (datatypes.POW_OPE,), self.factor)
+        return self.bin_op(self.call_ins, (datatypes.POW_OPE,), self.factor)
+
+    def call_ins(self):
+        res = ParserResult()
+        arg_list = []
+        atom = res.register(self.atom())
+        if res.error:
+            return res
+
+        if self.curr_token.type == datatypes.ADD_PARA:
+            res.register(self.advance())
+            if self.curr_token.type == datatypes.ADD_PARA:
+                res.register(self.advance())
+            else:
+                expr = res.register(self.expr())
+                arg_list.append(expr)
+                if res.error:
+                    return res.failure(
+                        error.SyntaxError(
+                            self.curr_token.pos_start, self.curr_token.pos_end,
+                            "Expected int or float, pointer, expression, '+', '-', '(', ')', '=', '<', '>', '<=', '>=', '!=', '<-', ':', ^, `, and, or"
+                        )
+                    )
+                while self.curr_token.type == datatypes.COMMA:
+                    res.register(self.advance())
+                    para = res.register(self.expr())
+                    arg_list.append(para)
+                    if res.error:
+                        return res
+            return res.success(CallNode(atom, arg_list))
+
+        return res.success(atom)
 
     def factor(self):
         res = ParserResult()
@@ -308,6 +341,70 @@ class Parser:
             res.register(self.advance())
             cond = res.register(self.atom())
             return res.success(DoNode(cond, do))
+
+    def ins(self):
+        res = ParserResult()
+        token = self.curr_token
+        arg_list = []
+        if token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["inst"]):
+            res.register(self.advance())
+            if not self.curr_token.type == datatypes.IDENTIFIER:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected identifier"
+                ))
+            name = res.register(self.atom())
+            if res.error:
+                return res
+            if not self.curr_token.type == datatypes.LEFT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected '('"
+                ))
+            res.register(self.advance())
+
+            if self.curr_token.type == datatypes.IDENTIFIER:
+
+                para1 = res.register(self.atom())
+                if res.error:
+                    return res
+                arg_list.append(para1)
+
+                while self.curr_token.type == datatypes.COMMA:
+
+                    res.register(self.advance())
+                    if not self.curr_token.type == datatypes.IDENTIFIER:
+                        return res.failure(error.SyntaxError(
+                            self.curr_token.pos_start, self.curr_token.pos_end,
+                            "Expected identifier"
+                        ))
+                    else:
+                        para = res.register(self.atom())
+                        if res.error:
+                            return res
+                        arg_list.append(para)
+
+                if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ')'"
+                    ))
+
+            else:
+
+                if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ')'"
+                    ))
+            res.register(self.advance())
+            if not self.curr_token.type == datatypes.THEN:
+                return res.failure(error.SyntaxError(
+                    "Expected ':'"
+                ))
+            res.register(self.advance())
+            body_node = res.register(self.atom())
+            return res.success(InsNode(name, arg_list, body_node))
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:
