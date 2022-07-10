@@ -12,6 +12,7 @@ POW_OPE = "pow"
 SQRT_OPE = "sqrt"
 SLASH = "slash"
 THEN = "then"
+ADD_PARA = "#"
 
 KEYWORD = "keyword"
 IDENTIFIER = "identifier"
@@ -46,4 +47,5 @@ KEYWORDS = {
     "while": "while",
     "do": "do",
     "inst": "set_instruction",
+
 }
