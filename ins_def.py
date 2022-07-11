@@ -36,7 +36,6 @@ class Instruction(Value):
             arg_value.set_context(context)
             symbol_table.set(arg_name.value, arg_value)
         interpreter = Hackinterpreter.Interpreter(memory, symbol_table)
-        print(symbol_table)
         value = res.register(interpreter.visit(self.body, context))
         if res.error:
             return res
