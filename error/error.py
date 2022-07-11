@@ -58,9 +58,13 @@ class RuntimeError(Error):
     def as_string(self):
         str_to_ret = "HackScript Received: Error"
         str_to_ret += "\nHere: \n"
-        str_to_ret += self.generate_traceback()
-        str_to_ret += f"\n{error_message.string_highlight(self.pos_start.fcontent, self.pos_start, self.pos_end)}"
-        str_to_ret += f"\n(Index: {self.pos_start.line+1}-{self.pos_start.column+1}, file: {self.pos_start.fname})"
+
+        str_req = self.generate_traceback()
+        if str_req == '':
+            str_to_ret += f"\n{error_message.string_highlight(self.pos_start.fcontent, self.pos_start, self.pos_end)}"
+            str_to_ret += f"\n(Index: {self.pos_start.line+1}-{self.pos_start.column+1}, file: {self.pos_start.fname})"
+        else:
+            str_to_ret += str_req
         str_to_ret += f"\n{self.error_name}: {self.details}"
         return str_to_ret
 
@@ -70,7 +74,9 @@ class RuntimeError(Error):
         ctx = self.context
 
         while ctx:
-            result = f'(Index: {str(pos.line + 1)}-{str(pos.column+1)}, file: {pos.fname}, in {ctx.display_name})\n' + result
+            result += \
+                f"\n{error_message.string_highlight(pos.fcontent, pos, pos.copy().advance())}"
+            result += f'\n(Index: {str(pos.line + 1)}-{str(pos.column+1)}, file: {pos.fname}, in {ctx.display_name})\n'
             pos = ctx.parent_entry_pos
             ctx = ctx.parent
 
