@@ -1,25 +1,7 @@
 from error import error
 from hacktypes import datatypes
+import ins_def
 from hacktypes.impor_type import *
-
-
-class RuntimeResult:
-    def __init__(self):
-        self.error = None
-        self.value = None
-
-    def register(self, res):
-        if res.error:
-            self.error = res.error
-        return res.value
-
-    def success(self, value):
-        self.value = value
-        return self
-
-    def failure(self, error):
-        self.error = error
-        return self
 
 
 class Interpreter:
@@ -27,12 +9,13 @@ class Interpreter:
         self.list_of_memory = memory
         self.symbol_table = symbol_table
 
-    def visit(self, node, context):
+    def visit(self, node, context, value=True):
         method_name = f'visit_{type(node).__name__}'
-        method = getattr(self, method_name, self.no_visit)
-        return method(node, context)
 
-    def no_visit(self, node, context):
+        method = getattr(self, method_name, self.no_visit)
+        return method(node, context, value)
+
+    def no_visit(self, node, context, value=True):
 
         return RuntimeResult().failure(error.NoVisitError(
             node.pos_start, node.pos_end,
@@ -40,22 +23,27 @@ class Interpreter:
                 type(node).__name__)
         ))
 
-    def visit_NumberNode(self, node, context):
+    def visit_NumberNode(self, node, context, value=True):
         return RuntimeResult().success(Number(node.token.value).set_pos(node.pos_start, node.pos_end))
 
-    def visit_IdentifierNode(self, node, context):
+    def visit_IdentifierNode(self, node, context, value=True):
         res = RuntimeResult()
-        if self.symbol_table.get(node.token.value) is None:
-            return res.failure(error.UndefinedObject(
-                node.pos_start, node.pos_end,
-                "Undefined indentifier"
-            ))
-        elif self.symbol_table.get(node.token.value) == "cons-pointer":
-            return res.success(self.list_of_memory.access_constant(node.token.value).set_pos(node.pos_start, node.pos_end))
+        if value:
 
-        return res.success(Identifier(self.symbol_table.get(node.token.value)).set_pos(node.pos_start, node.pos_end))
+            if self.symbol_table.get(node.token.value) is None:
+                return res.failure(error.UndefinedObject(
+                    node.pos_start, node.pos_end,
+                    "Undefined indentifier"
+                ))
+            elif self.symbol_table.get(node.token.value) == "cons-pointer":
+                return res.success(self.list_of_memory.access_constant(node.token.value).set_pos(node.pos_start, node.pos_end))
+            else:
+                result = self.symbol_table.get(node.token.value)
+                return res.success(Identifier(result).set_pos(node.pos_start, node.pos_end))
+        else:
+            return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end))
 
-    def visit_BinOpNode(self, node, context):
+    def visit_BinOpNode(self, node, context, value=True):
         res = RuntimeResult()
         left = res.register(self.visit(node.left, context))
         if res.error:
@@ -103,7 +91,7 @@ class Interpreter:
         else:
             return res.success(result.set_pos(node.pos_start, node.pos_end))
 
-    def visit_UnaryOpNode(self, node, context):
+    def visit_UnaryOpNode(self, node, context, value=True):
         res = RuntimeResult()
         number = res.register(self.visit(node.node, context))
         if res.error:
@@ -120,7 +108,7 @@ class Interpreter:
         else:
             return res.success(number.set_pos(node.pos_start, node.pos_end))
 
-    def visit_PointerNode(self, node, context):
+    def visit_PointerNode(self, node, context, value=True):
         res = RuntimeResult()
         type_pointer = res.register(self.visit(node.pointer_value, context))
         if res.error:
@@ -129,7 +117,7 @@ class Interpreter:
         pointer = Pointer(type_pointer, self.list_of_memory)
         return res.success(pointer.set_pos(node.pos_start, node.pos_end))
 
-    def visit_ConstantPointerNode(self, node, context):
+    def visit_ConstantPointerNode(self, node, context, value=True):
         res = RuntimeResult()
         name = res.register(self.visit(node.pointer_value, context))
         if res.error:
@@ -139,7 +127,7 @@ class Interpreter:
         pointer = Pointer(name, self.list_of_memory)
         return res.success(pointer.set_pos(node.pos_start, node.pos_end))
 
-    def visit_CondNode(self, node, context):
+    def visit_CondNode(self, node, context, value=True):
         res = RuntimeResult()
         condition = res.register(self.visit(node.condition, context))
         if res.error:
@@ -151,7 +139,7 @@ class Interpreter:
             false = res.register(self.visit(node.value_if_false, context))
             return res.success(false.set_pos(node.pos_start, node.pos_end))
 
-    def visit_WhileNode(self, node, context):
+    def visit_WhileNode(self, node, context, value=True):
         res = RuntimeResult()
 
         while True:
@@ -167,7 +155,7 @@ class Interpreter:
                 return res
         return res.success(Number.null)
 
-    def visit_DoNode(self, node, context):
+    def visit_DoNode(self, node, context, value=True):
         res = RuntimeResult()
         while True:
             res.register(self.visit(node.do, context))
@@ -180,3 +168,39 @@ class Interpreter:
                 break
 
         return res.success(Number.null)
+
+    def visit_InsNode(self, node, context, value=True):
+        res = RuntimeResult()
+        ins_name = res.register(self.visit(
+            node.name, context, False))
+
+        if res.error:
+            return res
+        args_list = [arg_name.token for arg_name in node.args]
+        body = node.body
+
+        ins_value = ins_def.Instruction(
+            ins_name.__repr__(), args_list, body, self.symbol_table)
+        self.symbol_table.set(ins_name.__repr__(), ins_value)
+        return res.success(ins_value)
+
+    def visit_CallNode(self, node, context, value=True):
+        res = RuntimeResult()
+        args = []
+
+        value_to_call = res.register(self.visit(node.name, context))
+
+        if res.error:
+            return res
+
+        value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
+
+        for arg_node in node.args:
+            args.append(res.register(self.visit(arg_node, context)))
+            if res.error:
+                return res
+
+        return_value = res.register(value_to_call.value.execute(args))
+        if res.error:
+            return res
+        return res.success(return_value)
