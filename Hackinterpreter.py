@@ -39,7 +39,7 @@ class Interpreter:
                 return res.success(self.list_of_memory.access_constant(node.token.value).set_pos(node.pos_start, node.pos_end))
             else:
                 result = self.symbol_table.get(node.token.value)
-                return res.success(Identifier(result).set_pos(node.pos_start, node.pos_end))
+                return res.success(result.set_pos(node.pos_start, node.pos_end))
         else:
             return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end))
 
@@ -187,6 +187,7 @@ class Interpreter:
     def visit_CallNode(self, node, context, value=True):
         res = RuntimeResult()
         args = []
+        print(self.symbol_table)
 
         value_to_call = res.register(self.visit(node.name, context))
 
@@ -200,7 +201,7 @@ class Interpreter:
             if res.error:
                 return res
 
-        return_value = res.register(value_to_call.value.execute(args))
+        return_value = res.register(value_to_call.execute(args))
         if res.error:
             return res
         return res.success(return_value)
