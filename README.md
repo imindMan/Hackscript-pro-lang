@@ -4,4 +4,4 @@ HackScript is a Turing-complete (not so), estoric-style, high-level programming 
 
 # Version
 
-HackScript is still in development and experimental. Current version: `v.x.x.1 (Alpha) HSD-E`
+HackScript is still in development and experimental. Current version: `v (Alpha) HSD-E`
