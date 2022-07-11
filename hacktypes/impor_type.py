@@ -528,290 +528,290 @@ class Identifier(Value):
         super().__init__(value)
         self.value = value
 
-    def added_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                res = self.value.added_to(other.value)[0]
-                return Number(res).set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Invalid type for doing expression (integer or float)"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def added_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             res = self.value.added_to(other.value)[0]
+    #             return Number(res).set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Invalid type for doing expression (integer or float)"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def subtracted_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                res = self.value.subtracted_to(other.value)[0]
-                return Number(res).set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Invalid type for doing expression (integer or float)"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def subtracted_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             res = self.value.subtracted_to(other.value)[0]
+    #             return Number(res).set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Invalid type for doing expression (integer or float)"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def multiplied_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                res = self.value.multiplied_to(other.value)[0]
-                return Number(res).set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Invalid type for doing expression (integer or float)"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def multiplied_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             res = self.value.multiplied_to(other.value)[0]
+    #             return Number(res).set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Invalid type for doing expression (integer or float)"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def divided_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                if other.value.equ_to(Number(0)):
-                    return None, error.RuntimeError(
-                        self.pos_start, self.pos_end, "Division by zero", self.context)
-                res = self.value.divided_to(other.value)[0]
-                return Number(res).set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Invalid type for doing expression (integer or float)"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def divided_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             if other.value.equ_to(Number(0)):
+    #                 return None, error.RuntimeError(
+    #                     self.pos_start, self.pos_end, "Division by zero", self.context)
+    #             res = self.value.divided_to(other.value)[0]
+    #             return Number(res).set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Invalid type for doing expression (integer or float)"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def powed_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                res = self.value.powed_to(other.value)[0]
-                return Number(res).set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Invalid type for doing expression (integer or float)"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def powed_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             res = self.value.powed_to(other.value)[0]
+    #             return Number(res).set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Invalid type for doing expression (integer or float)"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def fraced_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                if other.value.equ_to(Number(0)):
-                    return None, error.RuntimeError(
-                        self.pos_start, self.pos_end, "Division by zero", self.context
-                    )
-                res = self.value.fraced_to(other.value)[0]
-                return Number(res).set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Invalid type for doing expression (integer or float)"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def fraced_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             if other.value.equ_to(Number(0)):
+    #                 return None, error.RuntimeError(
+    #                     self.pos_start, self.pos_end, "Division by zero", self.context
+    #                 )
+    #             res = self.value.fraced_to(other.value)[0]
+    #             return Number(res).set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Invalid type for doing expression (integer or float)"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def sqrt(self):
-        if isinstance(self.value, Number):
-            if self.value.gre_equ_to(Number(0)):
-                res = self.value.sqrt()[0]
-                return Number(res).set_context(self.context), None
-            elif self.value.les_to(Number(0)):
-                return None, error.RuntimeError(
-                    self.pos_start, self.pos_end,
-                    "Factor must be a positive number", self.context
-                )
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Invalid type for doing expression (integer or float)"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def sqrt(self):
+    #     if isinstance(self.value, Number):
+    #         if self.value.gre_equ_to(Number(0)):
+    #             res = self.value.sqrt()[0]
+    #             return Number(res).set_context(self.context), None
+    #         elif self.value.les_to(Number(0)):
+    #             return None, error.RuntimeError(
+    #                 self.pos_start, self.pos_end,
+    #                 "Factor must be a positive number", self.context
+    #             )
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Invalid type for doing expression (integer or float)"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def equ_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                return self.value.equ_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def equ_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             return self.value.equ_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def not_equ_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                return self.value.not_equ_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def not_equ_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             return self.value.not_equ_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def gre_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                return self.value.gre_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def gre_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             return self.value.gre_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def les_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                return self.value.les_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def les_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             return self.value.les_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def gre_equ_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                return self.value.gre_equ_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def gre_equ_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             return self.value.gre_equ_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def les_equ_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                return self.value.les_equ_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def les_equ_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             return self.value.les_equ_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def and_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
-                return self.value.and_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def and_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
+    #             return self.value.and_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def or_to(self, other):
-        if isinstance(self.value, Number):
-            if isinstance(other.value, Number):
+    # def or_to(self, other):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(other.value, Number):
 
-                return self.value.or_to(other.value)[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    #             return self.value.or_to(other.value)[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def not_to(self):
-        if isinstance(self.value, Number):
-            if isinstance(self.value, Number):
-                return self.value.not_to()[0].set_context(self.context), None
-            else:
-                return None, error.OperatorNotSupported(
-                    self.pos_start, self.pos_end,
-                    "Cannot using this operator in this expression"
-                )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    # def not_to(self):
+    #     if isinstance(self.value, Number):
+    #         if isinstance(self.value, Number):
+    #             return self.value.not_to()[0].set_context(self.context), None
+    #         else:
+    #             return None, error.OperatorNotSupported(
+    #                 self.pos_start, self.pos_end,
+    #                 "Cannot using this operator in this expression"
+    #             )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def assign_from(self, other):
-        if isinstance(self.value, Pointer):
-            if isinstance(other.value, Pointer):
-                self.list_of_memory.index = other.list_of_memory.index
+    # def assign_from(self, other):
+    #     if isinstance(self.value, Pointer):
+    #         if isinstance(other.value, Pointer):
+    #             self.list_of_memory.index = other.list_of_memory.index
 
-                self.list_of_memory.curr_char = other.list_of_memory.curr_char
+    #             self.list_of_memory.curr_char = other.list_of_memory.curr_char
 
-                return self.set_context(self.context), None
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Cannot using this operator in this expression"
-            )
-        else:
-            return None, error.OperatorNotSupported(
-                self.pos_start, self.pos_end,
-                "Invalid type for doing expression (integer or float)"
-            )
+    #             return self.set_context(self.context), None
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Cannot using this operator in this expression"
+    #         )
+    #     else:
+    #         return None, error.OperatorNotSupported(
+    #             self.pos_start, self.pos_end,
+    #             "Invalid type for doing expression (integer or float)"
+    #         )
 
-    def copy(self):
-        res = Identifier(self.value)
-        res.set_pos(self.pos_start, self.pos_end)
-        res.set_context(self.context)
+    # def copy(self):
+    #     res = Identifier(self.value)
+    #     res.set_pos(self.pos_start, self.pos_end)
+    #     res.set_context(self.context)
 
-        return res
+    #     return res
 
 
 Number.null = Number(0)
