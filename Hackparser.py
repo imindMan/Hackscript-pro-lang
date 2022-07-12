@@ -400,6 +400,7 @@ class Parser:
             res.register(self.advance())
             if not self.curr_token.type == datatypes.THEN:
                 return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
                     "Expected ':'"
                 ))
             res.register(self.advance())
