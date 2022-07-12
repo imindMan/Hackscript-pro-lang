@@ -2,13 +2,22 @@ import Hacklexer
 import Hackparser
 import Hackinterpreter
 from hacktypes.impor_type import *
+from ins_def import *
 
 
 symbol_table = SymbolTable()
 memory = ListofMemory(symbol_table)
+
+Method.change_status = Method("change_status", memory)
+Method.exit = Method("exit", memory)
+Method.clear = Method("clear", memory)
+
 symbol_table.set("null", Number.null)
 symbol_table.set("false", Number.false)
 symbol_table.set("true", Number.true)
+symbol_table.set("!", Method.change_status)
+symbol_table.set("exit", Method.exit)
+symbol_table.set("clear", Method.clear)
 
 
 def run(text, fn):
