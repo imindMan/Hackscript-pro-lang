@@ -50,6 +50,11 @@ class UndefinedObject(Error):
         super().__init__(pos_start, pos_end, "UndefinedObject", details)
 
 
+class InvalidStatus(Error):
+    def __init__(self, pos_start, pos_end, details):
+        super().__init__(pos_start, pos_end, "InvalidStatus", details)
+
+
 class RuntimeError(Error):
     def __init__(self, pos_start, pos_end, details, context):
         super().__init__(pos_start, pos_end, "RuntimeError", details)
