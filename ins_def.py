@@ -88,14 +88,12 @@ class Method(GeneralInstruction):
         super().__init__(name, memory)
 
     def execute(self, args):
-        print(list(map(type, args)))
         res = RuntimeResult()
         context, symbol_table, memory = self.generate_basic_thing()
 
         method_name = f'execute_{self.name}'
 
         method = getattr(self, method_name, self.no_visit)
-        print(method.arg)
         res.register(self.check_and_populate_args(
             method.arg, args, context, memory))
         if res.error:
@@ -126,7 +124,7 @@ class Method(GeneralInstruction):
         res = RuntimeResult()
         parent_memory = memory.parent_list_of_memory
         if isinstance(memory.symbols_table.get("status"), Number):
-            error = parent_memory.curr_char.set_pos(self.pos_start, self.pos_end).change_status(
+            error = parent_memory.curr_char.set_pos(self.pos_start, self.pos_end).set_context(context).change_status(
                 memory.symbols_table.get("status"))
             if error:
                 return res.failure(error)
@@ -145,5 +143,18 @@ class Method(GeneralInstruction):
 
     def execute_exit(self, context, memory):
         exit()
-
     execute_exit.arg = []
+
+    def execute_set_constant(self, context, memory: ListofMemory):
+        res = RuntimeResult()
+        parent_memory = memory.parent_list_of_memory
+        if isinstance(memory.symbols_table.get("value"), ConstantPointer):
+            parent_memory.set_pos(self.pos_start, self.pos_end).set_context(context).set_constant(
+                memory.symbols_table.get("value").type.value)
+            return res.success(Number.null)
+        else:
+            return res.failure(error.InvalidObject(
+                self.pos_start, self.pos_end,
+                "Invalid parameter value"
+            ))
+    execute_set_constant.arg = [Identifier("value")]
