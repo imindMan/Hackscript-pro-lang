@@ -13,6 +13,7 @@ SQRT_OPE = "sqrt"
 SLASH = "slash"
 THEN = "then"
 ADD_PARA = "#"
+STRING = "string"
 
 KEYWORD = "keyword"
 IDENTIFIER = "identifier"
