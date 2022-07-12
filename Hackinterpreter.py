@@ -180,7 +180,7 @@ class Interpreter:
         body = node.body
 
         ins_value = ins_def.Instruction(
-            ins_name.__repr__(), args_list, body, self.symbol_table).set_pos(node.pos_start, node.pos_end).set_context(context)
+            ins_name.__repr__(), args_list, body, self.list_of_memory).set_pos(node.pos_start, node.pos_end).set_context(context)
         self.symbol_table.set(ins_name.__repr__(), ins_value)
         return res.success(ins_value)
 
