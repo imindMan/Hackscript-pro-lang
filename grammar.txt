@@ -24,8 +24,11 @@ atom 				: INT|FLOAT|IDENTIFIER
 					: check
 					: while-loop
 					: ins
+					: string
 
 sqrt    			: SQRT factor
+
+string 				: STRING: VALUE
 
 data				: POINTER atom
 					: data (PLUS|MINUS factor)*
