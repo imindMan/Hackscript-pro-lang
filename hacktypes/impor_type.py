@@ -377,7 +377,7 @@ class Memory(Value):
         return None
 
     def __repr__(self):
-        return f"data:{self.data}({self.status})"
+        return f"data:{self.name} {self.data}({self.status})"
 
 
 class ListofMemory:
@@ -398,6 +398,7 @@ class ListofMemory:
     def set_pos(self, pos_start=None, pos_end=None):
         self.pos_start = pos_start
         self.pos_end = pos_end
+        return self
 
     def set_context(self, context=None):
         self.context = context
@@ -421,6 +422,7 @@ class ListofMemory:
         for i in self.data:
             if i.name == name:
                 return i
+        return "Error catching while defined constant pointer"
 
     def move(self, number):
         if type(number.value) == type(float()):
@@ -535,6 +537,9 @@ class ConstantPointer(Value):
 
     def copy(self):
         return Pointer(self.type, self.list_of_memory)
+
+    def __repr__(self):
+        return self.list_of_memory.access_constant(self.type.value).__repr__()
 
 
 class Identifier(Value):
