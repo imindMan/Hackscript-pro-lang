@@ -13,11 +13,7 @@ if len(list_of_files) == 1:
 
         if user in " \t\n":
             continue
-        elif user == "clear":
-            os.system("cls") if os.name == "nt" else os.system("clear")
-            continue
-        elif user == "exit":
-            break
+
         result, error = main_hackscript.run(user, "<stdin>")
         if error:
             print(error.as_string())
