@@ -1,4 +1,3 @@
-
 import error.error as error
 import math
 import fractions
@@ -209,7 +208,6 @@ class Value:
 class Number(Value):
     def __init__(self, value):
         self.value = value
-        self.other_value = None
         self.set_pos()
         self.set_context()
 
@@ -328,6 +326,12 @@ class Number(Value):
     def or_to(self, other):
 
         return Number(int(self.value or other.value)).set_context(self.context), None
+
+    def copy(self):
+        number = Number(self.value)
+        number.set_pos(self.pos_start, self.pos_end)
+        number.set_context(self.context)
+        return number
 
     def not_to(self):
         return Number(int(not self.value)).set_context(self.context), None
