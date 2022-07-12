@@ -368,22 +368,32 @@ class Memory(Value):
             self.status = "230"
 
     def change_status(self, status):
+        if status.value > 230:
+            return error.InvalidStatus(
+                self.pos_start, self.pos_end,
+                f"Invalid status {status}"
+            )
         self.status = status
+        return None
 
     def __repr__(self):
         return f"data:{self.data}({self.status})"
 
 
 class ListofMemory:
-    def __init__(self, symbols_table):
+    def __init__(self, symbols_table, parent_list_of_memory=None):
 
         self.data = [Memory(str(i)) for i in range(10)]
         self.index = 0
         self.curr_char = self.data[self.index] if 0 <= self.index < len(
             self.data) else None
         self.symbols_table = symbols_table
+        self.parent_list_of_memory = parent_list_of_memory
         self.set_pos()
         self.set_context()
+
+    def change_status(self, status):
+        self.curr_char.change_status(status)
 
     def set_pos(self, pos_start=None, pos_end=None):
         self.pos_start = pos_start
