@@ -124,10 +124,10 @@ class Method(GeneralInstruction):
         res = RuntimeResult()
         parent_memory = memory.parent_list_of_memory
         if isinstance(memory.symbols_table.get("status"), Number):
-            error = parent_memory.curr_char.set_pos(self.pos_start, self.pos_end).set_context(context).change_status(
+            err = parent_memory.curr_char.set_pos(self.pos_start, self.pos_end).set_context(context).change_status(
                 memory.symbols_table.get("status"))
             if error:
-                return res.failure(error)
+                return res.failure(err)
             return res.success(Number.null)
         else:
             return res.failure(error.InvalidStatus(
