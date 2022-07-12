@@ -77,6 +77,8 @@ class Parser:
             return self.while_loop()
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["inst"]):
             return self.ins()
+        elif token.type == datatypes.STRING:
+            return self.string()
 
         return res.failure(error.SyntaxError(
             token.pos_start, token.pos_end,
@@ -406,6 +408,13 @@ class Parser:
             res.register(self.advance())
             body_node = res.register(self.atom())
             return res.success(InsNode(name, arg_list, body_node))
+
+    def string(self):
+        res = ParserResult()
+        token = self.curr_token
+        if token.type == datatypes.STRING:
+            res.register(self.advance())
+            return res.success(StringNode(token, token.value))
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:
