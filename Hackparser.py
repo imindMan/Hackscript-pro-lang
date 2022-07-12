@@ -161,7 +161,7 @@ class Parser:
                 elif atom.token.type == datatypes.IDENTIFIER:
                     return res.success(ConstantPointerNode(token, atom))
                 else:
-                    return res.failure(error.UndefinedObject(
+                    return res.failure(error.InvalidObject(
                         token.pos_start, atom.pos_end, "Pointer type must be 2 or identifier"
                     ))
 
