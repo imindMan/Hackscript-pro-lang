@@ -31,7 +31,7 @@ class Interpreter:
         if value:
 
             if self.symbol_table.get(node.token.value) is None:
-                return res.failure(error.UndefinedObject(
+                return res.failure(error.InvalidObject(
                     node.pos_start, node.pos_end,
                     "Undefined indentifier"
                 ))
@@ -119,12 +119,12 @@ class Interpreter:
 
     def visit_ConstantPointerNode(self, node, context, value=True):
         res = RuntimeResult()
-        name = res.register(self.visit(node.pointer_value, context))
+        name = res.register(self.visit(node.pointer_value, context, False))
         if res.error:
             return res
 
         self.list_of_memory.set_pos(node.pos_start, node.pos_end)
-        pointer = Pointer(name, self.list_of_memory)
+        pointer = ConstantPointer(name, self.list_of_memory)
         return res.success(pointer.set_pos(node.pos_start, node.pos_end))
 
     def visit_CondNode(self, node, context, value=True):
@@ -187,7 +187,6 @@ class Interpreter:
     def visit_CallNode(self, node, context, value=True):
         res = RuntimeResult()
         args = []
-        print(self.symbol_table)
 
         value_to_call = res.register(self.visit(node.name, context))
 
