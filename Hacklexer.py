@@ -109,6 +109,15 @@ class Lexer:
                 tokens.append(Token(datatypes.ADD_PARA,
                               pos_start=self.position))
                 self.advance()
+
+            elif self.curr_char == "\"":
+                self.advance()
+                string, error = self.make_string()
+                if error:
+                    return [], error
+                else:
+                    tokens.append(string)
+
             elif self.curr_char in datatypes.LETTERS + datatypes.SYMBOLS:
                 tokens.append(self.make_word())
 
@@ -151,3 +160,29 @@ class Lexer:
 
         else:
             return Token(datatypes.IDENTIFIER, word, pos_start=self.position)
+
+    def make_string(self):
+        string = ""
+        pos = self.position
+        escape_char = {
+            r"\n": "\n",
+            r"\t": "\t",
+        }
+
+        while self.curr_char is not None and self.curr_char != "\"":
+            if self.curr_char == "\\":
+                self.advance()
+                new_char = f"\{self.curr_char}"
+                if new_char in escape_char:
+                    new_char = escape_char[new_char]
+                    string += new_char
+                else:
+                    return None, error.IllegalCharacter(
+                        pos, self.position,
+                        new_char
+                    )
+            else:
+                string += self.curr_char
+            self.advance()
+        self.advance()
+        return Token(datatypes.STRING, string, pos_start=self.position), None
