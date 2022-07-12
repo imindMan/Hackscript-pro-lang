@@ -200,6 +200,12 @@ class Value:
             "Cannot using this operator in this expression"
         )
 
+    def copy(self):
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot copy this object"
+        )
+
     def __repr__(self):
 
         return f"{self.value}"
@@ -376,6 +382,14 @@ class Memory(Value):
         self.status = status
         return None
 
+    def copy(self):
+        memory = Memory(self.name)
+        memory.data = self.data
+        memory.status = self.status
+        memory.set_pos(self.pos_start, self.pos_end)
+        memory.set_context(self.context)
+        return memory
+
     def __repr__(self):
         return f"data:{self.name} {self.data}({self.status})"
 
@@ -547,6 +561,42 @@ class Identifier(Value):
         super().__init__(value)
         self.value = value
 
+    def copy(self):
+        identifier = Identifier(self.value).set_pos(
+            self.pos_start, self.pos_end).set_context(self.context)
+        return identifier
+
+
+class ClassString(Value):
+    def __init__(self, value):
+        super().__init__(value)
+        self.value = value
+
+    def added_to(self, other):
+        if isinstance(other, ClassString):
+            res = self.value + other.value
+            return ClassString(res).set_context(self.context), None
+        else:
+            return None, error.OperatorNotSupported(
+                self.pos_start, self.pos_end,
+                "Cannot using this operator in this expression"
+            )
+
+    def multiplied_to(self, other):
+        if isinstance(other, Number):
+            res = self.value * other.value
+            return ClassString(res).set_context(self.context), None
+        else:
+            return None, error.OperatorNotSupported(
+                self.pos_start, self.pos_end,
+                "Cannot using this operator in this expression"
+            )
+
+    def copy(self):
+        string_ = ClassString(self.value).set_pos(
+            self.pos_start, self.pos_end).set_context(self.context)
+        return string_
+
 
 Number.null = Number(0)
 Number.true = Number(1)
@@ -681,3 +731,14 @@ class CallNode:
 
     def __repr__(self):
         return f"<get {self.name} #{self.args}>"
+
+
+class StringNode:
+    def __init__(self, token, value):
+        self.value = value
+
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+
+    def __repr__(self):
+        return f"{repr(self.value)}"
