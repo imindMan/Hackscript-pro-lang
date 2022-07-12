@@ -24,7 +24,10 @@ class Interpreter:
         ))
 
     def visit_NumberNode(self, node, context, value=True):
-        return RuntimeResult().success(Number(node.token.value).set_pos(node.pos_start, node.pos_end))
+        return RuntimeResult().success(Number(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
+
+    def visit_StringNode(self, node, context, value=True):
+        return RuntimeResult().success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_IdentifierNode(self, node, context, value=True):
         res = RuntimeResult()
