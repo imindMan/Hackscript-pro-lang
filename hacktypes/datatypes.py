@@ -35,7 +35,6 @@ KEYWORDS = {
     "not": "not",
     # ".": "end",
     # "$": "launch",
-    "c": "curr_data",
     "->": "assign_out",
     "=": "equal",
     "<": "less",
