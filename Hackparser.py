@@ -55,6 +55,17 @@ class Parser:
             return res.success(NumberNode(token))
         elif token.type in (datatypes.IDENTIFIER, ):
             res.register(self.advance())
+            if self.curr_token.type == datatypes.L_SQUARE:
+
+                res.register(self.advance())
+                index = res.register(self.factor())
+                if self.curr_token.type != datatypes.R_SQUARE:
+                    return res.failure(error.InvalidIndexOfMemory(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ']'"
+                    ))
+                res.register(self.advance())
+                return res.success(IdentifierNode(token, index))
             return res.success(IdentifierNode(token))
         elif token.type == datatypes.LEFT_PAREN:
             res.register(self.advance())
@@ -412,9 +423,21 @@ class Parser:
     def string(self):
         res = ParserResult()
         token = self.curr_token
-        if token.type == datatypes.STRING:
+        if token.type in (datatypes.STRING, datatypes.IDENTIFIER):
             res.register(self.advance())
-            return res.success(StringNode(token, token.value))
+            string_here = token.value
+            if self.curr_token.type == datatypes.L_SQUARE:
+
+                res.register(self.advance())
+                index = res.register(self.factor())
+                if self.curr_token.type != datatypes.R_SQUARE:
+                    return res.failure(error.InvalidIndexOfMemory(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ']'"
+                    ))
+                res.register(self.advance())
+                return res.success(StringNode(token, string_here, index))
+            return res.success(StringNode(token, string_here))
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:
