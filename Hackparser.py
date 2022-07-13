@@ -90,6 +90,8 @@ class Parser:
             return self.ins()
         elif token.type == datatypes.STRING:
             return self.string()
+        elif token.type == datatypes.L_CURLY:
+            return self.list_()
 
         return res.failure(error.SyntaxError(
             token.pos_start, token.pos_end,
@@ -438,6 +440,47 @@ class Parser:
                 res.register(self.advance())
                 return res.success(StringNode(token, string_here, index))
             return res.success(StringNode(token, string_here))
+
+    def list_(self):
+        res = ParserResult()
+        token = self.curr_token
+        list_gene = []
+        if token.type == datatypes.L_CURLY:
+            res.register(self.advance())
+            if self.curr_token.type == datatypes.R_CURLY:
+                res.register(self.advance())
+                return res.success(ListNode(token, list_gene))
+            else:
+                ele_1 = res.register(self.atom())
+                if res.error:
+                    return res
+                list_gene.append(ele_1)
+
+                while self.curr_token.type == datatypes.COMMA:
+                    res.register(self.advance())
+                    para2 = res.register(self.atom())
+                    if res.error:
+                        return res
+                    list_gene.append(para2)
+
+                if not self.curr_token.type == datatypes.R_CURLY:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected '}'"
+                    ))
+                res.register(self.advance())
+                if self.curr_token.type == datatypes.L_SQUARE:
+
+                    res.register(self.advance())
+                    index = res.register(self.factor())
+                    if self.curr_token.type != datatypes.R_SQUARE:
+                        return res.failure(error.InvalidIndexOfMemory(
+                            self.curr_token.pos_start, self.curr_token.pos_end,
+                            "Expected ']'"
+                        ))
+                    res.register(self.advance())
+                    return res.success(ListNode(token, list_gene, index))
+                return res.success(ListNode(token, list_gene))
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:
