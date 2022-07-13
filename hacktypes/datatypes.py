@@ -14,6 +14,8 @@ SLASH = "slash"
 THEN = "then"
 ADD_PARA = "#"
 STRING = "string"
+L_SQUARE = "l_square"
+R_SQUARE = "r_square"
 
 KEYWORD = "keyword"
 IDENTIFIER = "identifier"
