@@ -59,11 +59,12 @@ class Lexer:
                     tokens.append(Token(datatypes.MINUS_OPE,
                                   pos_start=self.position))
             elif self.curr_char == "~":
-                tokens.append(Token(datatypes.SLASH, pos_start=self.position))
+                tokens.append(
+                    Token(datatypes.SLASH, pos_start=self.position))
                 self.advance()
             elif self.curr_char == "*":
                 tokens.append(Token(datatypes.MULT_OPE,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
             elif self.curr_char == "/":
                 tokens.append(
@@ -73,21 +74,21 @@ class Lexer:
                 tokens.append(self.make_number())
             elif self.curr_char == "^":
                 tokens.append(Token(datatypes.POW_OPE,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
 
             elif self.curr_char == "`":
                 tokens.append(Token(datatypes.SQRT_OPE,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
 
             elif self.curr_char == "(":
                 tokens.append(Token(datatypes.LEFT_PAREN,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
             elif self.curr_char == ")":
                 tokens.append(Token(datatypes.RIGHT_PAREN,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
             elif self.curr_char == "$":
                 self.advance()
@@ -95,27 +96,28 @@ class Lexer:
                 #     tokens.append(
                 #         Token(datatypes.KEYWORD, datatypes.KEYWORDS["$"], pos_start=self.position))
                 # else:
-                tokens.append(
-                    Token(datatypes.POINTER, pos_start=self.position))
+                tokens.append(Token(datatypes.POINTER,
+                                    pos_start=self.position))
                 continue
             elif self.curr_char == ",":
                 tokens.append(Token(datatypes.COMMA, pos_start=self.position))
                 self.advance()
             elif self.curr_char == ":":
-                tokens.append(Token(datatypes.THEN, pos_start=self.position))
+                tokens.append(
+                    Token(datatypes.THEN, pos_start=self.position))
                 self.advance()
             elif self.curr_char == "#":
                 tokens.append(Token(datatypes.ADD_PARA,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
 
             elif self.curr_char == "[":
                 tokens.append(Token(datatypes.L_SQUARE,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
             elif self.curr_char == "]":
                 tokens.append(Token(datatypes.R_SQUARE,
-                              pos_start=self.position))
+                                    pos_start=self.position))
                 self.advance()
             elif self.curr_char == "{":
                 tokens.append(
@@ -182,8 +184,8 @@ class Lexer:
         escape_char = {
             r"\n": "\n",
             r"\t": "\t",
+            r"\.": "."
         }
-
         while self.curr_char is not None and self.curr_char != "\"":
             if self.curr_char == "\\":
                 self.advance()
