@@ -62,6 +62,17 @@ class Interpreter:
                 string_spe = ClassString(string_spe.value[index.value]).set_pos(
                     string_spe.pos_start, string_spe.pos_end).set_context(string_spe.context)
                 return res.success(string_spe.set_pos(node.pos_start, node.pos_end))
+            elif isinstance(self.symbol_table.get(node.token.value), List) and node.index:
+                list_spe = self.symbol_table.get(node.token.value)
+                index = res.register(self.visit(node.index, context))
+                if index.value >= len(list_spe.value) or index.value < 0:
+                    return res.failure(error.InvalidIndexOfMemory(
+                        node.pos_start, node.pos_end,
+                        "Invalid index of the list"
+                    ))
+                list_spe = List(list_spe.value[index.value]).set_context(
+                    list_spe.context)
+                return res.success(list_spe.set_pos(node.pos_start, node.pos_end))
 
             else:
                 result = self.symbol_table.get(node.token.value)
@@ -116,6 +127,23 @@ class Interpreter:
             return res.failure(error)
         else:
             return res.success(result.set_pos(node.pos_start, node.pos_end))
+
+    def visit_ListNode(self, node, context, value=True):
+        res = RuntimeResult()
+        if not node.index:
+            list_in = [res.register(self.visit(i, context))
+                       for i in node.value]
+            return res.success(List(list_in).set_pos(node.pos_start, node.pos_end).set_context(context))
+        else:
+            list_ = [res.register(self.visit(i, context)) for i in node.value]
+            index = res.register(self.visit(node.index, context))
+            if index.value >= len(node.value) or index.value < 0:
+                return res.failure(error.InvalidIndexOfMemory(
+                    node.pos_start, node.pos_end,
+                    "Invalid index of the string"
+                ))
+            list_ = list_[index.value]
+            return res.success(List(list_).set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_UnaryOpNode(self, node, context, value=True):
         res = RuntimeResult()
