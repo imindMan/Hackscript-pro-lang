@@ -27,7 +27,18 @@ class Interpreter:
         return RuntimeResult().success(Number(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_StringNode(self, node, context, value=True):
-        return RuntimeResult().success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
+        res = RuntimeResult()
+        if not node.index:
+            return res.success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
+        else:
+            index = res.register(self.visit(node.index, context))
+            if index.value >= len(node.value) or index.value < 0:
+                return res.failure(error.InvalidIndexOfMemory(
+                    node.pos_start, node.pos_end,
+                    "Invalid index of the string"
+                ))
+            node.value = node.value[index.value]
+            return res.success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_IdentifierNode(self, node, context, value=True):
         res = RuntimeResult()
@@ -40,6 +51,18 @@ class Interpreter:
                 ))
             elif self.symbol_table.get(node.token.value) == "cons-pointer":
                 return res.success(self.list_of_memory.access_constant(node.token.value).set_pos(node.pos_start, node.pos_end))
+            elif isinstance(self.symbol_table.get(node.token.value), ClassString) and node.index:
+                string_spe = self.symbol_table.get(node.token.value)
+                index = res.register(self.visit(node.index, context))
+                if index.value >= len(string_spe.value) or index.value < 0:
+                    return res.failure(error.InvalidIndexOfMemory(
+                        node.pos_start, node.pos_end,
+                        "Invalid index of the string"
+                    ))
+                string_spe = ClassString(string_spe.value[index.value]).set_pos(
+                    string_spe.pos_start, string_spe.pos_end).set_context(string_spe.context)
+                return res.success(string_spe.set_pos(node.pos_start, node.pos_end))
+
             else:
                 result = self.symbol_table.get(node.token.value)
                 return res.success(result.set_pos(node.pos_start, node.pos_end))
