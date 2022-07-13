@@ -19,7 +19,7 @@ call-ins 			: atom (KEYWORD:PARA_ADD (expr (KEYWORD:COMMA expr)*)? KEYWORD:PARA_
 
 power				: call-ins (POW factor)*
 
-atom 				: INT|FLOAT|IDENTIFIER
+atom 				: INT|FLOAT|IDENTIFIER (L_SQUARE atom R_SQUARE)?
 					: LPAREN expr RPAREN
 					: check
 					: while-loop
@@ -28,7 +28,7 @@ atom 				: INT|FLOAT|IDENTIFIER
 
 sqrt    			: SQRT factor
 
-string 				: STRING: VALUE
+string 				: STRING: VALUE|IDENTIFIER (L_SQUARE atom R_SQUARE)?
 
 data				: POINTER atom
 					: data (PLUS|MINUS factor)*
