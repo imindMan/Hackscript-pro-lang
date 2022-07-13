@@ -58,7 +58,6 @@ class Lexer:
                 else:
                     tokens.append(Token(datatypes.MINUS_OPE,
                                   pos_start=self.position))
-                self.advance()
             elif self.curr_char == "~":
                 tokens.append(Token(datatypes.SLASH, pos_start=self.position))
                 self.advance()
@@ -107,6 +106,15 @@ class Lexer:
                 self.advance()
             elif self.curr_char == "#":
                 tokens.append(Token(datatypes.ADD_PARA,
+                              pos_start=self.position))
+                self.advance()
+
+            elif self.curr_char == "[":
+                tokens.append(Token(datatypes.L_SQUARE,
+                              pos_start=self.position))
+                self.advance()
+            elif self.curr_char == "]":
+                tokens.append(Token(datatypes.R_SQUARE,
                               pos_start=self.position))
                 self.advance()
 
