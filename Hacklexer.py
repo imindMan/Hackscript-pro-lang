@@ -120,9 +120,9 @@ class Lexer:
 
             elif self.curr_char == "\"":
                 self.advance()
-                string, error = self.make_string()
-                if error:
-                    return [], error
+                string, err = self.make_string()
+                if err:
+                    return [], err
                 else:
                     tokens.append(string)
 
