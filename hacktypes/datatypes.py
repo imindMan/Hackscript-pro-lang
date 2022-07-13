@@ -16,6 +16,8 @@ ADD_PARA = "#"
 STRING = "string"
 L_SQUARE = "l_square"
 R_SQUARE = "r_square"
+L_CURLY = "l_curly"
+R_CURLY = "r_curly"
 
 KEYWORD = "keyword"
 IDENTIFIER = "identifier"
