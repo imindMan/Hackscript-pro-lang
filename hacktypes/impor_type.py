@@ -627,6 +627,24 @@ class ClassString(Value):
             self.pos_start, self.pos_end).set_context(self.context)
         return string_
 
+    def __str__(self):
+        return f"{self.value}"
+
+
+class List(Value):
+    def __init__(self, value):
+        super().__init__(value)
+
+    def __repr__(self):
+        str_to_return = "{"
+        for i in range(len(self.value)):
+            if i == len(self.value) - 1:
+                str_to_return += self.value[i].__repr__()
+            else:
+                str_to_return += self.value[i].__repr__() + ", "
+        str_to_return += "}"
+        return str_to_return
+
 
 Number.null = Number(0)
 Number.true = Number(1)
@@ -773,3 +791,21 @@ class StringNode:
 
     def __repr__(self):
         return f"{repr(self.value)}"
+
+
+class ListNode:
+    def __init__(self, token, value, index=None):
+        self.value = value
+        self.index = index
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+
+    def __repr__(self):
+        str_to_return = "{"
+        for i in range(len(self.value)):
+            if i == len(self.value) - 1:
+                str_to_return += self.value[i].__repr__()
+            else:
+                str_to_return += self.value[i].__repr__() + ", "
+        str_to_return += "}"
+        return str_to_return
