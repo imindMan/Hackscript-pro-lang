@@ -557,9 +557,11 @@ class ConstantPointer(Value):
 
 
 class Identifier(Value):
-    def __init__(self, value):
+    def __init__(self, value, index=None):
         super().__init__(value)
         self.value = value
+        if isinstance(self.value, ClassString) and isinstance(index, Number):
+            self.value = value.value[index.value]
 
     def copy(self):
         identifier = Identifier(self.value).set_pos(
@@ -592,6 +594,34 @@ class ClassString(Value):
                 "Cannot using this operator in this expression"
             )
 
+    def equ_to(self, other):
+        return Number(int(self.value == other.value)).set_context(self.context), None
+
+    def not_equ_to(self, other):
+        return Number(int(self.value != other.value)).set_context(self.context), None
+
+    def gre_to(self, other):
+        return Number(int(len(self.value) > len(other.value))).set_context(self.context), None
+
+    def les_to(self, other):
+        return Number(int(len(self.value) < len(other.value))).set_context(self.context), None
+
+    def gre_equ_to(self, other):
+        return Number(int(len(self.value) >= len(other.value))).set_context(self.context), None
+
+    def les_equ_to(self, other):
+        return Number(int(len(self.value) <= len(other.value))).set_context(self.context), None
+
+    def and_to(self, other):
+        return Number(int(self.value != "" and other.value != "")).set_context(self.context), None
+
+    def or_to(self, other):
+
+        return Number(int(self.value != "" or other.value != "")).set_context(self.context), None
+
+    def not_to(self):
+        return Number(int(self.value != "")).set_context(self.context), None
+
     def copy(self):
         string_ = ClassString(self.value).set_pos(
             self.pos_start, self.pos_end).set_context(self.context)
@@ -618,8 +648,9 @@ class NumberNode:
 
 
 class IdentifierNode:
-    def __init__(self, token):
+    def __init__(self, token, index=None):
         self.token = token
+        self.index = index
         self.pos_start = self.token.pos_start
         self.pos_end = self.token.pos_end
 
@@ -734,9 +765,9 @@ class CallNode:
 
 
 class StringNode:
-    def __init__(self, token, value):
+    def __init__(self, token, value, index=None):
         self.value = value
-
+        self.index = index
         self.pos_start = token.pos_start
         self.pos_end = token.pos_end
 
