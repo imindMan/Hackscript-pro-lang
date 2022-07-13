@@ -25,10 +25,13 @@ atom 				: INT|FLOAT|IDENTIFIER (L_SQUARE atom R_SQUARE)?
 					: while-loop
 					: ins
 					: string
+					: list
 
 sqrt    			: SQRT factor
 
 string 				: STRING: VALUE|IDENTIFIER (L_SQUARE atom R_SQUARE)?
+
+list				: LEFT_CURLY (atom (COMMA atom)*?)? RIGHT_CURLY (L_SQUARE atom R_SQUARE)?
 
 data				: POINTER atom
 					: data (PLUS|MINUS factor)*
