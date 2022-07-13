@@ -50,7 +50,7 @@ class Interpreter:
                     "Undefined indentifier"
                 ))
             elif self.symbol_table.get(node.token.value) == "cons-pointer":
-                return res.success(self.list_of_memory.access_constant(node.token.value).set_pos(node.pos_start, node.pos_end))
+                return res.success(self.list_of_memory.access_constant(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
             elif isinstance(self.symbol_table.get(node.token.value), ClassString) and node.index:
                 string_spe = self.symbol_table.get(node.token.value)
                 index = res.register(self.visit(node.index, context))
@@ -61,7 +61,7 @@ class Interpreter:
                     ))
                 string_spe = ClassString(string_spe.value[index.value]).set_pos(
                     string_spe.pos_start, string_spe.pos_end).set_context(string_spe.context)
-                return res.success(string_spe.set_pos(node.pos_start, node.pos_end))
+                return res.success(string_spe.set_pos(node.pos_start, node.pos_end).set_context(context))
             elif isinstance(self.symbol_table.get(node.token.value), List) and node.index:
                 list_spe = self.symbol_table.get(node.token.value)
                 index = res.register(self.visit(node.index, context))
@@ -72,13 +72,13 @@ class Interpreter:
                     ))
                 list_spe = List(list_spe.value[index.value]).set_context(
                     list_spe.context)
-                return res.success(list_spe.set_pos(node.pos_start, node.pos_end))
+                return res.success(list_spe.set_pos(node.pos_start, node.pos_end).set_context(context))
 
             else:
                 result = self.symbol_table.get(node.token.value)
-                return res.success(result.set_pos(node.pos_start, node.pos_end))
+                return res.success(result.set_pos(node.pos_start, node.pos_end).set_context(context))
         else:
-            return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end))
+            return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_BinOpNode(self, node, context, value=True):
         res = RuntimeResult()
@@ -169,7 +169,7 @@ class Interpreter:
             return res
         self.list_of_memory.set_pos(node.pos_start, node.pos_end)
         pointer = Pointer(type_pointer, self.list_of_memory)
-        return res.success(pointer.set_pos(node.pos_start, node.pos_end))
+        return res.success(pointer.set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_ConstantPointerNode(self, node, context, value=True):
         res = RuntimeResult()
@@ -179,7 +179,7 @@ class Interpreter:
 
         self.list_of_memory.set_pos(node.pos_start, node.pos_end)
         pointer = ConstantPointer(name, self.list_of_memory)
-        return res.success(pointer.set_pos(node.pos_start, node.pos_end))
+        return res.success(pointer.set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_CondNode(self, node, context, value=True):
         res = RuntimeResult()
@@ -188,10 +188,10 @@ class Interpreter:
             return res
         if condition.value == 1:
             true = res.register(self.visit(node.value_if_true, context))
-            return res.success(true.set_pos(node.pos_start, node.pos_end))
+            return res.success(true.set_pos(node.pos_start, node.pos_end).set_context(context))
         elif condition.value == 0:
             false = res.register(self.visit(node.value_if_false, context))
-            return res.success(false.set_pos(node.pos_start, node.pos_end))
+            return res.success(false.set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_WhileNode(self, node, context, value=True):
         res = RuntimeResult()
