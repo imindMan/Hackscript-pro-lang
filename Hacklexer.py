@@ -117,7 +117,14 @@ class Lexer:
                 tokens.append(Token(datatypes.R_SQUARE,
                               pos_start=self.position))
                 self.advance()
-
+            elif self.curr_char == "{":
+                tokens.append(
+                    Token(datatypes.L_CURLY, pos_start=self.position))
+                self.advance()
+            elif self.curr_char == "}":
+                tokens.append(
+                    Token(datatypes.R_CURLY, pos_start=self.position))
+                self.advance()
             elif self.curr_char == "\"":
                 self.advance()
                 string, err = self.make_string()
