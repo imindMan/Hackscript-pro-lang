@@ -1,3 +1,4 @@
+import random
 import Hackinterpreter
 from hacktypes.impor_type import *
 from error.error import *
@@ -84,8 +85,9 @@ class Instruction(GeneralInstruction):
 
 class Method(GeneralInstruction):
 
-    def __init__(self, name, memory):
+    def __init__(self, name, memory, launch_table):
         super().__init__(name, memory)
+        self.launch_table = launch_table
 
     def execute(self, args):
         res = RuntimeResult()
@@ -111,7 +113,7 @@ class Method(GeneralInstruction):
         ))
 
     def copy(self):
-        copy = Method(self.name, self.memory)
+        copy = Method(self.name, self.memory, self.launch_table)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
 
@@ -124,11 +126,13 @@ class Method(GeneralInstruction):
         res = RuntimeResult()
         parent_memory = memory.parent_list_of_memory
         if isinstance(memory.symbols_table.get("status"), Number):
+            status = memory.symbols_table.get("status")
+            status.value = str(status.value)
             err = parent_memory.curr_char.set_pos(self.pos_start, self.pos_end).set_context(context).change_status(
-                memory.symbols_table.get("status"))
-            if error:
-                return res.failure(err)
-            return res.success(Number.null)
+                status)
+            if err:
+                return res
+            return res.success(NULL)
         else:
             return res.failure(error.InvalidStatus(
                 self.pos_start, self.pos_end,
@@ -138,7 +142,7 @@ class Method(GeneralInstruction):
 
     def execute_clear(self, context, memory):
         os.system("cls") if os.name == "nt" else os.system("clear")
-        return RuntimeResult().success(Number.null)
+        return RuntimeResult().success(NULL)
     execute_clear.arg = []
 
     def execute_exit(self, context, memory):
@@ -151,10 +155,130 @@ class Method(GeneralInstruction):
         if isinstance(memory.symbols_table.get("value"), ConstantPointer):
             parent_memory.set_pos(self.pos_start, self.pos_end).set_context(context).set_constant(
                 memory.symbols_table.get("value").type.value)
-            return res.success(Number.null)
+            return res.success(NULL)
         else:
             return res.failure(error.InvalidObject(
                 self.pos_start, self.pos_end,
                 "Invalid parameter value"
             ))
     execute_set_constant.arg = [Identifier("value")]
+
+    def execute_launch(self, context, memory: ListofMemory):
+        res = RuntimeResult()
+        parent_memory = memory.parent_list_of_memory
+
+        if len(self.launch_table) == 1:
+            self.launch_table = {}
+        if isinstance(memory.symbols_table.get("value"), Pointer):
+            self.launch_table["pointer_on_launch"] = memory.symbols_table.get(
+                "value")
+
+            return res.success(NULL)
+        elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
+            if parent_memory.access_constant(memory.symbols_table.get("value").type.value) == "Error catching while defined constant pointer":
+                return res.failure(error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined constant pointer"
+                ))
+            self.launch_table["pointer_constant_on_launch"] = memory.symbols_table.get(
+                "value")
+
+            return res.success(NULL)
+        else:
+
+            return res.failure(error.InvalidObject(
+                self.pos_start, self.pos_end,
+                "Launch method can only accept a Pointer or a Constant Pointer"
+            ))
+
+    execute_launch.arg = [Identifier("value")]
+
+    def execute_end_launch(self, context, memory: ListofMemory):
+        res = RuntimeResult()
+        parent_memory = memory.parent_list_of_memory
+        if isinstance(memory.symbols_table.get("value"), Pointer):
+            self.launch_table = {}
+            return res.success(NULL)
+
+        elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
+            if parent_memory.access_constant(memory.symbols_table.get("value").type.value) == "Error catching while defined constant pointer":
+                return res.failure(error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined constant pointer"
+                ))
+            self.launch_table = {}
+            return res.success(NULL)
+        else:
+            return res.failure(error.InvalidObject(
+                self.pos_start, self.pos_end,
+                "End launch method can only accept a Pointer, Constant Pointer"
+            ))
+    execute_end_launch.arg = [Identifier("value")]
+
+    def execute_push(self, context, memory: ListofMemory):
+        res = RuntimeResult()
+        parent_memory = memory.parent_list_of_memory
+
+        if len(self.launch_table) > 0:
+
+            pointer_to_push = list(self.launch_table.values())[0]
+
+        else:
+            return res.failure(error.RuntimeError(
+                self.pos_start, self.pos_end,
+                "Current there's no pointer on the launch table, maybe you miss to launch it?",
+                context
+            ))
+        if memory.symbols_table.get("how_to_push") == parent_memory.symbols_table.get("in"):
+
+            if isinstance(memory.symbols_table.get("value"), Pointer) or isinstance(memory.symbols_table.get("value"), ConstantPointer):
+                return res.failure(error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Cannot push a pointer or a constant pointer into a memory stack"
+                ))
+            if isinstance(pointer_to_push, Pointer):
+                parent_memory.curr_char.push(memory.symbols_table.get("value"))
+            if isinstance(pointer_to_push, ConstantPointer):
+                constant_pointer = parent_memory.access_constant(
+                    pointer_to_push.type.value)
+                constant_pointer.push(memory.symbols_table.get("value"))
+
+        elif memory.symbols_table.get("how_to_push") == parent_memory.symbols_table.get("out"):
+
+            if memory.symbols_table.get("value") == parent_memory.symbols_table.get("con"):
+
+                if isinstance(pointer_to_push, Pointer):
+                    if len(parent_memory.curr_char.data) == 1:
+                        print(parent_memory.curr_char.data[0])
+                    elif len(parent_memory.curr_char.data) == 0:
+                        print(r"{}")
+                    elif len(parent_memory.curr_char.data) > 1:
+                        print(List(parent_memory.curr_char.data))
+
+                    parent_memory.curr_char.data = []
+                elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
+                    constant_pointer = parent_memory.access_constant(
+                        pointer_to_push.type.value)
+                    if len(constant_pointer.data) == 1:
+                        print(constant_pointer.data[0])
+                    elif len(constant_pointer.data) == 0:
+                        print(r"{}")
+                    elif len(constant_pointer.data) > 1:
+                        print(List(constant_pointer.data))
+                    parent_memory.access_constant(
+                        pointer_to_push.type.value).data = []
+
+        return res.success(NULL)
+
+    execute_push.arg = [Identifier("how_to_push"), Identifier("value")]
+
+    def execute_random(self, context, memory: ListofMemory):
+        res = RuntimeResult()
+        if isinstance(memory.symbols_table.get("value"), List):
+            choice = random.choice(memory.symbols_table.get("value").value)
+            return res.success(choice)
+        elif memory.symbols_table.get("value") == memory.parent_list_of_memory.symbols_table.get("pp"):
+            result = input()
+            return res.success(result)
+
+    execute_random.arg = [Identifier("value")]
