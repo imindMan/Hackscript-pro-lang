@@ -7,19 +7,32 @@ from ins_def import *
 
 symbol_table = SymbolTable()
 memory = ListofMemory(symbol_table)
+launch_table = {}
 
-Method.change_status = Method("change_status", memory)
-Method.exit = Method("exit", memory)
-Method.clear = Method("clear", memory)
-Method.set_constant = Method("set_constant", memory)
+Method.change_status = Method("change_status", memory, launch_table)
+Method.exit = Method("exit", memory, launch_table)
+Method.clear = Method("clear", memory, launch_table)
+Method.set_constant = Method("set_constant", memory, launch_table)
+Method.launch = Method("launch", memory, launch_table)
+Method.end_launch = Method("end_launch", memory, launch_table)
+Method.push = Method("push", memory, launch_table)
+Method.random = Method("random", memory, launch_table)
 
-symbol_table.set("null", Number.null)
-symbol_table.set("false", Number.false)
-symbol_table.set("true", Number.true)
+symbol_table.set("null", NULL)
+symbol_table.set("true", TRUE)
+symbol_table.set("false", FALSE)
 symbol_table.set("!", Method.change_status)
 symbol_table.set("exit", Method.exit)
 symbol_table.set("clear", Method.clear)
 symbol_table.set("s", Method.set_constant)
+symbol_table.set("$", Method.launch)
+symbol_table.set(".", Method.end_launch)
+symbol_table.set("pu", Method.push)
+symbol_table.set("in", Identifier("in"))
+symbol_table.set("out", Identifier("out"))
+symbol_table.set("con", Identifier("con"))
+symbol_table.set("?", Method.random)
+symbol_table.set("pp", Identifier("pp"))
 
 
 def run(text, fn):
