@@ -374,12 +374,12 @@ class Memory(Value):
             self.status = "230"
 
     def change_status(self, status):
-        if status.value > 230:
+        if int(status.value) > 230:
             return error.InvalidStatus(
                 self.pos_start, self.pos_end,
                 f"Invalid status {status}"
             )
-        self.status = status
+        self.status = status.value
         return None
 
     def copy(self):
@@ -646,9 +646,9 @@ class List(Value):
         return str_to_return
 
 
-Number.null = Number(0)
-Number.true = Number(1)
-Number.false = Number(0)
+NULL = Number(0)
+FALSE = Number(0)
+TRUE = Number(1)
 ###################################
 # ALL THE NODES
 ###################################
