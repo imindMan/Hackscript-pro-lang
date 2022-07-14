@@ -279,6 +279,6 @@ class Method(GeneralInstruction):
             return res.success(choice)
         elif memory.symbols_table.get("value") == memory.parent_list_of_memory.symbols_table.get("pp"):
             result = input()
-            return res.success(result)
+            return res.success(ClassString(result))
 
     execute_random.arg = [Identifier("value")]
