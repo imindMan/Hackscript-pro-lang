@@ -91,14 +91,23 @@ class Lexer:
                                     pos_start=self.position))
                 self.advance()
             elif self.curr_char == "$":
+
                 self.advance()
-                # if self.curr_char is None or not self.curr_char.isdigit():
-                #     tokens.append(
-                #         Token(datatypes.KEYWORD, datatypes.KEYWORDS["$"], pos_start=self.position))
-                # else:
-                tokens.append(Token(datatypes.POINTER,
-                                    pos_start=self.position))
-                continue
+
+                if self.curr_char is None:
+
+                    tokens.append(
+                        Token(datatypes.IDENTIFIER, "$", pos_start=self.position))
+                    continue
+                elif self.curr_char.isdigit() == False and self.curr_char not in datatypes.LETTERS + datatypes.SYMBOLS:
+                    tokens.append(Token(datatypes.IDENTIFIER,
+                                  "$", pos_start=self.position))
+                    self.advance()
+                else:
+
+                    tokens.append(Token(datatypes.POINTER,
+                                        pos_start=self.position))
+                    continue
             elif self.curr_char == ",":
                 tokens.append(Token(datatypes.COMMA, pos_start=self.position))
                 self.advance()
