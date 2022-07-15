@@ -360,10 +360,12 @@ class Memory(Value):
             self.data.append(data)
             self.status = "220"
 
-    def delete(self, index):
+    def delete(self, index=None):
         if self.status == "200":
             self.status = "210"
             try:
+                if index == None:
+                    self.data = []
                 self.data.remove(self.data[index])
             except:
                 return error.InvalidIndexOfMemory(
@@ -371,7 +373,9 @@ class Memory(Value):
                     "Invalid index because data doesn't have that much memory"
                 )
 
-            self.status = "230"
+            finally:
+
+                self.status = "230"
 
     def change_status(self, status):
         if int(status.value) > 230:
