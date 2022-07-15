@@ -255,7 +255,7 @@ class Method(GeneralInstruction):
                     elif len(parent_memory.curr_char.data) > 1:
                         print(List(parent_memory.curr_char.data))
 
-                    parent_memory.curr_char.data = []
+                    parent_memory.curr_char.delete()
                 elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
                     constant_pointer = parent_memory.access_constant(
                         pointer_to_push.type.value)
@@ -266,7 +266,7 @@ class Method(GeneralInstruction):
                     elif len(constant_pointer.data) > 1:
                         print(List(constant_pointer.data))
                     parent_memory.access_constant(
-                        pointer_to_push.type.value).data = []
+                        pointer_to_push.type.value).delete()
 
         return res.success(NULL)
 
