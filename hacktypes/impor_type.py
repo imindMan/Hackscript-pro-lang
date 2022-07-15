@@ -399,7 +399,7 @@ class Memory(Value):
 
 
 class ListofMemory:
-    def __init__(self, symbols_table, parent_list_of_memory=None):
+    def __init__(self, symbols_table, launch_table, parent_list_of_memory=None):
 
         self.data = [Memory(str(i)) for i in range(10)]
         self.index = 0
@@ -407,6 +407,7 @@ class ListofMemory:
             self.data) else None
         self.symbols_table = symbols_table
         self.parent_list_of_memory = parent_list_of_memory
+        self.launch_table = launch_table
         self.set_pos()
         self.set_context()
 
