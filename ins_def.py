@@ -12,15 +12,15 @@ class GeneralInstruction(Value):
         self.memory = memory
         self.parent_symbol_table = memory.symbols_table
 
-    def set_up_symbol_table(self, symbol_table, memory, launch_table):
-        Method.change_status = Method("change_status", memory, launch_table)
-        Method.exit = Method("exit", memory, launch_table)
-        Method.clear = Method("clear", memory, launch_table)
-        Method.set_constant = Method("set_constant", memory, launch_table)
-        Method.launch = Method("launch", memory, launch_table)
-        Method.end_launch = Method("end_launch", memory, launch_table)
-        Method.push = Method("push", memory, launch_table)
-        Method.random = Method("random", memory, launch_table)
+    def set_up_symbol_table(self, symbol_table, memory):
+        Method.change_status = Method("change_status", memory)
+        Method.exit = Method("exit", memory)
+        Method.clear = Method("clear", memory)
+        Method.set_constant = Method("set_constant", memory)
+        Method.launch = Method("launch", memory)
+        Method.end_launch = Method("end_launch", memory)
+        Method.push = Method("push", memory)
+        Method.random = Method("random", memory)
 
         symbol_table.set("null", NULL)
         symbol_table.set("true", TRUE)
@@ -41,10 +41,11 @@ class GeneralInstruction(Value):
     def generate_basic_thing(self):
         context = Context(self.name, self.context, self.pos_start)
         symbol_table = SymbolTable(self.parent_symbol_table)
-        memory = ListofMemory(symbol_table, self.memory)
         launch_table = {}
-        self.set_up_symbol_table(symbol_table, memory, launch_table)
-        return context, symbol_table, memory, launch_table
+        memory = ListofMemory(symbol_table, launch_table, self.memory)
+
+        self.set_up_symbol_table(symbol_table, memory)
+        return context, symbol_table, memory
 
     def check_args(self, arg_names, args):
         res = RuntimeResult()
@@ -87,7 +88,7 @@ class Instruction(GeneralInstruction):
 
     def execute(self, args):
         res = RuntimeResult()
-        context, symbol_table, memory, launch_table = self.generate_basic_thing()
+        context, symbol_table, memory = self.generate_basic_thing()
 
         res.register(self.check_and_populate_args(
             self.args, args, context, memory))
@@ -113,14 +114,13 @@ class Instruction(GeneralInstruction):
 
 class Method(GeneralInstruction):
 
-    def __init__(self, name, memory, launch_table):
+    def __init__(self, name, memory):
         super().__init__(name, memory)
-        self.launch_table = launch_table
+        self.launch_table = memory.launch_table
 
     def execute(self, args):
         res = RuntimeResult()
-        context, symbol_table, memory, launch_table = self.generate_basic_thing()
-        self.launch_table = launch_table
+        context, symbol_table, memory = self.generate_basic_thing()
         method_name = f'execute_{self.name}'
 
         method = getattr(self, method_name, self.no_visit)
@@ -141,7 +141,7 @@ class Method(GeneralInstruction):
         ))
 
     def copy(self):
-        copy = Method(self.name, self.memory, self.launch_table)
+        copy = Method(self.name, self.memory)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
 
