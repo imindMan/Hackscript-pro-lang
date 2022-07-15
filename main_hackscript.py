@@ -6,17 +6,18 @@ from ins_def import *
 
 
 symbol_table = SymbolTable()
-memory = ListofMemory(symbol_table)
 launch_table = {}
+memory = ListofMemory(symbol_table, launch_table)
 
-Method.change_status = Method("change_status", memory, launch_table)
-Method.exit = Method("exit", memory, launch_table)
-Method.clear = Method("clear", memory, launch_table)
-Method.set_constant = Method("set_constant", memory, launch_table)
-Method.launch = Method("launch", memory, launch_table)
-Method.end_launch = Method("end_launch", memory, launch_table)
-Method.push = Method("push", memory, launch_table)
-Method.random = Method("random", memory, launch_table)
+
+Method.change_status = Method("change_status", memory)
+Method.exit = Method("exit", memory)
+Method.clear = Method("clear", memory)
+Method.set_constant = Method("set_constant", memory)
+Method.launch = Method("launch", memory)
+Method.end_launch = Method("end_launch", memory)
+Method.push = Method("push", memory)
+Method.random = Method("random", memory)
 
 symbol_table.set("null", NULL)
 symbol_table.set("true", TRUE)
