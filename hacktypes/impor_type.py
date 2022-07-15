@@ -428,12 +428,18 @@ class ListofMemory:
         if index + 1 >= len(self.data):
             self.data.append(Memory(str(f"{index + 1}")))
             self.index += 1
+            temp_data = self.curr_char.data
+            self.curr_char.data = []
             self.curr_char = self.data[self.index] if 0 <= self.index < len(
                 self.data) else None
+            self.curr_char.data = temp_data
         else:
             self.index += 1
+            temp_data = self.curr_char.data
+            self.curr_char.data = []
             self.curr_char = self.data[self.index] if 0 <= self.index < len(
                 self.data) else None
+            self.curr_char.data = temp_data
         self.symbols_table.set(name, "cons-pointer")
 
     def access_constant(self, name):
