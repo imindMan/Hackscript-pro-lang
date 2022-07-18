@@ -31,6 +31,7 @@ EOF_TYPE = "eof"
 SYMBOLS = r"<>-=!_.?"
 LETTERS = string.ascii_letters
 DIGITS = "0123456789"
+NEWLINE = "newline"
 
 KEYWORDS = {
     # "!": "change_status",
