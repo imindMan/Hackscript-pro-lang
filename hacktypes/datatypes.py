@@ -27,7 +27,7 @@ LEFT_PAREN = "left_paren"
 RIGHT_PAREN = "right_paren"
 
 EOF_TYPE = "eof"
-# SYMBOLS = r"`~!@#$%^&*()–_=+[]{}\|;:‘“,./<>?"
+FULL_SYMBOLS = r"`~!@#$%^&*()–_=+[]{}\|;:‘“,./<>?"
 SYMBOLS = r"<>-=!_.?"
 LETTERS = string.ascii_letters
 DIGITS = "0123456789"
