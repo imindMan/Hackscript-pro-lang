@@ -38,14 +38,39 @@ class Parser:
         return self.curr_token
 
     def parse(self):
-        res = self.expr()
+        res = self.statements(datatypes.EOF_TYPE)
         if not res.error and self.curr_token.type != datatypes.EOF_TYPE:
             res.failure(error.SyntaxError(
                 self.curr_token.pos_start, self.curr_token.pos_end,
-                "Expected '+', '-', '*', '/', '=', '<', '>', '<=', '>=', '!=', '<-', ^, `, and, or"
+                "Expected '+', '-', '*', '/', '=', '<', '>', '<=', '>=', '!=', '<-', ^, `, and, or, instruction, method"
             ))
 
         return res
+
+    def statements(self, keyword):
+        res = ParserResult()
+        token = self.curr_token
+        list_of_statements = []
+        while self.curr_token.type == datatypes.NEWLINE:
+            res.register(self.advance())
+
+        expr = res.register(self.expr())
+        if res.error:
+            return res
+        list_of_statements.append(expr)
+
+        while True:
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
+
+            if self.curr_token.type == keyword:
+                break
+            else:
+                expr2 = res.register(self.expr())
+                if res.error:
+                    return res
+                list_of_statements.append(expr2)
+        return res.success(StatementNode(token, list_of_statements))
 
     def atom(self):
         res = ParserResult()
@@ -69,7 +94,7 @@ class Parser:
             return res.success(IdentifierNode(token))
         elif token.type == datatypes.LEFT_PAREN:
             res.register(self.advance())
-            expr = res.register(self.expr())
+            expr = res.register(self.statements(datatypes.RIGHT_PAREN))
             if res.error:
                 return res
             if self.curr_token.type == datatypes.RIGHT_PAREN:
@@ -246,6 +271,8 @@ class Parser:
             if res.error:
                 return res
             res.register(self.advance())
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
             if not self.curr_token.matches(datatypes.IDENTIFIER, "true"):
                 return res.failure(error.SyntaxError(
                     self.curr_token.pos_start, self.curr_token.pos_end,
@@ -262,6 +289,8 @@ class Parser:
                 ))
             res.register(self.advance())
             cond_true = res.register(self.atom())
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
             if res.error:
                 return res
 
@@ -281,6 +310,8 @@ class Parser:
                 ))
             res.register(self.advance())
             cond_false = res.register(self.atom())
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
             if res.error:
                 return res
             if not self.curr_token.type == datatypes.RIGHT_PAREN:
@@ -315,6 +346,9 @@ class Parser:
                     "Expected '('"
                 ))
             res.register(self.advance())
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
+
             if not self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
                 return res.failure(error.SyntaxError(
                     self.curr_token.pos_start, self.curr_token.pos_end,
@@ -330,6 +364,8 @@ class Parser:
 
             res.register(self.advance())
             what_to_do = res.register(self.atom())
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
             if not self.curr_token.type == datatypes.RIGHT_PAREN:
                 return res.failure(error.SyntaxError(
                     self.curr_token.pos_start, self.curr_token.pos_end,
