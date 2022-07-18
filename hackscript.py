@@ -1,5 +1,6 @@
 import sys
 import main_hackscript
+from hacktypes.impor_type import *
 
 
 list_of_files = sys.argv
@@ -28,10 +29,8 @@ elif len(list_of_files) >= 2:
     else:
         if user in " \t\n":
             pass
-        elif user == "exit":
-            exit()
         result, error = main_hackscript.run(user, "<stdin>")
         if error:
             print(error.as_string())
         else:
-            print(result)
+            print(NULL)
