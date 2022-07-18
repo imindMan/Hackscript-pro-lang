@@ -200,7 +200,6 @@ class Interpreter:
             condition = res.register(self.visit(node.condition, context))
             if res.error:
                 return res
-
             if condition.value != 1:
                 break
 
@@ -260,3 +259,13 @@ class Interpreter:
         return_value = return_value.copy().set_pos(
             node.pos_start, node.pos_end).set_context(context)
         return res.success(return_value)
+
+    def visit_StatementNode(self, node, context, value=True):
+        res = RuntimeResult()
+
+        list1 = [res.register(self.visit(i, context)) for i in node.value]
+        if res.error:
+            return res
+        if len(list1) == 1:
+            return res.success(list1[0].set_pos(node.pos_start, node.pos_end).set_context(context))
+        return res.success(NULL.set_pos(node.pos_start, node.pos_end).set_context(context))
