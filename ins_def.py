@@ -195,8 +195,6 @@ class Method(GeneralInstruction):
         res = RuntimeResult()
         parent_memory = memory.parent_list_of_memory
 
-        if len(self.launch_table) == 1:
-            self.launch_table = {}
         if isinstance(memory.symbols_table.get("value"), Pointer):
             self.launch_table["pointer_on_launch"] = memory.symbols_table.get(
                 "value")
@@ -225,7 +223,14 @@ class Method(GeneralInstruction):
         res = RuntimeResult()
         parent_memory = memory.parent_list_of_memory
         if isinstance(memory.symbols_table.get("value"), Pointer):
-            self.launch_table = {}
+            value = self.launch_table.get("pointer_on_launch", None)
+            if value == None:
+                return res.failure(error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "No pointer detected on launch"
+                ))
+            del self.launch_table["pointer_on_launch"]
+
             return res.success(NULL)
 
         elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
@@ -234,7 +239,12 @@ class Method(GeneralInstruction):
                     self.pos_start, self.pos_end,
                     "Undefined constant pointer"
                 ))
-            self.launch_table = {}
+            if self.launch_table.get("pointer_constant_on_launch", None) == None:
+                return res.failure(error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "No constant pointer detected on launch"
+                ))
+            del self.launch_table["pointer_constant_on_launch"]
             return res.success(NULL)
         else:
             return res.failure(error.InvalidObject(
