@@ -44,6 +44,14 @@ class Lexer:
         while self.curr_char is not None:
             if self.curr_char in " \t":
                 self.advance()
+            elif self.curr_char in ";\n":
+                tokens.append(Token(datatypes.NEWLINE,
+                              pos_start=self.position))
+                self.advance()
+            elif self.curr_char == "'":
+                while self.curr_char != "\n":
+                    self.advance()
+                continue
             elif self.curr_char == "+":
                 tokens.append(Token(datatypes.PLUS_OPE,
                               pos_start=self.position))
