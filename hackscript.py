@@ -1,9 +1,16 @@
 import sys
 import main_hackscript
 from hacktypes.impor_type import *
-
+from hacktypes.datatypes import *
 
 list_of_files = sys.argv
+
+
+def checkempty(string):
+    for i in string:
+        if i in FULL_SYMBOLS + DIGITS + LETTERS:
+            return False
+    return True
 
 
 if len(list_of_files) == 1:
@@ -11,9 +18,8 @@ if len(list_of_files) == 1:
 
         user = input("hackscript>")
 
-        if user in " \t\n":
+        if checkempty(user) == True:
             continue
-
         result, error = main_hackscript.run(user, "<stdin>")
         if error:
             print(error.as_string())
@@ -24,11 +30,10 @@ elif len(list_of_files) >= 2:
     f = open(list_of_files[1], "r")
     user = f.read()
     f.close()
-    if user == "":
+    if checkempty(user) == True:
         print("File is empty")
+        exit()
     else:
-        if user in " \t\n":
-            pass
         result, error = main_hackscript.run(user, "<stdin>")
         if error:
             print(error.as_string())
