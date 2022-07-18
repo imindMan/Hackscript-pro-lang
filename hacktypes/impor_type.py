@@ -472,7 +472,7 @@ class ListofMemory:
         return (index, curr_char), None
 
     def copy(self):
-        list_of_memory = ListofMemory(self.symbols_table)
+        list_of_memory = ListofMemory(self.symbols_table, self.launch_table)
         list_of_memory.data = self.data
         list_of_memory.index = self.index
         list_of_memory.curr_char = list_of_memory.data[list_of_memory.index] if list_of_memory.index < len(
@@ -808,6 +808,23 @@ class ListNode:
     def __init__(self, token, value, index=None):
         self.value = value
         self.index = index
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+
+    def __repr__(self):
+        str_to_return = "{"
+        for i in range(len(self.value)):
+            if i == len(self.value) - 1:
+                str_to_return += self.value[i].__repr__()
+            else:
+                str_to_return += self.value[i].__repr__() + ", "
+        str_to_return += "}"
+        return str_to_return
+
+
+class StatementNode:
+    def __init__(self, token, value):
+        self.value = value
         self.pos_start = token.pos_start
         self.pos_end = token.pos_end
 
