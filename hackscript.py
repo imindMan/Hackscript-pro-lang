@@ -1,4 +1,5 @@
 import sys
+import os
 import main_hackscript
 from hacktypes.impor_type import *
 from hacktypes.datatypes import *
@@ -34,7 +35,8 @@ elif len(list_of_files) >= 2:
         print("File is empty")
         exit()
     else:
-        result, error = main_hackscript.run(user, "<stdin>")
+        result, error = main_hackscript.run(
+            user, os.path.abspath(list_of_files[1]))
         if error:
             print(error.as_string())
         else:
