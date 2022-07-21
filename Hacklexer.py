@@ -63,6 +63,7 @@ class Lexer:
                 if self.curr_char == ">":
                     tokens.append(
                         Token(datatypes.KEYWORD, datatypes.KEYWORDS["->"], pos_start=self.position))
+                    self.advance()
                 else:
                     tokens.append(Token(datatypes.MINUS_OPE,
                                   pos_start=self.position))
