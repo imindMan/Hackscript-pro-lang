@@ -47,14 +47,14 @@ class Parser:
 
         return res
 
-    def statements(self, keyword):
+    def statements(self, keyword, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
         list_of_statements = []
         while self.curr_token.type == datatypes.NEWLINE:
             res.register(self.advance())
 
-        expr = res.register(self.expr())
+        expr = res.register(self.expr(list_of_attribute))
         if res.error:
             return res
         list_of_statements.append(expr)
@@ -66,35 +66,45 @@ class Parser:
             if self.curr_token.type == keyword:
                 break
             else:
-                expr2 = res.register(self.expr())
+                expr2 = res.register(self.expr(list_of_attribute))
                 if res.error:
                     return res
                 list_of_statements.append(expr2)
         return res.success(StatementNode(token, list_of_statements))
 
-    def atom(self):
+    def atom(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
         if token.type in (datatypes.INT_TYPE, datatypes.FLOAT_TYPE):
             res.register(self.advance())
-            return res.success(NumberNode(token))
+            num = NumberNode(token)
+            if list_of_attribute != None:
+                list_of_attribute.append(num)
+            return res.success(num)
         elif token.type in (datatypes.IDENTIFIER, ):
             res.register(self.advance())
             if self.curr_token.type == datatypes.L_SQUARE:
 
                 res.register(self.advance())
-                index = res.register(self.factor())
+                index = res.register(self.factor(list_of_attribute))
                 if self.curr_token.type != datatypes.R_SQUARE:
                     return res.failure(error.InvalidIndexOfMemory(
                         self.curr_token.pos_start, self.curr_token.pos_end,
                         "Expected ']'"
                     ))
                 res.register(self.advance())
-                return res.success(IdentifierNode(token, index))
-            return res.success(IdentifierNode(token))
+                identifier = IdentifierNode(token, index)
+                if list_of_attribute != None:
+                    list_of_attribute.append(identifier)
+                return res.success(identifier)
+            identifier = IdentifierNode(token)
+            if list_of_attribute != None:
+                list_of_attribute.append(identifier)
+            return res.success(identifier)
         elif token.type == datatypes.LEFT_PAREN:
             res.register(self.advance())
-            expr = res.register(self.statements(datatypes.RIGHT_PAREN))
+            expr = res.register(self.statements(
+                datatypes.RIGHT_PAREN, list_of_attribute))
             if res.error:
                 return res
             if self.curr_token.type == datatypes.RIGHT_PAREN:
@@ -108,28 +118,52 @@ class Parser:
                     )
                 )
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["check"]):
-            return self.check()
+            return self.check(list_of_attribute)
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["while"]) or token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
-            return self.while_loop()
+            return self.while_loop(list_of_attribute)
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["inst"]):
-            return self.ins()
+            ins = self.ins(list_of_attribute)
+            return ins
         elif token.type == datatypes.STRING:
-            return self.string()
+            return self.string(list_of_attribute)
         elif token.type == datatypes.L_CURLY:
-            return self.list_()
-
+            return self.list_(list_of_attribute)
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["class"]):
+            return self.class_(list_of_attribute)
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["this"]):
+            res.register(self.advance())
+            if not self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["->"]):
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected '->'"
+                ))
+            res.register(self.advance())
+            name = res.register(self.atom(list_of_attribute))
+            if self.curr_token.type == datatypes.THEN:
+                res.register(self.advance())
+                value = res.register(self.expr(list_of_attribute))
+                if list_of_attribute != None:
+                    list_of_attribute.append(AttributeNode(name, value))
+                return res.success(AttributeNode(name, value))
+            else:
+                if list_of_attribute != None:
+                    list_of_attribute.append(AttributeNode(name))
+                return res.success(AttributeNode(name))
         return res.failure(error.SyntaxError(
             token.pos_start, token.pos_end,
             "Expected int or float, pointer, expression, '+', '-', '(', ')', '=', '<', '>', '<=', '>=', '!=', '<-', ':', ^, `, and, or"
         ))
 
-    def power(self):
-        return self.bin_op(self.call_ins, (datatypes.POW_OPE,), self.factor)
+    def power(self, list_of_attribute=None):
+        power = self.bin_op(self.call_ins, (datatypes.POW_OPE,), self.factor)
+        if list_of_attribute != None:
+            list_of_attribute.append(power)
+        return power
 
-    def call_ins(self):
+    def call_ins(self, list_of_attribute=None):
         res = ParserResult()
         arg_list = []
-        atom = res.register(self.atom())
+        atom = res.register(self.atom(list_of_attribute))
         if res.error:
             return res
 
@@ -138,7 +172,7 @@ class Parser:
             if self.curr_token.type == datatypes.ADD_PARA:
                 res.register(self.advance())
             else:
-                expr = res.register(self.expr())
+                expr = res.register(self.expr(list_of_attribute))
                 arg_list.append(expr)
                 if res.error:
                     return res.failure(
@@ -149,15 +183,19 @@ class Parser:
                     )
                 while self.curr_token.type == datatypes.COMMA:
                     res.register(self.advance())
-                    para = res.register(self.expr())
+                    para = res.register(self.expr(list_of_attribute))
                     arg_list.append(para)
                     if res.error:
                         return res
-            return res.success(CallNode(atom, arg_list))
-
+            call_ins = CallNode(atom, arg_list)
+            if list_of_attribute is not None:
+                list_of_attribute.append(call_ins)
+            return res.success(call_ins)
+        if list_of_attribute is not None:
+            list_of_attribute.append(atom)
         return res.success(atom)
 
-    def factor(self):
+    def factor(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
         if token.type in (datatypes.MINUS_OPE, datatypes.PLUS_OPE):
@@ -165,15 +203,18 @@ class Parser:
             factor = res.register(self.factor())
             if res.error:
                 return res
-            return res.success(UnaryOpNode(token, factor))
+            ret = UnaryOpNode(token, factor)
+            if list_of_attribute != None:
+                list_of_attribute.append(ret)
+            return res.success(ret)
         elif token.type in (datatypes.POINTER, ):
-            return self.data()
+            return self.data(list_of_attribute)
         elif token.type == datatypes.SQRT_OPE:
-            return self.sqrt()
+            return self.sqrt(list_of_attribute)
 
-        return self.power()
+        return self.power(list_of_attribute)
 
-    def data(self):
+    def data(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
 
@@ -192,20 +233,28 @@ class Parser:
                     if res.error:
                         return res
                     left = BinOpNode(left, op, right)
+                if list_of_attribute != None:
+                    list_of_attribute.append(ret)
                 return res.success(left)
             else:
                 if res.error:
                     return res
                 if atom.token.type == datatypes.INT_TYPE and atom.token.value == 2:
-                    return res.success(PointerNode(token, atom))
+                    ret = PointerNode(token, atom)
+                    if list_of_attribute != None:
+                        list_of_attribute.append(ret)
+                    return res.success(ret)
                 elif atom.token.type == datatypes.IDENTIFIER:
-                    return res.success(ConstantPointerNode(token, atom))
+                    ret = ConstantPointerNode(token, atom)
+                    if list_of_attribute != None:
+                        list_of_attribute.append(ret)
+                    return res.success(ret)
                 else:
                     return res.failure(error.InvalidObject(
                         token.pos_start, atom.pos_end, "Pointer type must be 2 or identifier"
                     ))
 
-    def sqrt(self):
+    def sqrt(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
 
@@ -214,16 +263,27 @@ class Parser:
             factor = res.register(self.factor())
             if res.error:
                 return res
-            return res.success(UnaryOpNode(token, factor))
+            ret = UnaryOpNode(token, factor)
+            if list_of_attribute != None:
+                list_of_attribute.append(ret)
+            return res.success(ret)
 
-    def term(self):
-        return self.bin_op(self.factor, ((datatypes.MULT_OPE, None), (datatypes.DIV_OPE, None), (datatypes.SLASH, None), ))
+    def term(self, list_of_attribute=None):
+        term = self.bin_op(self.factor, ((datatypes.MULT_OPE, None),
+                           (datatypes.DIV_OPE, None), (datatypes.SLASH, None), ))
+        if list_of_attribute != None:
+            list_of_attribute.append(term)
+        return term
 
-    def expr(self):
+    def expr(self, list_of_attribute=None):
+        ret = self.bin_op(self.comp_expr, ((
+            datatypes.KEYWORD, datatypes.KEYWORDS["and"]), (datatypes.KEYWORD, datatypes.KEYWORDS["or"])))
+        if list_of_attribute != None:
+            list_of_attribute.append(ret)
 
-        return self.bin_op(self.comp_expr, ((datatypes.KEYWORD, datatypes.KEYWORDS["and"]), (datatypes.KEYWORD, datatypes.KEYWORDS["or"])))
+        return ret
 
-    def comp_expr(self):
+    def comp_expr(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
         if token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["not"]):
@@ -231,9 +291,11 @@ class Parser:
             expr = res.register(self.arith_expr())
             if res.error:
                 return res
+            ret = UnaryOpNode(token, expr)
+            if list_of_attribute != None:
+                list_of_attribute.append(ret)
             return res.success(UnaryOpNode(token, expr))
-
-        return self.bin_op(self.arith_expr, (
+        ans = self.bin_op(self.arith_expr, (
             (datatypes.KEYWORD, datatypes.KEYWORDS["="]),
             (datatypes.KEYWORD, datatypes.KEYWORDS["<"]),
             (datatypes.KEYWORD, datatypes.KEYWORDS[">"]),
@@ -241,11 +303,18 @@ class Parser:
             (datatypes.KEYWORD, datatypes.KEYWORDS[">="]),
             (datatypes.KEYWORD, datatypes.KEYWORDS["!="]),
         ))
+        if list_of_attribute != None:
+            list_of_attribute.append(ans)
+        return ans
 
-    def arith_expr(self):
-        return self.bin_op(self.term, ((datatypes.PLUS_OPE, None), (datatypes.MINUS_OPE, None), (datatypes.KEYWORD, datatypes.KEYWORDS["<-"])))
+    def arith_expr(self, list_of_attribute=None):
+        ret = self.bin_op(self.term, ((datatypes.PLUS_OPE, None), (
+            datatypes.MINUS_OPE, None), (datatypes.KEYWORD, datatypes.KEYWORDS["<-"]), (datatypes.KEYWORD, datatypes.KEYWORDS["->"])))
+        if list_of_attribute != None:
+            list_of_attribute.append(ret)
+        return ret
 
-    def check(self):
+    def check(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
 
@@ -320,9 +389,12 @@ class Parser:
                     "Expected ')'"
                 ))
             res.register(self.advance())
-            return res.success(CondNode(condition, cond_true, cond_false))
+            cond = CondNode(condition, cond_true, cond_false)
+            if list_of_attribute != None:
+                list_of_attribute.append(cond)
+            return res.success(cond)
 
-    def while_loop(self):
+    def while_loop(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
 
@@ -372,7 +444,10 @@ class Parser:
                     "Expected ')'"
                 ))
             res.register(self.advance())
-            return res.success(WhileNode(condition, what_to_do))
+            while_ = WhileNode(condition, what_to_do)
+            if list_of_attribute != None:
+                list_of_attribute.append(while_)
+            return res.success(while_)
 
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["do"]):
             res.register(self.advance())
@@ -391,9 +466,12 @@ class Parser:
                 ))
             res.register(self.advance())
             cond = res.register(self.atom())
-            return res.success(DoNode(cond, do))
+            do_ = DoNode(cond, do)
+            if list_of_attribute != None:
+                list_of_attribute.append(do_)
+            return res.success(do_)
 
-    def ins(self):
+    def ins(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
         arg_list = []
@@ -456,9 +534,12 @@ class Parser:
                 ))
             res.register(self.advance())
             body_node = res.register(self.atom())
-            return res.success(InsNode(name, arg_list, body_node))
+            ins = InsNode(name, arg_list, body_node)
+            if list_of_attribute != None:
+                list_of_attribute.append(ins)
+            return res.success(ins)
 
-    def string(self):
+    def string(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
         if token.type in (datatypes.STRING, datatypes.IDENTIFIER):
@@ -474,10 +555,16 @@ class Parser:
                         "Expected ']'"
                     ))
                 res.register(self.advance())
-                return res.success(StringNode(token, string_here, index))
-            return res.success(StringNode(token, string_here))
+                string_ = StringNode(token, string_here, index)
+                if list_of_attribute != None:
+                    list_of_attribute.append(string_)
+                return res.success(string_)
+            string_ = StringNode(token, string_here)
+            if list_of_attribute != None:
+                list_of_attribute.append(string_)
+            return res.success(string_)
 
-    def list_(self):
+    def list_(self, list_of_attribute=None):
         res = ParserResult()
         token = self.curr_token
         list_gene = []
@@ -485,7 +572,10 @@ class Parser:
             res.register(self.advance())
             if self.curr_token.type == datatypes.R_CURLY:
                 res.register(self.advance())
-                return res.success(ListNode(token, list_gene))
+                list_ = ListNode(token, list_gene)
+                if list_of_attribute != None:
+                    list_of_attribute.append(list_)
+                return res.success(list_)
             else:
                 ele_1 = res.register(self.atom())
                 if res.error:
@@ -515,8 +605,119 @@ class Parser:
                             "Expected ']'"
                         ))
                     res.register(self.advance())
-                    return res.success(ListNode(token, list_gene, index))
-                return res.success(ListNode(token, list_gene))
+                    list_ = ListNode(token, list_gene, index)
+                    if list_of_attribute != None:
+                        list_of_attribute.append(list_)
+                    return res.success(list_)
+                list_ = ListNode(token, list_gene)
+                if list_of_attribute != None:
+                    list_of_attribute.append(list_)
+                return res.success(list_)
+
+    def class_(self, list_of_attribute=None):
+        res = ParserResult()
+        token = self.curr_token
+        list_of_attribut = []
+        list_of_method = []
+        parameter = []
+        super_class = None
+        if token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["class"]):
+            res.register(self.advance())
+            if self.curr_token.type == datatypes.LEFT_PAREN:
+                super_class = res.register(self.atom(list_of_attribute))
+            name = res.register(self.atom(list_of_attribute))
+            if not self.curr_token.type == datatypes.THEN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ':'"
+                ))
+
+            res.register(self.advance())
+
+            if not self.curr_token.type == datatypes.LEFT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected '('"
+                ))
+            res.register(self.advance())
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
+            if not self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["cons"]):
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected 'cons'"
+                ))
+            res.register(self.advance())
+            if self.curr_token.type == datatypes.LEFT_PAREN:
+                res.register(self.advance())
+                para1 = res.register(self.atom())
+                if res.error:
+                    return res
+                parameter.append(para1)
+
+                while self.curr_token.type == datatypes.COMMA:
+
+                    res.register(self.advance())
+                    if not self.curr_token.type == datatypes.IDENTIFIER:
+                        return res.failure(error.SyntaxError(
+                            self.curr_token.pos_start, self.curr_token.pos_end,
+                            "Expected identifier"
+                        ))
+                    else:
+                        para = res.register(self.atom())
+                        if res.error:
+                            return res
+                        parameter.append(para)
+
+                if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ')'"
+                    ))
+                res.register(self.advance())
+
+            if not self.curr_token.type == datatypes.THEN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ':'"
+                ))
+            res.register(self.advance())
+            res.register(self.atom(list_of_attribut))
+            while self.curr_token.type == datatypes.NEWLINE:
+
+                res.register(self.advance())
+            if self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["method"]):
+                res.register(self.advance())
+                if not self.curr_token.type == datatypes.THEN:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ':'"
+                    ))
+                res.register(self.advance())
+                res.register(self.atom(list_of_method))
+                res.register(self.advance())
+                while self.curr_token.type == datatypes.NEWLINE:
+                    res.register(self.advance())
+
+            else:
+                pass
+            if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ')'"
+                ))
+            res.register(self.advance())
+
+            list_of_attribut = list(
+                map(lambda x: x.node, list_of_attribut))
+            list_of_method = list(
+                map(lambda x: x.node, list_of_method))
+            class_ = ClassNode(name, list_of_attribut,
+                               list_of_method, parameter, super_class)
+            if list_of_attribute != None:
+                list_of_attribute.append(class_)
+
+            return res.success(class_)
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:
