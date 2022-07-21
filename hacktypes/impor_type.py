@@ -206,6 +206,36 @@ class Value:
             "Cannot copy this object"
         )
 
+    def assign_from(self, other):
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
+    def push(self, other):
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
+    def delete(self, other):
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
+    def change_status(self, other):
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
+    def attribute(self, other):
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
     def __repr__(self):
 
         return f"{self.value}"
@@ -837,3 +867,29 @@ class StatementNode:
                 str_to_return += self.value[i].__repr__() + ", "
         str_to_return += "}"
         return str_to_return
+
+
+class ClassNode:
+    def __init__(self, name, attributes, methods, parameter, superclass=None):
+        self.name = name
+        self.run = attributes
+        self.methods = methods
+        self.parameter = parameter
+        self.superclass = superclass
+
+        self.pos_start = self.name.pos_start
+        self.pos_end = self.name.pos_end
+
+    def __repr__(self):
+        return f"<class: {self.name}>"
+
+
+class AttributeNode:
+    def __init__(self, name, value=None):
+        self.name = name
+        self.value = value
+        self.pos_start = self.name.pos_start
+        self.pos_end = self.name.pos_end
+
+    def __repr__(self):
+        return f"{self.name}"
