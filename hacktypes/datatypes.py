@@ -34,14 +34,11 @@ DIGITS = "0123456789"
 NEWLINE = "newline"
 
 KEYWORDS = {
-    # "!": "change_status",
     "<-": "assign",
     "and": "and",
     "or": "or",
     "not": "not",
-    # ".": "end",
-    # "$": "launch",
-    "->": "assign_out",
+    "->": "attribute",
     "=": "equal",
     "<": "less",
     ">": "greater",
@@ -52,5 +49,10 @@ KEYWORDS = {
     "while": "while",
     "do": "do",
     "inst": "set_instruction",
+    "class": "class",
+    "cons": "constructor",
+    "method": "method",
+    "this": "this",
+
 
 }
