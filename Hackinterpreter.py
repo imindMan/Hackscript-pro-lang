@@ -9,13 +9,13 @@ class Interpreter:
         self.list_of_memory = memory
         self.symbol_table = symbol_table
 
-    def visit(self, node, context, value=True):
+    def visit(self, node, context, value=True, attributes=None):
         method_name = f'visit_{type(node).__name__}'
 
         method = getattr(self, method_name, self.no_visit)
-        return method(node, context, value)
+        return method(node, context, value, attributes)
 
-    def no_visit(self, node, context, value=True):
+    def no_visit(self, node, context, value=True, attributes=None):
 
         return RuntimeResult().failure(error.NoVisitError(
             node.pos_start, node.pos_end,
@@ -23,10 +23,10 @@ class Interpreter:
                 type(node).__name__)
         ))
 
-    def visit_NumberNode(self, node, context, value=True):
+    def visit_NumberNode(self, node, context, value=True, attributes=None):
         return RuntimeResult().success(Number(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_StringNode(self, node, context, value=True):
+    def visit_StringNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         if not node.index:
             return res.success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
@@ -40,7 +40,7 @@ class Interpreter:
             node.value = node.value[index.value]
             return res.success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_IdentifierNode(self, node, context, value=True):
+    def visit_IdentifierNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         if value:
 
@@ -80,14 +80,23 @@ class Interpreter:
         else:
             return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_BinOpNode(self, node, context, value=True):
+    def visit_BinOpNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
-        left = res.register(self.visit(node.left, context))
-        if res.error:
-            return res
-        right = res.register(self.visit(node.right, context))
-        if res.error:
-            return res
+        if (node.op.type, node.op.value) == (datatypes.KEYWORD, datatypes.KEYWORDS["->"]):
+            left = res.register(self.visit(node.left, context))
+            if res.error:
+                return res
+            right = res.register(self.visit(node.right, context, False))
+
+            if res.error:
+                return res
+        else:
+            left = res.register(self.visit(node.left, context))
+            if res.error:
+                return res
+            right = res.register(self.visit(node.right, context))
+            if res.error:
+                return res
 
         if node.op.type == datatypes.PLUS_OPE:
 
@@ -122,13 +131,17 @@ class Interpreter:
             result, error = left.and_to(right)
         elif (node.op.type, node.op.value) == (datatypes.KEYWORD, datatypes.KEYWORDS["or"]):
             result, error = left.or_to(right)
-
+        elif (node.op.type, node.op.value) == (datatypes.KEYWORD, datatypes.KEYWORDS["->"]):
+            try:
+                result, error = left.attribute(right, right.args)
+            except:
+                result, error = left.attribute(right)
         if error:
             return res.failure(error)
         else:
             return res.success(result.set_pos(node.pos_start, node.pos_end))
 
-    def visit_ListNode(self, node, context, value=True):
+    def visit_ListNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         if not node.index:
             list_in = [res.register(self.visit(i, context))
@@ -145,7 +158,7 @@ class Interpreter:
             list_ = list_[index.value]
             return res.success(List(list_).set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_UnaryOpNode(self, node, context, value=True):
+    def visit_UnaryOpNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         number = res.register(self.visit(node.node, context))
         if res.error:
@@ -162,7 +175,7 @@ class Interpreter:
         else:
             return res.success(number.set_pos(node.pos_start, node.pos_end))
 
-    def visit_PointerNode(self, node, context, value=True):
+    def visit_PointerNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         type_pointer = res.register(self.visit(node.pointer_value, context))
         if res.error:
@@ -171,7 +184,7 @@ class Interpreter:
         pointer = Pointer(type_pointer, self.list_of_memory)
         return res.success(pointer.set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_ConstantPointerNode(self, node, context, value=True):
+    def visit_ConstantPointerNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         name = res.register(self.visit(node.pointer_value, context, False))
         if res.error:
@@ -181,7 +194,7 @@ class Interpreter:
         pointer = ConstantPointer(name, self.list_of_memory)
         return res.success(pointer.set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_CondNode(self, node, context, value=True):
+    def visit_CondNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         condition = res.register(self.visit(node.condition, context))
         if res.error:
@@ -193,7 +206,7 @@ class Interpreter:
             false = res.register(self.visit(node.value_if_false, context))
             return res.success(false.set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_WhileNode(self, node, context, value=True):
+    def visit_WhileNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
 
         while True:
@@ -208,7 +221,7 @@ class Interpreter:
                 return res
         return res.success(NULL)
 
-    def visit_DoNode(self, node, context, value=True):
+    def visit_DoNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         while True:
             res.register(self.visit(node.do, context))
@@ -222,7 +235,7 @@ class Interpreter:
 
         return res.success(NULL)
 
-    def visit_InsNode(self, node, context, value=True):
+    def visit_InsNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         ins_name = res.register(self.visit(
             node.name, context, False))
@@ -234,38 +247,121 @@ class Interpreter:
 
         ins_value = ins_def.Instruction(
             ins_name.__repr__(), args_list, body, self.list_of_memory).set_pos(node.pos_start, node.pos_end).set_context(context)
-        self.symbol_table.set(ins_name.__repr__(), ins_value)
+        if value == True:
+            self.symbol_table.set(ins_name.__repr__(), ins_value)
+
         return res.success(ins_value)
 
-    def visit_CallNode(self, node, context, value=True):
+    def visit_CallNode(self, node, context, value=True, attributes=None):
+        if value == True:
+            res = RuntimeResult()
+            args = []
+
+            value_to_call = res.register(self.visit(node.name, context))
+            if res.error:
+                return res
+            value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
+
+            for arg_node in node.args:
+                args.append(res.register(self.visit(arg_node, context)))
+                if res.error:
+                    return res
+            try:
+                if type(value_to_call) == type(ins_def.Class(value_to_call.name, value_to_call.methods, value_to_call.parameters, value_to_call.run, value_to_call.memory, value_to_call.super_class)):
+                    return_value = res.register(value_to_call.execute(args))
+                    if res.error:
+                        return res
+                    return_value = return_value.copy().set_pos(
+                        node.pos_start, node.pos_end).set_context(context)
+                    return res.success(value_to_call)
+            except AttributeError:
+
+                return_value = res.register(value_to_call.execute(args))
+                if res.error:
+                    return res
+                return_value = return_value.copy().set_pos(
+                    node.pos_start, node.pos_end).set_context(context)
+                return res.success(return_value)
+        else:
+            res = RuntimeResult()
+            value_to_call = res.register(self.visit(node.name, context, False))
+            args = []
+            for arg_node in node.args:
+                args.append(res.register(self.visit(arg_node, context)))
+                if res.error:
+                    return res
+            value_to_call.args = args
+            return res.success(value_to_call)
+
+    def visit_ClassNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
-        args = []
+        name = res.register(self.visit(node.name, context, False))
+        arg_list = [arg_name.token for arg_name in node.parameter]
+        body = StatementNode(node.name, node.run)
+        methods = [res.register(self.visit(i, context, False))
+                   for i in node.methods]
 
-        value_to_call = res.register(self.visit(node.name, context))
+        if node.superclass:
+            super_class = res.register(self.visit(node.superclass, context))
+            class_ = ins_def.Class(
+                name.__repr__(), methods, arg_list, body, self.list_of_memory, super_class)
+            self.symbol_table.set(name.__repr__(), class_)
+            return res.success(class_)
+        else:
+            class_ = ins_def.Class(
+                name.__repr__(), methods, arg_list, body, self.list_of_memory)
+            self.symbol_table.set(name.__repr__(), class_)
+            return res.success(class_)
 
-        if res.error:
-            return res
+    def visit_AttributeNode(self, node, context, value=True, attributes=None):
+        res = RuntimeResult()
+        if attributes is None:
+            return res.failure(error.RuntimeError(
+                node.pos_start, node.pos_end,
+                "Expected a class", context
+            ))
+        else:
+            if node.value:
+                val = res.register(self.visit(node.value, context))
+                name = res.register(self.visit(node.name, context, False))
+                attributes[name.__repr__()] = val
+                self.symbol_table.set(name.__repr__(), val)
 
-        value_to_call = value_to_call.copy().set_pos(node.pos_start, node.pos_end)
+            else:
+                name = res.register(self.visit(node.name, context))
 
-        for arg_node in node.args:
-            args.append(res.register(self.visit(arg_node, context)))
+                if attributes.get(name.__repr__(), None) is None:
+
+                    return res.failure(error.RuntimeError(
+                        node.pos_start, node.pos_end,
+                        f"Undefined attribute detected",
+                        context
+                    ))
+
+                else:
+                    return res.success(attributes.get(name.__repr__(), None).set_pos(node.pos_start, node.pos_end).set_context(context))
+        return res.success(NULL.set_pos(node.pos_start, node.pos_end).set_context(context))
+
+    def visit_StatementNode(self, node, context, value=True, attributes=None):
+
+        if attributes is None:
+            res = RuntimeResult()
+
+            list1 = [res.register(self.visit(
+                i, context, value, attributes=attributes)) for i in node.value]
+            if res.error:
+                return res
+            if len(list1) == 1:
+                return res.success(list1[0].set_pos(node.pos_start, node.pos_end).set_context(context))
+            return res.success(NULL.set_pos(node.pos_start, node.pos_end).set_context(context))
+        else:
+            res = RuntimeResult()
+            list1 = [res.register(self.visit(
+                i, context, value, attributes=attributes)) for i in node.value]
             if res.error:
                 return res
 
-        return_value = res.register(value_to_call.execute(args))
-        if res.error:
-            return res
-        return_value = return_value.copy().set_pos(
-            node.pos_start, node.pos_end).set_context(context)
-        return res.success(return_value)
+            if len(list1) == 1:
+                return res.success(list1[0].set_pos(node.pos_start, node.pos_end).set_context(context))
 
-    def visit_StatementNode(self, node, context, value=True):
-        res = RuntimeResult()
-
-        list1 = [res.register(self.visit(i, context)) for i in node.value]
-        if res.error:
-            return res
-        if len(list1) == 1:
-            return res.success(list1[0].set_pos(node.pos_start, node.pos_end).set_context(context))
-        return res.success(NULL.set_pos(node.pos_start, node.pos_end).set_context(context))
+            return res.success(NULL.set_pos(node.pos_start, node.pos_end).set_context(context))
