@@ -327,7 +327,10 @@ class Class(Value):
         super().__init__(name)
         self.name = name
         self.methods = methods
-        self.attributes = dict(map(lambda x: (x.name, x), self.methods))
+        if len(self.methods) == 1 and isinstance(self.methods[0], Identifier):
+            self.attributes = {}
+        else:
+            self.attributes = dict(map(lambda x: (x.name, x), self.methods))
         self.parameters = parameters
         self.run = run
         self.super_class = super_class
