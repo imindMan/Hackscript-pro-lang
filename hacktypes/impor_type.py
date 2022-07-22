@@ -233,7 +233,7 @@ class Value:
     def attribute(self, other):
         return None, error.OperatorNotSupported(
             self.pos_start, self.pos_end,
-            "Cannot using this operator in this expression"
+            "Undefined attribute"
         )
 
     def __repr__(self):
@@ -383,6 +383,11 @@ class Memory(Value):
         self.name = name
         self.data = []
         self.status = "200"
+        self.attributes = {
+            "value": List(self.data),
+            "status": ClassString(self.status),
+            "name": ClassString(self.name)
+        }
 
     def push(self, data):
         if self.status == "200":
@@ -423,6 +428,20 @@ class Memory(Value):
         memory.set_pos(self.pos_start, self.pos_end)
         memory.set_context(self.context)
         return memory
+
+    def attribute(self, other):
+        if isinstance(other, Identifier):
+            if self.attributes.get(other.value, None) is None:
+                return None, error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined attribute"
+                )
+
+            return self.attributes[other.value], None
+        return None, error.InvalidObject(
+            self.pos_start, self.pos_end,
+            "Undefined attribute"
+        )
 
     def __repr__(self):
         return f"data:{self.name} {self.data}({self.status})"
@@ -520,6 +539,10 @@ class Pointer(Value):
         super().__init__(type)
         self.type = type
         self.list_of_memory = list_of_memory
+        self.attributes = {
+            "value": self.list_of_memory.curr_char,
+            "list_memo": self.list_of_memory
+        }
 
     def copy(self):
         return Pointer(self.type, self.list_of_memory)
@@ -577,6 +600,20 @@ class Pointer(Value):
         return None, error.OperatorNotSupported(
             self.pos_start, self.pos_end,
             "Cannot using this operator in this expression"
+        )
+
+    def attribute(self, other):
+        if isinstance(other, Identifier):
+            if self.attributes.get(other.value, None) is None:
+                return None, error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined attribute"
+                )
+
+            return self.attributes[other.value], None
+        return None, error.InvalidObject(
+            self.pos_start, self.pos_end,
+            "Undefined attribute"
         )
 
     def __repr__(self):
