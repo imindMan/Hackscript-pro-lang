@@ -3,6 +3,7 @@ import Hackparser
 import Hackinterpreter
 from hacktypes.impor_type import *
 from ins_def import *
+from error.error import *
 
 
 symbol_table = SymbolTable()
@@ -37,24 +38,30 @@ symbol_table.set("pp", Identifier("pp"))
 
 
 def run(text, fn):
-    global memory, symbol_table
-    lexer = Hacklexer.Lexer(fn, text)
-    tokens, error = lexer.make_tokens()
-    print(tokens)
+    try:
+        global memory, symbol_table
+        lexer = Hacklexer.Lexer(fn, text)
+        tokens, err = lexer.make_tokens()
+        print(tokens)
 
-    # return tokens, error
-    if error:
-        return None, error
+        # return tokens, error
+        if err:
+            return None, err
 
-    parser = Hackparser.Parser(tokens)
-    ast = parser.parse()
-    print(ast.node)
-    if ast.error:
-        return None, ast.error
+        parser = Hackparser.Parser(tokens)
+        ast = parser.parse()
+        print(ast.node)
+        if ast.error:
+            return None, ast.error
 
-    intepreter = Hackinterpreter.Interpreter(memory, symbol_table)
-    context = Context("<program>")
+        intepreter = Hackinterpreter.Interpreter(memory, symbol_table)
+        context = Context("<program>")
 
-    res = intepreter.visit(ast.node, context)
+        res = intepreter.visit(ast.node, context)
 
-    return res.value, res.error
+        return res.value, res.error
+    except RecursionError:
+        return None, RuntimeError(
+            ast.node.pos_start, ast.node.pos_end,
+            "Maximum recursion depth exceeded", context
+        )
