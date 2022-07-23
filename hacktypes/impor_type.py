@@ -372,6 +372,16 @@ class Number(Value):
     def not_to(self):
         return Number(int(not self.value)).set_context(self.context), None
 
+    def assign_from(self, other):
+        if isinstance(other, Number):
+            self.value = other.value
+
+            return self.set_context(self.context), None
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
     def __repr__(self):
 
         return f"{self.value}"
@@ -380,28 +390,29 @@ class Number(Value):
 class Memory(Value):
     def __init__(self, name):
         super().__init__(name)
-        self.name = name
-        self.data = []
-        self.status = "200"
+        self.name = ClassString(name)
+        self.value = []
+        self.status = ClassString("200")
         self.attributes = {
-            "value": List(self.data),
-            "status": ClassString(self.status),
-            "name": ClassString(self.name)
+            "value": List(self.value),
+            "status": self.status,
+            "name": self.name
         }
 
     def push(self, data):
-        if self.status == "200":
-            self.status = "210"
-            self.data.append(data)
-            self.status = "220"
+        if self.status.value == "200":
+            self.status.value = "210"
+            self.value.append(data)
+
+            self.status.value = "220"
 
     def delete(self, index=None):
-        if self.status == "200":
-            self.status = "210"
+        if self.status.value == "200":
+            self.status.value = "210"
             try:
                 if index == None:
-                    self.data = []
-                self.data.remove(self.data[index])
+                    self.value = []
+                self.value.remove(self.value.value[index])
             except:
                 return error.InvalidIndexOfMemory(
                     self.pos_start, self.pos_end,
@@ -410,7 +421,7 @@ class Memory(Value):
 
             finally:
 
-                self.status = "230"
+                self.status.value = "230"
 
     def change_status(self, status):
         if int(status.value) > 230:
@@ -418,12 +429,12 @@ class Memory(Value):
                 self.pos_start, self.pos_end,
                 f"Invalid status {status}"
             )
-        self.status = status.value
+        self.status.value = str(status.value)
         return None
 
     def copy(self):
         memory = Memory(self.name)
-        memory.data = self.data
+        memory.value = self.value
         memory.status = self.status
         memory.set_pos(self.pos_start, self.pos_end)
         memory.set_context(self.context)
@@ -437,14 +448,26 @@ class Memory(Value):
                     "Undefined attribute"
                 )
 
-            return self.attributes[other.value], None
-        return None, error.InvalidObject(
-            self.pos_start, self.pos_end,
-            "Undefined attribute"
-        )
+            elif other.index != None:
+
+                return_value = self.attributes[other.value]
+                if other.index.value < 0 or other.index.value > len(return_value.value):
+                    return None, error.InvalidObject(
+
+                        self.pos_start, self.pos_end,
+                        "Invalid index specified"
+                    )
+                elif len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                return return_value.value[other.index.value], None
+            else:
+                if len(self.attributes[other.value].value) == 1:
+                    return self.attributes[other.value].value[0], None
+                else:
+                    return self.attributes[other.value], None
 
     def __repr__(self):
-        return f"data:{self.name} {self.data}({self.status})"
+        return f"data:{self.name} {self.value}({self.status})"
 
 
 class ListofMemory:
@@ -478,25 +501,25 @@ class ListofMemory:
         if index + 1 >= len(self.data):
             self.data.append(Memory(str(f"{index + 1}")))
             self.index += 1
-            temp_data = self.curr_char.data
-            self.curr_char.data = []
+            temp_data = self.curr_char.value
+            self.curr_char.value = []
             self.curr_char = self.data[self.index] if 0 <= self.index < len(
                 self.data) else None
-            self.curr_char.data = temp_data
+            self.curr_char.value = temp_data
         else:
             self.index += 1
-            temp_data = self.curr_char.data
-            self.curr_char.data = []
+            temp_data = self.curr_char.value
+            self.curr_char.value = []
             self.curr_char = self.data[self.index] if 0 <= self.index < len(
                 self.data) else None
-            self.curr_char.data = temp_data
+            self.curr_char.value = temp_data
         self.symbols_table.set(name, "cons-pointer")
 
     def access_constant(self, name):
         for i in self.data:
             if i.name == name:
                 return i
-        return "Error catching while defined constant pointer"
+        return ClassString("Error catching while defined constant pointer")
 
     def move(self, number):
         if type(number.value) == type(float()):
@@ -610,11 +633,22 @@ class Pointer(Value):
                     "Undefined attribute"
                 )
 
-            return self.attributes[other.value], None
-        return None, error.InvalidObject(
-            self.pos_start, self.pos_end,
-            "Undefined attribute"
-        )
+            elif other.index != None:
+                return_value = self.attributes[other.value]
+                if (other.index.value < 0 or other.index.value > len(return_value.value)) \
+                        and (other.index.value < 0 or other.index.value > len(return_value.value[0].value)):
+                    return None, error.InvalidObject(
+                        self.pos_start, self.pos_end,
+                        "Invalid index specified"
+                    )
+                elif len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                return return_value.value[other.index.value], None
+            else:
+                if len(self.attributes[other.value].value) == 1:
+                    return self.attributes[other.value].value[0], None
+                else:
+                    return self.attributes[other.value], None
 
     def __repr__(self):
 
@@ -626,9 +660,38 @@ class ConstantPointer(Value):
         super().__init__(type)
         self.type = type
         self.list_of_memory = list_of_memory
+        self.attributes = {
+            "value": self.list_of_memory.access_constant(self.type.value)
+        }
 
     def copy(self):
         return Pointer(self.type, self.list_of_memory)
+
+    def attribute(self, other):
+        if isinstance(other, Identifier):
+            if self.attributes.get(other.value, None) is None:
+                return None, error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined attribute"
+                )
+
+            elif other.index != None:
+
+                return_value = self.attributes[other.value]
+                if other.index.value < 0 or other.index.value > len(return_value.value):
+                    return None, error.InvalidObject(
+
+                        self.pos_start, self.pos_end,
+                        "Invalid index specified"
+                    )
+                elif len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                return return_value.value[other.index.value], None
+            else:
+                if len(self.attributes[other.value].value) == 1:
+                    return self.attributes[other.value].value[0], None
+                else:
+                    return self.attributes[other.value], None
 
     def __repr__(self):
         return self.list_of_memory.access_constant(self.type.value).__repr__()
@@ -638,8 +701,7 @@ class Identifier(Value):
     def __init__(self, value, index=None):
         super().__init__(value)
         self.value = value
-        if isinstance(self.value, ClassString) and isinstance(index, Number):
-            self.value = value.value[index.value]
+        self.index = index
 
     def copy(self):
         identifier = Identifier(self.value).set_pos(
@@ -699,6 +761,16 @@ class ClassString(Value):
 
     def not_to(self):
         return Number(int(self.value != "")).set_context(self.context), None
+
+    def assign_from(self, other):
+        if isinstance(other, ClassString):
+            self.value = other.value
+
+            return self.set_context(self.context), None
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
 
     def copy(self):
         string_ = ClassString(self.value).set_pos(
