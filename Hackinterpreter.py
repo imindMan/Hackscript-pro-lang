@@ -78,7 +78,11 @@ class Interpreter:
                 result = self.symbol_table.get(node.token.value)
                 return res.success(result.set_pos(node.pos_start, node.pos_end).set_context(context))
         else:
-            return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
+            if not node.index:
+                return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
+            else:
+                index = res.register(self.visit(node.index, context))
+                return res.success(Identifier(node.token.value, index).set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_BinOpNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
@@ -153,10 +157,10 @@ class Interpreter:
             if index.value >= len(node.value) or index.value < 0:
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
-                    "Invalid index of the string"
+                    "Invalid index of the list"
                 ))
             list_ = list_[index.value]
-            return res.success(List(list_).set_pos(node.pos_start, node.pos_end).set_context(context))
+            return res.success(list_.set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_UnaryOpNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
