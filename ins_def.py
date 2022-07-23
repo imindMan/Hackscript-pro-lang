@@ -454,6 +454,15 @@ class Class(Value):
                 return return_value.value, None
             return self.attributes[other.value], None
 
+    def assign_from(self, other=None):
+        if isinstance(other, Class):
+            self = other.copy()
+            return self.set_context(self.context), None
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
     def copy(self):
         class_ = Class(self.name, self.methods, self.parameters,
                        self.run, self.memory, self.super_class)
