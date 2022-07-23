@@ -451,14 +451,14 @@ class Memory(Value):
             elif other.index != None:
 
                 return_value = self.attributes[other.value]
-                if other.index.value < 0 or other.index.value > len(return_value.value):
+                if len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                elif other.index.value < 0 or other.index.value > len(return_value.value):
                     return None, error.InvalidObject(
 
                         self.pos_start, self.pos_end,
                         "Invalid index specified"
                     )
-                elif len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
                 return return_value.value[other.index.value], None
             else:
                 if len(self.attributes[other.value].value) == 1:
@@ -634,15 +634,16 @@ class Pointer(Value):
                 )
 
             elif other.index != None:
+
                 return_value = self.attributes[other.value]
-                if (other.index.value < 0 or other.index.value > len(return_value.value)) \
-                        and (other.index.value < 0 or other.index.value > len(return_value.value[0].value)):
+                if len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                elif other.index.value < 0 or other.index.value > len(return_value.value):
                     return None, error.InvalidObject(
+
                         self.pos_start, self.pos_end,
                         "Invalid index specified"
                     )
-                elif len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
                 return return_value.value[other.index.value], None
             else:
                 if len(self.attributes[other.value].value) == 1:
@@ -678,14 +679,14 @@ class ConstantPointer(Value):
             elif other.index != None:
 
                 return_value = self.attributes[other.value]
-                if other.index.value < 0 or other.index.value > len(return_value.value):
+                if len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                elif other.index.value < 0 or other.index.value > len(return_value.value):
                     return None, error.InvalidObject(
 
                         self.pos_start, self.pos_end,
                         "Invalid index specified"
                     )
-                elif len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
                 return return_value.value[other.index.value], None
             else:
                 if len(self.attributes[other.value].value) == 1:
