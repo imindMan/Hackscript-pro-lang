@@ -44,7 +44,6 @@ def run(text, fn):
         global memory, symbol_table
         lexer = Hacklexer.Lexer(fn, text)
         tokens, err = lexer.make_tokens()
-        print(tokens)
 
         # return tokens, error
         if err:
@@ -52,7 +51,6 @@ def run(text, fn):
 
         parser = Hackparser.Parser(tokens)
         ast = parser.parse()
-        print(ast.node)
         if ast.error:
             return None, ast.error
 
