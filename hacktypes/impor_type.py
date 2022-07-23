@@ -473,10 +473,10 @@ class Memory(Value):
 class ListofMemory:
     def __init__(self, symbols_table, launch_table, parent_list_of_memory=None):
 
-        self.data = [Memory(str(i)) for i in range(10)]
+        self.value = [Memory(str(i)) for i in range(10)]
         self.index = 0
-        self.curr_char = self.data[self.index] if 0 <= self.index < len(
-            self.data) else None
+        self.curr_char = self.value[self.index] if 0 <= self.index < len(
+            self.value) else None
         self.symbols_table = symbols_table
         self.parent_list_of_memory = parent_list_of_memory
         self.launch_table = launch_table
@@ -498,25 +498,25 @@ class ListofMemory:
     def set_constant(self, name):
         self.curr_char.name = name
         index = self.index
-        if index + 1 >= len(self.data):
-            self.data.append(Memory(str(f"{index + 1}")))
+        if index + 1 >= len(self.value):
+            self.value.append(Memory(str(f"{index + 1}")))
             self.index += 1
             temp_data = self.curr_char.value
             self.curr_char.value = []
-            self.curr_char = self.data[self.index] if 0 <= self.index < len(
-                self.data) else None
+            self.curr_char = self.value[self.index] if 0 <= self.index < len(
+                self.value) else None
             self.curr_char.value = temp_data
         else:
             self.index += 1
             temp_data = self.curr_char.value
             self.curr_char.value = []
-            self.curr_char = self.data[self.index] if 0 <= self.index < len(
-                self.data) else None
+            self.curr_char = self.value[self.index] if 0 <= self.index < len(
+                self.value) else None
             self.curr_char.value = temp_data
         self.symbols_table.set(name, "cons-pointer")
 
     def access_constant(self, name):
-        for i in self.data:
+        for i in self.value:
             if i.name == name:
                 return i
         return ClassString("Error catching while defined constant pointer")
@@ -531,7 +531,7 @@ class ListofMemory:
         curr_char = self.curr_char
         old_index = self.index
         index += number.value
-        if index < 0 or index >= len(self.data):
+        if index < 0 or index >= len(self.value):
 
             index = old_index
             return None, error.InvalidIndexOfMemory(
@@ -539,22 +539,22 @@ class ListofMemory:
                 "Invalid index because data doesn't have that much memory"
             )
 
-        curr_char = self.data[index]
+        curr_char = self.value[index]
 
         return (index, curr_char), None
 
     def copy(self):
         list_of_memory = ListofMemory(self.symbols_table, self.launch_table)
-        list_of_memory.data = self.data
+        list_of_memory.value = self.value
         list_of_memory.index = self.index
-        list_of_memory.curr_char = list_of_memory.data[list_of_memory.index] if list_of_memory.index < len(
-            list_of_memory.data) else None
+        list_of_memory.curr_char = list_of_memory.value[list_of_memory.index] if list_of_memory.index < len(
+            list_of_memory.value) else None
         list_of_memory.set_pos(self.pos_start, self.pos_end)
         list_of_memory.set_context(self.context)
         return list_of_memory
 
     def __repr__(self):
-        return str(self.data)
+        return str(self.value)
 
 
 class Pointer(Value):
