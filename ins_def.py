@@ -37,6 +37,7 @@ class GeneralInstruction(Value):
         symbol_table.set("con", Identifier("con"))
         symbol_table.set("?", Method.random)
         symbol_table.set("pp", Identifier("pp"))
+        symbol_table.set("len", Method.len)
 
     def generate_basic_thing(self):
         context = Context(self.name, self.context, self.pos_start)
@@ -286,12 +287,12 @@ class Method(GeneralInstruction):
             if memory.symbols_table.get("value") == parent_memory.symbols_table.get("con"):
 
                 if isinstance(pointer_to_push, Pointer):
-                    if len(parent_memory.curr_char.data) == 1:
-                        print(parent_memory.curr_char.data[0])
-                    elif len(parent_memory.curr_char.data) == 0:
+                    if len(parent_memory.curr_char.value) == 1:
+                        print(parent_memory.curr_char.value[0])
+                    elif len(parent_memory.curr_char.value) == 0:
                         print(r"{}")
-                    elif len(parent_memory.curr_char.data) > 1:
-                        print(List(parent_memory.curr_char.data))
+                    elif len(parent_memory.curr_char.value) > 1:
+                        print(parent_memory.curr_char.value)
 
                     parent_memory.curr_char.delete()
                 elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
@@ -320,6 +321,11 @@ class Method(GeneralInstruction):
             return res.success(ClassString(result))
 
     execute_random.arg = [Identifier("value")]
+
+    def execute_len(self, context, memory):
+        res = RuntimeResult()
+        return res.success(Number(len(memory.symbols_table.get("value").value)))
+    execute_len.arg = [Identifier("value")]
 
 
 class Class(Value):
@@ -363,6 +369,7 @@ class Class(Value):
         symbol_table.set("con", Identifier("con"))
         symbol_table.set("?", Method.random)
         symbol_table.set("pp", Identifier("pp"))
+        symbol_table.set("len", Method.len)
         for i in self.methods:
             try:
                 symbol_table.set(i.name, i)
