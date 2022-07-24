@@ -372,6 +372,16 @@ class Number(Value):
     def not_to(self):
         return Number(int(not self.value)).set_context(self.context), None
 
+    def attribute(self, other):
+        if isinstance(other, Identifier):
+            if other.value == "value":
+                return Number(self.value).set_context(self.context), None
+        else:
+            return None, error.InvalidObject(
+                self.pos_start, self.pos_end,
+                "Invalid parameter"
+            )
+
     def assign_from(self, other):
         if isinstance(other, Number):
             self.value = other.value
