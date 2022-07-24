@@ -21,6 +21,7 @@ class GeneralInstruction(Value):
         Method.end_launch = Method("end_launch", memory)
         Method.push = Method("push", memory)
         Method.random = Method("random", memory)
+        Method.type = Method("type", memory)
 
         symbol_table.set("null", NULL)
         symbol_table.set("true", TRUE)
@@ -38,6 +39,7 @@ class GeneralInstruction(Value):
         symbol_table.set("?", Method.random)
         symbol_table.set("pp", Identifier("pp"))
         symbol_table.set("len", Method.len)
+        symbol_table.set("%", Method.type)
 
     def generate_basic_thing(self):
         context = Context(self.name, self.context, self.pos_start)
@@ -327,6 +329,24 @@ class Method(GeneralInstruction):
         return res.success(Number(len(memory.symbols_table.get("value").value)))
     execute_len.arg = [Identifier("value")]
 
+    def execute_type(self, context, memory):
+        res = RuntimeResult()
+        if isinstance(memory.symbols_table.get("value"), ClassString):
+            return res.success(ClassString("<string>"))
+        elif isinstance(memory.symbols_table.get("value"), List):
+            return res.success(ClassString("<list>"))
+        elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
+            return res.success(ClassString("<constant-pointer>"))
+        elif isinstance(memory.symbols_table.get("value"), Pointer):
+            return res.success(ClassString("<pointer>"))
+        elif isinstance(memory.symbols_table.get("value"), Number):
+            return res.success(ClassString("<number>"))
+        elif isinstance(memory.symbols_table.get("value"), ListofMemory):
+            return res.success(ClassString("<listmemo>"))
+        elif isinstance(memory.symbols_table.get("value"), Memory):
+            return res.success(ClassString("<memory>"))
+    execute_type.arg = [Identifier("value")]
+
 
 class Class(Value):
     def __init__(self, name, methods, parameters, run, memory, super_class=None):
@@ -353,6 +373,7 @@ class Class(Value):
         Method.end_launch = Method("end_launch", memory)
         Method.push = Method("push", memory)
         Method.random = Method("random", memory)
+        Method.type = Method("type", memory)
 
         symbol_table.set("null", NULL)
         symbol_table.set("true", TRUE)
@@ -370,6 +391,7 @@ class Class(Value):
         symbol_table.set("?", Method.random)
         symbol_table.set("pp", Identifier("pp"))
         symbol_table.set("len", Method.len)
+        symbol_table.set("%", Method.type)
         for i in self.methods:
             try:
                 symbol_table.set(i.name, i)
