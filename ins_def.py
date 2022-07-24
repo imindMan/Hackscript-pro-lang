@@ -331,21 +331,67 @@ class Method(GeneralInstruction):
 
     def execute_type(self, context, memory):
         res = RuntimeResult()
-        if isinstance(memory.symbols_table.get("value"), ClassString):
-            return res.success(ClassString("<string>"))
-        elif isinstance(memory.symbols_table.get("value"), List):
-            return res.success(ClassString("<list>"))
-        elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
-            return res.success(ClassString("<constant-pointer>"))
-        elif isinstance(memory.symbols_table.get("value"), Pointer):
-            return res.success(ClassString("<pointer>"))
-        elif isinstance(memory.symbols_table.get("value"), Number):
-            return res.success(ClassString("<number>"))
-        elif isinstance(memory.symbols_table.get("value"), ListofMemory):
-            return res.success(ClassString("<listmemo>"))
-        elif isinstance(memory.symbols_table.get("value"), Memory):
-            return res.success(ClassString("<memory>"))
-    execute_type.arg = [Identifier("value")]
+        if memory.symbols_table.get("type") == NULL:
+            if isinstance(memory.symbols_table.get("value"), ClassString):
+                return res.success(ClassString("<string>"))
+            elif isinstance(memory.symbols_table.get("value"), List):
+                return res.success(ClassString("<list>"))
+            elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
+                return res.success(ClassString("<constant-pointer>"))
+            elif isinstance(memory.symbols_table.get("value"), Pointer):
+                return res.success(ClassString("<pointer>"))
+            elif isinstance(memory.symbols_table.get("value"), Number):
+                return res.success(ClassString("<number>"))
+            elif isinstance(memory.symbols_table.get("value"), ListofMemory):
+                return res.success(ClassString("<listmemo>"))
+            elif isinstance(memory.symbols_table.get("value"), Memory):
+                return res.success(ClassString("<memory>"))
+        elif isinstance(memory.symbols_table.get("type"), ClassString):
+            if memory.symbols_table.get("type").value == "num":
+                if isinstance(memory.symbols_table.get("value"), ClassString):
+                    val = memory.symbols_table.get("value").value
+                    try:
+                        if "." in val:
+                            val = float(val)
+                        else:
+                            val = int(val)
+                    except:
+                        return res.failure(error.IllegalChangeType(
+                            self.pos_start, self.pos_end,
+                            "Invalid value to change type"
+                        ))
+                    return res.success(Number(val))
+                elif isinstance(memory.symbols_table.get("value"), Number):
+                    return res.success(memory.symbols_table.get("value"))
+
+            elif memory.symbols_table.get("type").value == "list":
+                if isinstance(memory.symbols_table.get("value"), ClassString):
+                    val = memory.symbols_table.get("value").value
+                    val = [char for char in val]
+                    return res.success(List(val))
+                elif isinstance(memory.symbols_table.get("value"), List):
+                    return res.success(memory.symbols_table.get("value"))
+
+            elif memory.symbols_table.get("type").value == "string":
+                if isinstance(memory.symbols_table.get("value"), ClassString):
+                    return res.success(memory.symbols_table.get("value"))
+                elif isinstance(memory.symbols_table.get("value"), Number):
+                    val = memory.symbols_table.get("value").value
+                    val = str(val)
+                    return res.success(ClassString(val))
+                elif isinstance(memory.symbols_table.get("value"), List):
+                    val = memory.symbols_table.get("value").value
+                    empty_str = ""
+                    for i in val:
+                        empty_str += str(i.value)
+                    return res.success(ClassString(empty_str))
+
+        return res.failure(error.InvalidObject(
+            self.pos_start, self.pos_end,
+            "Invalid parameters"
+        ))
+
+    execute_type.arg = [Identifier("type"), Identifier("value")]
 
 
 class Class(Value):
