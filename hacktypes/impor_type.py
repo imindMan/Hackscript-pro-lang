@@ -792,6 +792,12 @@ class List(Value):
     def __init__(self, value):
         super().__init__(value)
 
+    def copy(self):
+        list_ = List(self.value)
+        list_.set_pos(self.pos_start, self.pos_end)
+        list_.set_context(self.context)
+        return list_
+
     def __repr__(self):
         str_to_return = "{"
         for i in range(len(self.value)):
