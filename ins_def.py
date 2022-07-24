@@ -524,8 +524,15 @@ class Class(Value):
 
     def assign_from(self, other=None):
         if isinstance(other, Class):
-            self = other.copy()
-            return self.set_context(self.context), None
+            self.name = other.name
+            self.methods = other.methods
+            self.attributes = other.attributes
+            self.parameters = other.parameters
+            self.run = other.run
+            self.super_class = other.super_class
+            self.memory = other.memory
+            self.parent_symbol_table = other.parent_symbol_table
+            return self, None
         return None, error.OperatorNotSupported(
             self.pos_start, self.pos_end,
             "Cannot using this operator in this expression"
