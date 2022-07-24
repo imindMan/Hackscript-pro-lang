@@ -459,7 +459,13 @@ class Memory(Value):
                         self.pos_start, self.pos_end,
                         "Invalid index specified"
                     )
-                return return_value.value[other.index.value], None
+                try:
+                    return return_value.value[other.index.value], None
+                except:
+                    return None, error.InvalidObject(
+                        self.pos_start, self.pos_end,
+                        "Invalid index specified"
+                    )
             else:
                 if len(self.attributes[other.value].value) == 1:
                     return self.attributes[other.value].value[0], None
