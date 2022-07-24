@@ -20,6 +20,7 @@ Method.end_launch = Method("end_launch", memory)
 Method.push = Method("push", memory)
 Method.random = Method("random", memory)
 Method.len = Method("len", memory)
+Method.type = Method("type", memory)
 
 symbol_table.set("null", NULL)
 symbol_table.set("true", TRUE)
@@ -37,6 +38,7 @@ symbol_table.set("con", Identifier("con"))
 symbol_table.set("?", Method.random)
 symbol_table.set("pp", Identifier("pp"))
 symbol_table.set("len", Method.len)
+symbol_table.set("%", Method.type)
 
 
 def run(text, fn):
