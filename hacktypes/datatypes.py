@@ -28,7 +28,7 @@ RIGHT_PAREN = "right_paren"
 
 EOF_TYPE = "eof"
 FULL_SYMBOLS = r"`~!@#$%^&*()–_=+[]{}\|;:‘“,./<>?"
-SYMBOLS = r"<>-=!_.?"
+SYMBOLS = r"<>-=!_.?%"
 LETTERS = string.ascii_letters
 DIGITS = "0123456789"
 NEWLINE = "newline"
