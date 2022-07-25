@@ -819,9 +819,9 @@ class List(Value):
         return str_to_return
 
 
-NULL = Number(0)
-FALSE = Number(0)
-TRUE = Number(1)
+Number.null = Number(0)
+Number.false = Number(0)
+Number.true = Number(1)
 ###################################
 # ALL THE NODES
 ###################################
