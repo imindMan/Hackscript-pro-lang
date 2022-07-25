@@ -23,9 +23,9 @@ class GeneralInstruction(Value):
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
 
-        symbol_table.set("null", NULL)
-        symbol_table.set("true", TRUE)
-        symbol_table.set("false", FALSE)
+        symbol_table.set("null", Number.null)
+        symbol_table.set("true", Number.true)
+        symbol_table.set("false", Number.false)
         symbol_table.set("!", Method.change_status)
         symbol_table.set("exit", Method.exit)
         symbol_table.set("clear", Method.clear)
@@ -163,7 +163,7 @@ class Method(GeneralInstruction):
                 status)
             if err:
                 return res
-            return res.success(NULL)
+            return res.success(Number.null)
         else:
             return res.failure(error.InvalidStatus(
                 self.pos_start, self.pos_end,
@@ -173,7 +173,7 @@ class Method(GeneralInstruction):
 
     def execute_clear(self, context, memory):
         os.system("cls") if os.name == "nt" else os.system("clear")
-        return RuntimeResult().success(NULL)
+        return RuntimeResult().success(Number.null)
     execute_clear.arg = []
 
     def execute_exit(self, context, memory):
@@ -186,7 +186,7 @@ class Method(GeneralInstruction):
         if isinstance(memory.symbols_table.get("value"), ConstantPointer):
             parent_memory.set_pos(self.pos_start, self.pos_end).set_context(context).set_constant(
                 memory.symbols_table.get("value").type.value)
-            return res.success(NULL)
+            return res.success(Number.null)
         else:
             return res.failure(error.InvalidObject(
                 self.pos_start, self.pos_end,
@@ -202,7 +202,7 @@ class Method(GeneralInstruction):
             self.launch_table["pointer_on_launch"] = memory.symbols_table.get(
                 "value")
 
-            return res.success(NULL)
+            return res.success(Number.null)
         elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
             if parent_memory.access_constant(memory.symbols_table.get("value").type.value) == "Error catching while defined constant pointer":
                 return res.failure(error.InvalidObject(
@@ -212,7 +212,7 @@ class Method(GeneralInstruction):
             self.launch_table["pointer_constant_on_launch"] = memory.symbols_table.get(
                 "value")
 
-            return res.success(NULL)
+            return res.success(Number.null)
         else:
 
             return res.failure(error.InvalidObject(
@@ -234,7 +234,7 @@ class Method(GeneralInstruction):
                 ))
             del self.launch_table["pointer_on_launch"]
 
-            return res.success(NULL)
+            return res.success(Number.null)
 
         elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
             if parent_memory.access_constant(memory.symbols_table.get("value").type.value) == "Error catching while defined constant pointer":
@@ -248,7 +248,7 @@ class Method(GeneralInstruction):
                     "No constant pointer detected on launch"
                 ))
             del self.launch_table["pointer_constant_on_launch"]
-            return res.success(NULL)
+            return res.success(Number.null)
         else:
             return res.failure(error.InvalidObject(
                 self.pos_start, self.pos_end,
@@ -309,7 +309,7 @@ class Method(GeneralInstruction):
                     parent_memory.access_constant(
                         pointer_to_push.type.value).delete()
 
-        return res.success(NULL)
+        return res.success(Number.null)
 
     execute_push.arg = [Identifier("how_to_push"), Identifier("value")]
 
@@ -331,7 +331,7 @@ class Method(GeneralInstruction):
 
     def execute_type(self, context, memory):
         res = RuntimeResult()
-        if memory.symbols_table.get("type") == NULL:
+        if memory.symbols_table.get("type") == Number.null:
             if isinstance(memory.symbols_table.get("value"), ClassString):
                 return res.success(ClassString("<string>"))
             elif isinstance(memory.symbols_table.get("value"), List):
@@ -421,9 +421,9 @@ class Class(Value):
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
 
-        symbol_table.set("null", NULL)
-        symbol_table.set("true", TRUE)
-        symbol_table.set("false", FALSE)
+        symbol_table.set("null", Number.null)
+        symbol_table.set("true", Number.true)
+        symbol_table.set("false", Number.false)
         symbol_table.set("!", Method.change_status)
         symbol_table.set("exit", Method.exit)
         symbol_table.set("clear", Method.clear)
