@@ -730,6 +730,9 @@ class ClassString(Value):
     def __init__(self, value):
         super().__init__(value)
         self.value = value
+        self.attributes = {
+            "value": self.value
+        }
 
     def added_to(self, other):
         if isinstance(other, ClassString):
@@ -789,6 +792,32 @@ class ClassString(Value):
             "Cannot using this operator in this expression"
         )
 
+    def attribute(self, other):
+        if isinstance(other, Identifier):
+            if self.attributes.get(other.value, None) is None:
+                return None, error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined attribute"
+                )
+
+            elif other.index != None:
+
+                return_value = self.attributes[other.value]
+                if len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                elif other.index.value < 0 or other.index.value > len(return_value.value):
+                    return None, error.InvalidObject(
+
+                        self.pos_start, self.pos_end,
+                        "Invalid index specified"
+                    )
+                return return_value.value[other.index.value], None
+            else:
+                if len(self.attributes[other.value].value) == 1:
+                    return self.attributes[other.value].value[0], None
+                else:
+                    return self.attributes[other.value], None
+
     def copy(self):
         string_ = ClassString(self.value).set_pos(
             self.pos_start, self.pos_end).set_context(self.context)
@@ -801,12 +830,41 @@ class ClassString(Value):
 class List(Value):
     def __init__(self, value):
         super().__init__(value)
+        self.attributes = {
+            "value": self.value
+        }
 
     def copy(self):
         list_ = List(self.value)
         list_.set_pos(self.pos_start, self.pos_end)
         list_.set_context(self.context)
         return list_
+
+    def attribute(self, other):
+        if isinstance(other, Identifier):
+            if self.attributes.get(other.value, None) is None:
+                return None, error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined attribute"
+                )
+
+            elif other.index != None:
+
+                return_value = self.attributes[other.value]
+                if len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                elif other.index.value < 0 or other.index.value > len(return_value.value):
+                    return None, error.InvalidObject(
+
+                        self.pos_start, self.pos_end,
+                        "Invalid index specified"
+                    )
+                return return_value.value[other.index.value], None
+            else:
+                if len(self.attributes[other.value].value) == 1:
+                    return self.attributes[other.value].value[0], None
+                else:
+                    return self.attributes[other.value], None
 
     def __repr__(self):
         str_to_return = "{"
@@ -819,9 +877,51 @@ class List(Value):
         return str_to_return
 
 
+class PlaceHolder(Value):
+    def __init__(self):
+        self.value = None
+        self.attributes = {
+            "value": self.value
+        }
+
+    def assign_from(self, other):
+        self.value = other.copy()
+        return self, None
+
+    def attribute(self, other):
+        if isinstance(other, Identifier):
+            if self.attributes.get(other.value, None) is None:
+                return None, error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Undefined attribute"
+                )
+
+            elif other.index != None:
+
+                return_value = self.attributes[other.value]
+                if len(return_value.value) == 1:
+                    return ClassString(return_value.value[0].value[other.index.value]), None
+                elif other.index.value < 0 or other.index.value > len(return_value.value):
+                    return None, error.InvalidObject(
+
+                        self.pos_start, self.pos_end,
+                        "Invalid index specified"
+                    )
+                return return_value.value[other.index.value], None
+            else:
+                if len(self.attributes[other.value].value) == 1:
+                    return self.attributes[other.value].value[0], None
+                else:
+                    return self.attributes[other.value], None
+
+    def __repr__(self):
+        return f"{self.value}" if self.value else "null"
+
+
 Number.null = Number(0)
 Number.false = Number(0)
 Number.true = Number(1)
+placeholder = PlaceHolder()
 ###################################
 # ALL THE NODES
 ###################################
