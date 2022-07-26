@@ -346,6 +346,8 @@ class Method(GeneralInstruction):
                 return res.success(ClassString("<listmemo>"))
             elif isinstance(memory.symbols_table.get("value"), Memory):
                 return res.success(ClassString("<memory>"))
+            elif isinstance(memory.symbols_table.get("value"), PlaceHolder):
+                return res.success(ClassString("<holder>"))
         elif isinstance(memory.symbols_table.get("type"), ClassString):
             if memory.symbols_table.get("type").value == "num":
                 if isinstance(memory.symbols_table.get("value"), ClassString):
