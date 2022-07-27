@@ -877,9 +877,14 @@ class List(Value):
         return str_to_return
 
 
+Number.null = Number(0)
+Number.false = Number(0)
+Number.true = Number(1)
+
+
 class PlaceHolder(Value):
     def __init__(self):
-        self.value = None
+        super().__init__(Number.null)
         self.attributes = {
             "value": self.value
         }
@@ -919,12 +924,9 @@ class PlaceHolder(Value):
                     return self.attributes[other.value], None
 
     def __repr__(self):
-        return f"{self.value}" if self.value else "null"
+        return f"{self.value}" if self.value != Number.null else "null"
 
 
-Number.null = Number(0)
-Number.false = Number(0)
-Number.true = Number(1)
 placeholder = PlaceHolder()
 ###################################
 # ALL THE NODES
