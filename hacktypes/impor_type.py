@@ -890,16 +890,12 @@ class PlaceHolder(Value):
         }
 
     def assign_from(self, other):
-        res, error = self.value.assign_from(other)
-        if res:
-            self.value = res
-            self.attributes = {
-                "value": self.value
-            }
+        self.value = other.copy()
+        self.attributes = {
+            "value": self.value
+        }
 
-            return self, None
-        else:
-            return None, error
+        return self, None
 
     def attribute(self, other):
         if isinstance(other, Identifier):
