@@ -907,6 +907,13 @@ class PlaceHolder(Value):
                     "Undefined attribute"
                 )
 
+    def copy(self):
+        placeholder = PlaceHolder()
+        placeholder.attributes = self.attributes
+        placeholder.set_pos(self.pos_start, self.pos_end)
+        placeholder.set_context(self.context)
+        return placeholder
+
     def __repr__(self):
         return f"{self.value}" if self.value != Number.null else "null"
 
