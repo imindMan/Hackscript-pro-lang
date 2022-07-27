@@ -915,7 +915,8 @@ class PlaceHolder(Value):
         return placeholder
 
     def __repr__(self):
-        return f"{self.value}" if self.value != Number.null else "null"
+        place_string = self.value if self.value != Number.null else "null"
+        return f"<placeholder: {place_string}>"
 
 
 placeholder = PlaceHolder()
