@@ -66,6 +66,6 @@ def run(text, fn):
     except RecursionError:
         return None, RuntimeError(
             ast.node.pos_start, ast.node.pos_end,
-            "Non-stop infinity run (HackScript does not allow to do something infinity, mostly due to recursion, or infinity loop)",
+            "Non-stop infinity run (HackScript does not allow to do something infinity, mostly due to recursion)",
             context
         )
