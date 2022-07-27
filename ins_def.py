@@ -116,6 +116,162 @@ class Instruction(GeneralInstruction):
         return f"<instruction: {self.name}>"
 
 
+class Class(Value):
+    def __init__(self, name, methods, parameters, run, memory, super_class=None):
+        super().__init__(name)
+        self.name = name
+        self.methods = methods
+        if len(self.methods) == 1 and isinstance(self.methods[0], Identifier):
+            self.attributes = {}
+        else:
+            self.attributes = dict(map(lambda x: (x.name, x), self.methods))
+        self.parameters = parameters
+        self.run = run
+        self.super_class = super_class
+        self.memory = memory
+        self.parent_symbol_table = memory.symbols_table
+
+    def set_up_symbol_table(self, symbol_table, memory):
+        res = RuntimeResult()
+        Method.change_status = Method("change_status", memory)
+        Method.exit = Method("exit", memory)
+        Method.clear = Method("clear", memory)
+        Method.set_constant = Method("set_constant", memory)
+        Method.launch = Method("launch", memory)
+        Method.end_launch = Method("end_launch", memory)
+        Method.push = Method("push", memory)
+        Method.random = Method("random", memory)
+        Method.type = Method("type", memory)
+
+        symbol_table.set("null", Number.null)
+        symbol_table.set("true", Number.true)
+        symbol_table.set("false", Number.false)
+        symbol_table.set("phd", placeholder)
+        symbol_table.set("!", Method.change_status)
+        symbol_table.set("exit", Method.exit)
+        symbol_table.set("clear", Method.clear)
+        symbol_table.set("s", Method.set_constant)
+        symbol_table.set("$", Method.launch)
+        symbol_table.set(".", Method.end_launch)
+        symbol_table.set("pu", Method.push)
+        symbol_table.set("in", Identifier("in"))
+        symbol_table.set("out", Identifier("out"))
+        symbol_table.set("con", Identifier("con"))
+        symbol_table.set("?", Method.random)
+        symbol_table.set("pp", Identifier("pp"))
+        symbol_table.set("len", Method.len)
+        symbol_table.set("%", Method.type)
+        for i in self.methods:
+            try:
+                symbol_table.set(i.name, i)
+            except:
+                return res.failure(error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "Method part can only accept instructions, classes, and some special expressions only, no more kind of expressions. If you want to do it, you have to put in the constructor"
+                ))
+
+    def generate_basic_thing(self):
+        context = Context(self.name, self.context, self.pos_start)
+        symbol_table = SymbolTable(self.parent_symbol_table)
+        launch_table = {}
+        memory = ListofMemory(symbol_table, launch_table, self.memory)
+
+        self.set_up_symbol_table(symbol_table, memory)
+        return context, symbol_table, memory
+
+    def check_args(self, arg_names, args):
+        res = RuntimeResult()
+        if len(args) > len(arg_names):
+            return res.failure(RuntimeError(
+                self.pos_start, self.pos_end,
+                f"Too many args passed into '{self.name}'",
+                self.context
+            ))
+
+        if len(args) < len(arg_names):
+            return res.failure(RuntimeError(
+                self.pos_start, self.pos_end,
+                f"Too few args passed into '{self.name}'",
+                self.context
+            ))
+        return res.success(None)
+
+    def populate_args(self, arg_names, args, context, memory):
+        for i in range(len(args)):
+            arg_name = arg_names[i]
+            arg_value = args[i]
+            arg_value.set_context(context)
+            memory.symbols_table.set(arg_name.value, arg_value)
+
+    def check_and_populate_args(self, arg_names, args, context, memory):
+        res = RuntimeResult()
+        res.register(self.check_args(arg_names, args))
+        if res.error:
+            return res
+        self.populate_args(arg_names, args, context, memory)
+        return res.success(None)
+
+    def execute(self, args):
+        res = RuntimeResult()
+        context, symbol_table, memory = self.generate_basic_thing()
+
+        res.register(self.check_and_populate_args(
+            self.parameters, args, context, memory))
+        if res.error:
+            return res
+        interpreter = Hackinterpreter.Interpreter(memory, symbol_table)
+        value = res.register(interpreter.visit(
+            self.run, context, attributes=self.attributes))
+        if res.error:
+            return res
+
+        return res.success(value)
+
+    def attribute(self, other, args=None):
+        if isinstance(other, Identifier):
+            if self.attributes.get(other.value, None) is None:
+                return None, error.RuntimeError(
+                    self.pos_start, self.pos_end,
+                    "Attribute cannot be detected", self.context
+                )
+            elif isinstance(self.attributes.get(other.value, None), Instruction):
+                return_value = None
+                if args is not None:
+                    return_value = self.attributes.get(
+                        other.value).execute(args)
+                else:
+                    return_value = self.attributes.get(
+                        other.value).execute([])
+                return return_value.value, None
+            return self.attributes[other.value], None
+
+    def assign_from(self, other=None):
+        if isinstance(other, Class):
+            self.name = other.name
+            self.methods = other.methods
+            self.attributes = other.attributes
+            self.parameters = other.parameters
+            self.run = other.run
+            self.super_class = other.super_class
+            self.memory = other.memory
+            self.parent_symbol_table = other.parent_symbol_table
+            return self, None
+        return None, error.OperatorNotSupported(
+            self.pos_start, self.pos_end,
+            "Cannot using this operator in this expression"
+        )
+
+    def copy(self):
+        class_ = Class(self.name, self.methods, self.parameters,
+                       self.run, self.memory, self.super_class)
+        class_.set_pos(self.pos_start, self.pos_end)
+        class_.set_context(self.context)
+        return class_
+
+    def __repr__(self):
+        return f"<class: {self.name}>"
+
+
 class Method(GeneralInstruction):
 
     def __init__(self, name, memory):
@@ -349,6 +505,10 @@ class Method(GeneralInstruction):
                 return res.success(ClassString("<memory>"))
             elif isinstance(memory.symbols_table.get("value"), PlaceHolder):
                 return res.success(ClassString("<holder>"))
+            elif isinstance(memory.symbols_table.get("value"), Class):
+                return_string = memory.symbols_table.get("value").__repr__()
+                return res.success(ClassString(return_string))
+
         elif isinstance(memory.symbols_table.get("type"), ClassString):
             if memory.symbols_table.get("type").value == "num":
                 if isinstance(memory.symbols_table.get("value"), ClassString):
@@ -395,159 +555,3 @@ class Method(GeneralInstruction):
         ))
 
     execute_type.arg = [Identifier("type"), Identifier("value")]
-
-
-class Class(Value):
-    def __init__(self, name, methods, parameters, run, memory, super_class=None):
-        super().__init__(name)
-        self.name = name
-        self.methods = methods
-        if len(self.methods) == 1 and isinstance(self.methods[0], Identifier):
-            self.attributes = {}
-        else:
-            self.attributes = dict(map(lambda x: (x.name, x), self.methods))
-        self.parameters = parameters
-        self.run = run
-        self.super_class = super_class
-        self.memory = memory
-        self.parent_symbol_table = memory.symbols_table
-
-    def set_up_symbol_table(self, symbol_table, memory):
-        res = RuntimeResult()
-        Method.change_status = Method("change_status", memory)
-        Method.exit = Method("exit", memory)
-        Method.clear = Method("clear", memory)
-        Method.set_constant = Method("set_constant", memory)
-        Method.launch = Method("launch", memory)
-        Method.end_launch = Method("end_launch", memory)
-        Method.push = Method("push", memory)
-        Method.random = Method("random", memory)
-        Method.type = Method("type", memory)
-
-        symbol_table.set("null", Number.null)
-        symbol_table.set("true", Number.true)
-        symbol_table.set("false", Number.false)
-        symbol_table.set("phd", placeholder)
-        symbol_table.set("!", Method.change_status)
-        symbol_table.set("exit", Method.exit)
-        symbol_table.set("clear", Method.clear)
-        symbol_table.set("s", Method.set_constant)
-        symbol_table.set("$", Method.launch)
-        symbol_table.set(".", Method.end_launch)
-        symbol_table.set("pu", Method.push)
-        symbol_table.set("in", Identifier("in"))
-        symbol_table.set("out", Identifier("out"))
-        symbol_table.set("con", Identifier("con"))
-        symbol_table.set("?", Method.random)
-        symbol_table.set("pp", Identifier("pp"))
-        symbol_table.set("len", Method.len)
-        symbol_table.set("%", Method.type)
-        for i in self.methods:
-            try:
-                symbol_table.set(i.name, i)
-            except:
-                return res.failure(error.InvalidObject(
-                    self.pos_start, self.pos_end,
-                    "Method part can only accept instructions, classes, and some special expressions only, no more kind of expressions. If you want to do it, you have to put in the constructor"
-                ))
-
-    def generate_basic_thing(self):
-        context = Context(self.name, self.context, self.pos_start)
-        symbol_table = SymbolTable(self.parent_symbol_table)
-        launch_table = {}
-        memory = ListofMemory(symbol_table, launch_table, self.memory)
-
-        self.set_up_symbol_table(symbol_table, memory)
-        return context, symbol_table, memory
-
-    def check_args(self, arg_names, args):
-        res = RuntimeResult()
-        if len(args) > len(arg_names):
-            return res.failure(RuntimeError(
-                self.pos_start, self.pos_end,
-                f"Too many args passed into '{self.name}'",
-                self.context
-            ))
-
-        if len(args) < len(arg_names):
-            return res.failure(RuntimeError(
-                self.pos_start, self.pos_end,
-                f"Too few args passed into '{self.name}'",
-                self.context
-            ))
-        return res.success(None)
-
-    def populate_args(self, arg_names, args, context, memory):
-        for i in range(len(args)):
-            arg_name = arg_names[i]
-            arg_value = args[i]
-            arg_value.set_context(context)
-            memory.symbols_table.set(arg_name.value, arg_value)
-
-    def check_and_populate_args(self, arg_names, args, context, memory):
-        res = RuntimeResult()
-        res.register(self.check_args(arg_names, args))
-        if res.error:
-            return res
-        self.populate_args(arg_names, args, context, memory)
-        return res.success(None)
-
-    def execute(self, args):
-        res = RuntimeResult()
-        context, symbol_table, memory = self.generate_basic_thing()
-
-        res.register(self.check_and_populate_args(
-            self.parameters, args, context, memory))
-        if res.error:
-            return res
-        interpreter = Hackinterpreter.Interpreter(memory, symbol_table)
-        value = res.register(interpreter.visit(
-            self.run, context, attributes=self.attributes))
-        if res.error:
-            return res
-
-        return res.success(value)
-
-    def attribute(self, other, args=None):
-        if isinstance(other, Identifier):
-            if self.attributes.get(other.value, None) is None:
-                return None, error.RuntimeError(
-                    self.pos_start, self.pos_end,
-                    "Attribute cannot be detected", self.context
-                )
-            elif isinstance(self.attributes.get(other.value, None), Instruction):
-                return_value = None
-                if args is not None:
-                    return_value = self.attributes.get(
-                        other.value).execute(args)
-                else:
-                    return_value = self.attributes.get(
-                        other.value).execute([])
-                return return_value.value, None
-            return self.attributes[other.value], None
-
-    def assign_from(self, other=None):
-        if isinstance(other, Class):
-            self.name = other.name
-            self.methods = other.methods
-            self.attributes = other.attributes
-            self.parameters = other.parameters
-            self.run = other.run
-            self.super_class = other.super_class
-            self.memory = other.memory
-            self.parent_symbol_table = other.parent_symbol_table
-            return self, None
-        return None, error.OperatorNotSupported(
-            self.pos_start, self.pos_end,
-            "Cannot using this operator in this expression"
-        )
-
-    def copy(self):
-        class_ = Class(self.name, self.methods, self.parameters,
-                       self.run, self.memory, self.super_class)
-        class_.set_pos(self.pos_start, self.pos_end)
-        class_.set_context(self.context)
-        return class_
-
-    def __repr__(self):
-        return f"<class: {self.name}>"
