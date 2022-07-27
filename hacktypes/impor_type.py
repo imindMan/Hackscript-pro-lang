@@ -376,11 +376,11 @@ class Number(Value):
         if isinstance(other, Identifier):
             if other.value == "value":
                 return Number(self.value).set_context(self.context), None
-        else:
-            return None, error.InvalidObject(
-                self.pos_start, self.pos_end,
-                "Invalid parameter"
-            )
+
+        return None, error.InvalidObject(
+            self.pos_start, self.pos_end,
+            "Invalid parameter"
+        )
 
     def assign_from(self, other):
         if isinstance(other, Number):
@@ -890,12 +890,16 @@ class PlaceHolder(Value):
         }
 
     def assign_from(self, other):
-        self.value = other
-        self.attributes = {
-            "value": self.value
-        }
+        res, error = self.value.assign_from(other)
+        if res:
+            self.value = res
+            self.attributes = {
+                "value": self.value
+            }
 
-        return self, None
+            return self, None
+        else:
+            return None, error
 
     def attribute(self, other):
         if isinstance(other, Identifier):
