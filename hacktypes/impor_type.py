@@ -890,7 +890,7 @@ class PlaceHolder(Value):
         }
 
     def assign_from(self, other):
-        self.value = other.copy()
+        self.value = other
         self.attributes = {
             "value": self.value
         }
