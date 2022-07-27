@@ -66,5 +66,6 @@ def run(text, fn):
     except RecursionError:
         return None, RuntimeError(
             ast.node.pos_start, ast.node.pos_end,
-            "Maximum recursion depth exceeded", context
+            "Non-stop infinity run (HackScript does not allow to do something infinity, mostly due to recursion, or infinity loop)",
+            context
         )
