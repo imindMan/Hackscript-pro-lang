@@ -8,6 +8,7 @@ class Interpreter:
     def __init__(self, memory, symbol_table):
         self.list_of_memory = memory
         self.symbol_table = symbol_table
+        self.error_right_now = None
 
     def visit(self, node, context, value=True, attributes=None):
         method_name = f'visit_{type(node).__name__}'
@@ -142,6 +143,8 @@ class Interpreter:
                 result, error = left.attribute(right)
         if error:
             return res.failure(error)
+        elif (error, result) == (None, None):
+            return res.failure(self.error_right_now)
         else:
             return res.success(result.set_pos(node.pos_start, node.pos_end))
 
@@ -347,25 +350,20 @@ class Interpreter:
         return res.success(Number.null.set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_StatementNode(self, node, context, value=True, attributes=None):
+        res = RuntimeResult()
 
-        if attributes is None:
-            res = RuntimeResult()
-
-            list1 = [res.register(self.visit(
-                i, context, value, attributes=attributes)) for i in node.value]
+        list1 = []
+        temp = None
+        for i in node.value:
+            res = self.visit(i, context, value, attributes=attributes)
+            temp = res
             if res.error:
-                return res
-            if len(list1) == 1:
-                return res.success(list1[0].set_pos(node.pos_start, node.pos_end).set_context(context))
-            return res.success(Number.null.set_pos(node.pos_start, node.pos_end).set_context(context))
-        else:
-            res = RuntimeResult()
-            list1 = [res.register(self.visit(
-                i, context, value, attributes=attributes)) for i in node.value]
-            if res.error:
-                return res
+                break
+            list1.append(res)
+        if temp.error:
+            self.error = temp.value
+            return temp
+        elif len(list1) == 1:
+            return res.success(list1[0].value.set_pos(node.pos_start, node.pos_end).set_context(context))
 
-            if len(list1) == 1:
-                return res.success(list1[0].set_pos(node.pos_start, node.pos_end).set_context(context))
-
-            return res.success(Number.null.set_pos(node.pos_start, node.pos_end).set_context(context))
+        return res.success(Number.null.set_pos(node.pos_start, node.pos_end).set_context(context))
