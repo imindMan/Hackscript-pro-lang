@@ -264,6 +264,7 @@ class Class(Value):
     def copy(self):
         class_ = Class(self.name, self.methods, self.parameters,
                        self.run, self.memory, self.super_class)
+        class_.attributes = self.attributes
         class_.set_pos(self.pos_start, self.pos_end)
         class_.set_context(self.context)
         return class_
