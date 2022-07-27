@@ -261,6 +261,22 @@ class Class(Value):
             "Cannot using this operator in this expression"
         )
 
+    def equ_to(self, other):
+        if not isinstance(other, Class):
+            return Number(0).set_context(self.context), None
+        if (self.name, self.methods, self.parameters, self.run, self.memory, self.super_class, self.attributes) == \
+                (other.name, other.methods, other.parameters, other.run, other.memory, other.super_class, other.attributes):
+            return Number(1).set_context(self.context), None
+        return Number(0).set_context(self.context), None
+
+    def not_equ_to(self, other):
+        if not isinstance(other, Class):
+            return Number(0).set_context(self.context), None
+        if (self.name, self.methods, self.parameters, self.run, self.memory, self.super_class, self.attributes) != \
+                (other.name, other.methods, other.parameters, other.run, other.memory, other.super_class, other.attributes):
+            return Number(1).set_context(self.context), None
+        return Number(0).set_context(self.context), None
+
     def copy(self):
         class_ = Class(self.name, self.methods, self.parameters,
                        self.run, self.memory, self.super_class)
