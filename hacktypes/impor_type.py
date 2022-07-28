@@ -919,7 +919,6 @@ class PlaceHolder(Value):
         return f"<placeholder: {place_string}>"
 
 
-placeholder = PlaceHolder()
 ###################################
 # ALL THE NODES
 ###################################
