@@ -349,6 +349,10 @@ class Interpreter:
                     return res.success(attributes.get(name.__repr__(), None).set_pos(node.pos_start, node.pos_end).set_context(context))
         return res.success(Number.null.set_pos(node.pos_start, node.pos_end).set_context(context))
 
+    def visit_PlaceHolderNode(self, node, context, value=True, attributes=None):
+        res = RuntimeResult()
+        return res.success(PlaceHolder().set_pos(node.pos_start, node.pos_end).set_context(context))
+
     def visit_StatementNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
 

@@ -101,6 +101,9 @@ class Parser:
             if list_of_attribute != None:
                 list_of_attribute.append(identifier)
             return res.success(identifier)
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["phd"]):
+            res.register(self.advance())
+            return res.success(PlaceHolderNode(token))
         elif token.type == datatypes.LEFT_PAREN:
             res.register(self.advance())
             expr = res.register(self.statements(
