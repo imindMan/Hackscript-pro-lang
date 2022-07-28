@@ -1126,9 +1126,8 @@ class AttributeNode:
 
 class PlaceHolderNode:
     def __init__(self, name):
-        self.name = name
-        self.pos_start = self.name.pos_start
-        self.pos_end = self.name.pos_end
+        self.pos_start = name.pos_start
+        self.pos_end = name.pos_end
 
     def __repr__(self):
         return f"<phd: {self.name}>"
