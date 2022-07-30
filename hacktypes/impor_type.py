@@ -452,30 +452,40 @@ class Memory(Value):
 
     def attribute(self, other):
         if isinstance(other, Identifier):
-            if self.attributes.get(other.value, None) is None:
+            name = other
+            list_of_index = []
+            while not isinstance(name, str):
+                if name.index == None:
+                    pass
+                else:
+                    list_of_index.append(name.index)
+                name = name.value
+            list_of_index.reverse()
+            if self.attributes.get(name, None) is None:
                 return None, error.InvalidObject(
                     self.pos_start, self.pos_end,
                     "Undefined attribute"
                 )
 
-            elif other.index != None:
+            elif list_of_index != []:
 
-                return_value = self.attributes[other.value]
-                if len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
-                elif other.index.value < 0 or other.index.value > len(return_value.value):
-                    return None, error.InvalidObject(
+                return_value = self.attributes[name]
+                if isinstance(return_value, Number):
+                    return None, error.InvalidIndexOfMemory(
+                        self.pos_start, self.pos_end,
+                        "Number type cannot be indexed"
+                    )
+                for i in list_of_index:
+                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                        return None, error.InvalidIndexOfMemory(
+                            self.pos_start, self.pos_end,
+                            "Invalid index of the memory"
+                        )
+                    return_value = return_value.value[i.value]
+                if isinstance(return_value, str):
+                    return_value = ClassString(return_value)
+                return return_value, None
 
-                        self.pos_start, self.pos_end,
-                        "Invalid index specified"
-                    )
-                try:
-                    return return_value.value[other.index.value], None
-                except:
-                    return None, error.InvalidObject(
-                        self.pos_start, self.pos_end,
-                        "Invalid index specified"
-                    )
             else:
                 if len(self.attributes[other.value].value) == 1:
                     return self.attributes[other.value].value[0], None
@@ -643,24 +653,40 @@ class Pointer(Value):
 
     def attribute(self, other):
         if isinstance(other, Identifier):
-            if self.attributes.get(other.value, None) is None:
+            name = other
+            list_of_index = []
+            while not isinstance(name, str):
+                if name.index == None:
+                    pass
+                else:
+                    list_of_index.append(name.index)
+                name = name.value
+            list_of_index.reverse()
+            if self.attributes.get(name, None) is None:
                 return None, error.InvalidObject(
                     self.pos_start, self.pos_end,
                     "Undefined attribute"
                 )
 
-            elif other.index != None:
+            elif list_of_index != []:
 
-                return_value = self.attributes[other.value]
-                if len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
-                elif other.index.value < 0 or other.index.value > len(return_value.value):
-                    return None, error.InvalidObject(
-
+                return_value = self.attributes[name]
+                if isinstance(return_value, Number):
+                    return None, error.InvalidIndexOfMemory(
                         self.pos_start, self.pos_end,
-                        "Invalid index specified"
+                        "Number type cannot be indexed"
                     )
-                return return_value.value[other.index.value], None
+                for i in list_of_index:
+                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                        return None, error.InvalidIndexOfMemory(
+                            self.pos_start, self.pos_end,
+                            "Invalid index of the memory"
+                        )
+                    return_value = return_value.value[i.value]
+                if isinstance(return_value, str):
+                    return_value = ClassString(return_value)
+                return return_value, None
+
             else:
                 if len(self.attributes[other.value].value) == 1:
                     return self.attributes[other.value].value[0], None
@@ -686,24 +712,40 @@ class ConstantPointer(Value):
 
     def attribute(self, other):
         if isinstance(other, Identifier):
-            if self.attributes.get(other.value, None) is None:
+            name = other
+            list_of_index = []
+            while not isinstance(name, str):
+                if name.index == None:
+                    pass
+                else:
+                    list_of_index.append(name.index)
+                name = name.value
+            list_of_index.reverse()
+            if self.attributes.get(name, None) is None:
                 return None, error.InvalidObject(
                     self.pos_start, self.pos_end,
                     "Undefined attribute"
                 )
 
-            elif other.index != None:
+            elif list_of_index != []:
 
-                return_value = self.attributes[other.value]
-                if len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
-                elif other.index.value < 0 or other.index.value > len(return_value.value):
-                    return None, error.InvalidObject(
-
+                return_value = self.attributes[name]
+                if isinstance(return_value, Number):
+                    return None, error.InvalidIndexOfMemory(
                         self.pos_start, self.pos_end,
-                        "Invalid index specified"
+                        "Number type cannot be indexed"
                     )
-                return return_value.value[other.index.value], None
+                for i in list_of_index:
+                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                        return None, error.InvalidIndexOfMemory(
+                            self.pos_start, self.pos_end,
+                            "Invalid index of the memory"
+                        )
+                    return_value = return_value.value[i.value]
+                if isinstance(return_value, str):
+                    return_value = ClassString(return_value)
+                return return_value, None
+
             else:
                 if len(self.attributes[other.value].value) == 1:
                     return self.attributes[other.value].value[0], None
@@ -794,24 +836,40 @@ class ClassString(Value):
 
     def attribute(self, other):
         if isinstance(other, Identifier):
-            if self.attributes.get(other.value, None) is None:
+            name = other
+            list_of_index = []
+            while not isinstance(name, str):
+                if name.index == None:
+                    pass
+                else:
+                    list_of_index.append(name.index)
+                name = name.value
+            list_of_index.reverse()
+            if self.attributes.get(name, None) is None:
                 return None, error.InvalidObject(
                     self.pos_start, self.pos_end,
                     "Undefined attribute"
                 )
 
-            elif other.index != None:
+            elif list_of_index != []:
 
-                return_value = self.attributes[other.value]
-                if len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
-                elif other.index.value < 0 or other.index.value > len(return_value.value):
-                    return None, error.InvalidObject(
-
+                return_value = self.attributes[name]
+                if isinstance(return_value, Number):
+                    return None, error.InvalidIndexOfMemory(
                         self.pos_start, self.pos_end,
-                        "Invalid index specified"
+                        "Number type cannot be indexed"
                     )
-                return return_value.value[other.index.value], None
+                for i in list_of_index:
+                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                        return None, error.InvalidIndexOfMemory(
+                            self.pos_start, self.pos_end,
+                            "Invalid index of the memory"
+                        )
+                    return_value = return_value.value[i.value]
+                if isinstance(return_value, str):
+                    return_value = ClassString(return_value)
+                return return_value, None
+
             else:
                 if len(self.attributes[other.value].value) == 1:
                     return self.attributes[other.value].value[0], None
@@ -842,24 +900,40 @@ class List(Value):
 
     def attribute(self, other):
         if isinstance(other, Identifier):
-            if self.attributes.get(other.value, None) is None:
+            name = other
+            list_of_index = []
+            while not isinstance(name, str):
+                if name.index == None:
+                    pass
+                else:
+                    list_of_index.append(name.index)
+                name = name.value
+            list_of_index.reverse()
+            if self.attributes.get(name, None) is None:
                 return None, error.InvalidObject(
                     self.pos_start, self.pos_end,
                     "Undefined attribute"
                 )
 
-            elif other.index != None:
+            elif list_of_index != []:
 
-                return_value = self.attributes[other.value]
-                if len(return_value.value) == 1:
-                    return ClassString(return_value.value[0].value[other.index.value]), None
-                elif other.index.value < 0 or other.index.value > len(return_value.value):
-                    return None, error.InvalidObject(
-
+                return_value = self.attributes[name]
+                if isinstance(return_value, Number):
+                    return None, error.InvalidIndexOfMemory(
                         self.pos_start, self.pos_end,
-                        "Invalid index specified"
+                        "Number type cannot be indexed"
                     )
-                return return_value.value[other.index.value], None
+                for i in list_of_index:
+                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                        return None, error.InvalidIndexOfMemory(
+                            self.pos_start, self.pos_end,
+                            "Invalid index of the memory"
+                        )
+                    return_value = return_value.value[i.value]
+                if isinstance(return_value, str):
+                    return_value = ClassString(return_value)
+                return return_value, None
+
             else:
                 if len(self.attributes[other.value].value) == 1:
                     return self.attributes[other.value].value[0], None
@@ -899,13 +973,43 @@ class PlaceHolder(Value):
 
     def attribute(self, other):
         if isinstance(other, Identifier):
-            if other.value == "value":
-                return self.attributes.get(other.value), None
-            else:
+            name = other
+            list_of_index = []
+            while not isinstance(name, str):
+                if name.index == None:
+                    pass
+                else:
+                    list_of_index.append(name.index)
+                name = name.value
+            list_of_index.reverse()
+            if self.attributes.get(name, None) is None:
                 return None, error.InvalidObject(
                     self.pos_start, self.pos_end,
                     "Undefined attribute"
                 )
+
+            elif list_of_index != []:
+
+                return_value = self.attributes[name]
+                if isinstance(return_value, Number):
+                    return None, error.InvalidIndexOfMemory(
+                        self.pos_start, self.pos_end,
+                        "Number type cannot be indexed"
+                    )
+                for i in list_of_index:
+                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                        return None, error.InvalidIndexOfMemory(
+                            self.pos_start, self.pos_end,
+                            "Invalid index of the memory"
+                        )
+                    return_value = return_value.value[i.value]
+                if isinstance(return_value, str):
+                    return_value = ClassString(return_value)
+                return return_value, None
+
+            else:
+
+                return self.attributes[other.value], None
 
     def copy(self):
         placeholder = PlaceHolder()
@@ -931,7 +1035,7 @@ class NumberNode:
 
         self.pos_end = self.token.pos_end
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"{self.token}"
 
 
@@ -941,6 +1045,17 @@ class IdentifierNode:
         self.index = index
         self.pos_start = self.token.pos_start
         self.pos_end = self.token.pos_end
+
+    def __repr__(self):
+        return f"{self.token}"
+
+
+class MultiIdentifierNode:
+    def __init__(self, token, index=None):
+        self.token = token
+        self.index = index
+        self.pos_start = token.pos_start
+        self.pos_end = index.pos_end
 
     def __repr__(self):
         return f"{self.token}"
@@ -1064,6 +1179,24 @@ class StringNode:
 
 
 class ListNode:
+    def __init__(self, token, value, index=None):
+        self.value = value
+        self.index = index
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+
+    def __repr__(self):
+        str_to_return = "{"
+        for i in range(len(self.value)):
+            if i == len(self.value) - 1:
+                str_to_return += self.value[i].__repr__()
+            else:
+                str_to_return += self.value[i].__repr__() + ", "
+        str_to_return += "}"
+        return str_to_return
+
+
+class MultiListNode:
     def __init__(self, token, value, index=None):
         self.value = value
         self.index = index
