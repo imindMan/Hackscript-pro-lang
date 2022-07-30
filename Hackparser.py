@@ -82,25 +82,7 @@ class Parser:
                 list_of_attribute.append(num)
             return res.success(num)
         elif token.type in (datatypes.IDENTIFIER, ):
-            res.register(self.advance())
-            if self.curr_token.type == datatypes.L_SQUARE:
-
-                res.register(self.advance())
-                index = res.register(self.factor(list_of_attribute))
-                if self.curr_token.type != datatypes.R_SQUARE:
-                    return res.failure(error.InvalidIndexOfMemory(
-                        self.curr_token.pos_start, self.curr_token.pos_end,
-                        "Expected ']'"
-                    ))
-                res.register(self.advance())
-                identifier = IdentifierNode(token, index)
-                if list_of_attribute != None:
-                    list_of_attribute.append(identifier)
-                return res.success(identifier)
-            identifier = IdentifierNode(token)
-            if list_of_attribute != None:
-                list_of_attribute.append(identifier)
-            return res.success(identifier)
+            return self.identifier(list_of_attribute)
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["phd"]):
             res.register(self.advance())
             return res.success(PlaceHolderNode(token))
@@ -609,6 +591,23 @@ class Parser:
                         ))
                     res.register(self.advance())
                     list_ = ListNode(token, list_gene, index)
+                    if self.curr_token.type != datatypes.L_SQUARE:
+                        if list_of_attribute != None:
+                            list_of_attribute.append(list_)
+                        return res.success(list_)
+                    list_ = ListNode(token, list_gene, index)
+                    while self.curr_token.type == datatypes.L_SQUARE:
+                        res.register(self.advance())
+                        index = res.register(self.factor())
+                        if not self.curr_token.type == datatypes.R_SQUARE:
+                            return res.failure(error.SyntaxError(
+                                self.curr_token.pos_start, self.curr_token.pos_end,
+                                "Expected ']'"
+                            ))
+
+                        res.register(self.advance())
+                        list_ = MultiListNode(token, list_, index)
+
                     if list_of_attribute != None:
                         list_of_attribute.append(list_)
                     return res.success(list_)
@@ -721,6 +720,40 @@ class Parser:
                 list_of_attribute.append(class_)
 
             return res.success(class_)
+
+    def identifier(self, list_of_attribute=None):
+        res = ParserResult()
+        token = self.curr_token
+        res.register(self.advance())
+        identifier = IdentifierNode(token)
+        if self.curr_token.type == datatypes.L_SQUARE:
+            res.register(self.advance())
+            index = res.register(self.atom())
+            if not self.curr_token.type == datatypes.R_SQUARE:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ']'"
+                ))
+            res.register(self.advance())
+            identifier = IdentifierNode(token, index)
+            if self.curr_token.type != datatypes.L_SQUARE:
+                if list_of_attribute != None:
+                    list_of_attribute.append(identifier)
+                return res.success(identifier)
+            identifier = IdentifierNode(token, index)
+            while self.curr_token.type == datatypes.L_SQUARE:
+                res.register(self.advance())
+                index = res.register(self.atom())
+                if not self.curr_token.type == datatypes.R_SQUARE:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ']'"
+                    ))
+                res.register(self.advance())
+                identifier = MultiIdentifierNode(identifier, index)
+            if list_of_attribute != None:
+                list_of_attribute.append(identifier)
+        return res.success(identifier)
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:
