@@ -41,6 +41,32 @@ class Interpreter:
             node.value = node.value[index.value]
             return res.success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
 
+    def visit_MultiIdentifierNode(self, node, context, value=True, attributes=None):
+        res = RuntimeResult()
+        val = res.register(self.visit(node.token, context, value, attributes))
+        if res.error:
+            return res
+        index = res.register(self.visit(
+            node.index, context, value, attributes))
+        if res.error:
+            return res
+        if isinstance(val, List) and index:
+            list_spe = val
+            if index.value >= len(list_spe.value) or index.value < 0:
+                return res.failure(error.InvalidIndexOfMemory(
+                    node.pos_start, node.pos_end,
+                    "Invalid index of the list"
+                ))
+            list_spe = list_spe.value[index.value].set_context(
+                list_spe.context)
+            return res.success(list_spe.set_pos(node.pos_start, node.pos_end).set_context(context))
+        elif isinstance(val, Identifier) and index:
+            return res.success(Identifier(val, index).set_pos(node.pos_start, node.pos_end).set_context(context))
+        return res.failure(error.InvalidObject(
+            node.pos_start, node.pos_end,
+            "Invalid object"
+        ))
+
     def visit_IdentifierNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
         if value:
@@ -71,7 +97,7 @@ class Interpreter:
                         node.pos_start, node.pos_end,
                         "Invalid index of the list"
                     ))
-                list_spe = List(list_spe.value[index.value]).set_context(
+                list_spe = list_spe.value[index.value].set_context(
                     list_spe.context)
                 return res.success(list_spe.set_pos(node.pos_start, node.pos_end).set_context(context))
 
@@ -164,6 +190,43 @@ class Interpreter:
                 ))
             list_ = list_[index.value]
             return res.success(list_.set_pos(node.pos_start, node.pos_end).set_context(context))
+
+    def visit_MultiListNode(self, node, context, value=True, attributes=None):
+        res = RuntimeResult()
+        val = res.register(self.visit(node.value, context, value, attributes))
+        if res.error:
+            return res
+        index = res.register(self.visit(
+            node.index, context, value, attributes))
+        if res.error:
+            return res
+        if isinstance(val, List) and index:
+            list_spe = val
+            if index.value >= len(list_spe.value) or index.value < 0:
+                return res.failure(error.InvalidIndexOfMemory(
+                    node.pos_start, node.pos_end,
+                    "Invalid index of the list"
+
+                ))
+            list_spe = list_spe.value[index.value].set_context(
+                list_spe.context)
+            return res.success(list_spe.set_pos(node.pos_start, node.pos_end).set_context(context))
+        elif isinstance(val, ClassString) and index:
+            string_spe = val
+            if index.value >= len(string_spe.value) or index.value < 0:
+                return res.failure(error.InvalidIndexOfMemory(
+                    node.pos_start, node.pos_end,
+                    "Invalid index of the list"
+
+                ))
+            string_spe = ClassString(string_spe.value[index.value]).set_context(
+                string_spe.context)
+            return res.success(string_spe.set_pos(node.pos_start, node.pos_end).set_context(context))
+
+        return res.failure(error.InvalidObject(
+            node.pos_start, node.pos_end,
+            "Invalid object"
+        ))
 
     def visit_UnaryOpNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
