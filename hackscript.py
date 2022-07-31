@@ -40,4 +40,4 @@ elif len(list_of_files) >= 2:
         if error:
             print(error.as_string())
         else:
-            print("=>", Number.null)
+            print("=>", null)
