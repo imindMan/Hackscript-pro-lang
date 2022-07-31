@@ -1314,3 +1314,13 @@ class PlaceHolderNode:
 
     def __repr__(self):
         return f"<phd: {self.name}>"
+
+
+class SuperNode:
+    def __init__(self, token, list_of_para):
+        self.list_of_para = list_of_para
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+
+    def __repr__(self):
+        return f"<supercall>"

@@ -171,6 +171,16 @@ class Class(Value):
                     self.pos_start, self.pos_end,
                     "Method part can only accept instructions, classes, and some special expressions only, no more kind of expressions. If you want to do it, you have to put in the constructor"
                 ))
+        if isinstance(self.super_class, Class):
+            for i in self.super_class.methods:
+                try:
+                    symbol_table.set(i.name, i)
+                    self.attributes[i.name] = i
+                except:
+                    return res.failure(error.InvalidObject(
+                        self.pos_start, self.pos_end,
+                        "Method part can only accept instructions, classes, and some special expressions only, no more kind of expressions. If you want to do it, you have to put in the constructor"
+                    ))
 
     def generate_basic_thing(self):
         context = Context(self.name, self.context, self.pos_start)
@@ -223,7 +233,7 @@ class Class(Value):
             return res
         interpreter = Hackinterpreter.Interpreter(memory, symbol_table)
         value = res.register(interpreter.visit(
-            self.run, context, attributes=self.attributes))
+            self.run, context, attributes=self.attributes, superclass=self.super_class))
         if res.error:
             return res
 

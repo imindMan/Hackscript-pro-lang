@@ -53,7 +53,8 @@ KEYWORDS = {
     "cons": "constructor",
     "method": "method",
     "this": "this",
-    "phd": "placeholder"
+    "phd": "placeholder",
+    "super": "superclass"
 
 
 }

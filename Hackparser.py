@@ -86,6 +86,43 @@ class Parser:
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["phd"]):
             res.register(self.advance())
             return res.success(PlaceHolderNode(token))
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["super"]):
+            list_of_para = []
+            res.register(self.advance())
+            if not self.curr_token.type == datatypes.LEFT_PAREN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected '('"
+                ))
+            res.register(self.advance())
+            if self.curr_token.type == datatypes.RIGHT_PAREN:
+                res.register(self.advance())
+                return res.success(SuperNode(token, list_of_para))
+            para = res.register(self.atom())
+            list_of_para.append(para)
+            pass_loop = False
+            while self.curr_token.type == datatypes.COMMA:
+                pass_loop = True
+                res.register(self.advance())
+                para = res.register(self.atom())
+                list_of_para.append(para)
+            if pass_loop:
+                if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ')'"
+                    ))
+                res.register(self.advance())
+                return res.success(SuperNode(token, list_of_para))
+            else:
+                if not self.curr_token.type == datatypes.RIGHT_PAREN:
+                    return res.failure(error.SyntaxError(
+                        self.curr_token.pos_start, self.curr_token.pos_end,
+                        "Expected ')'"
+                    ))
+                res.register(self.advance())
+                return res.success(SuperNode(token, list_of_para))
+
         elif token.type == datatypes.LEFT_PAREN:
             res.register(self.advance())
             expr = res.register(self.statements(
