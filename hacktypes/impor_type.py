@@ -339,29 +339,29 @@ class Number(Value):
             )
 
     def equ_to(self, other):
-        return Number(int(self.value == other.value)).set_context(self.context), None
+        return Boolean(int(self.value == other.value)).set_context(self.context), None
 
     def not_equ_to(self, other):
-        return Number(int(self.value != other.value)).set_context(self.context), None
+        return Boolean(int(self.value != other.value)).set_context(self.context), None
 
     def gre_to(self, other):
-        return Number(int(self.value > other.value)).set_context(self.context), None
+        return Boolean(int(self.value > other.value)).set_context(self.context), None
 
     def les_to(self, other):
-        return Number(int(self.value < other.value)).set_context(self.context), None
+        return Boolean(int(self.value < other.value)).set_context(self.context), None
 
     def gre_equ_to(self, other):
-        return Number(int(self.value >= other.value)).set_context(self.context), None
+        return Boolean(int(self.value >= other.value)).set_context(self.context), None
 
     def les_equ_to(self, other):
-        return Number(int(self.value <= other.value)).set_context(self.context), None
+        return Boolean(int(self.value <= other.value)).set_context(self.context), None
 
     def and_to(self, other):
-        return Number(int(self.value and other.value)).set_context(self.context), None
+        return Boolean(int(self.value and other.value)).set_context(self.context), None
 
     def or_to(self, other):
 
-        return Number(int(self.value or other.value)).set_context(self.context), None
+        return Boolean(int(self.value or other.value)).set_context(self.context), None
 
     def copy(self):
         number = Number(self.value)
@@ -370,7 +370,7 @@ class Number(Value):
         return number
 
     def not_to(self):
-        return Number(int(not self.value)).set_context(self.context), None
+        return Boolean(int(not self.value)).set_context(self.context), None
 
     def attribute(self, other):
         if isinstance(other, Identifier):
@@ -395,6 +395,56 @@ class Number(Value):
     def __repr__(self):
 
         return f"{self.value}"
+
+
+class Boolean(Value):
+    def __init__(self, value):
+        super().__init__(value)
+
+    def equ_to(self, other):
+        return Boolean(int(self.value == other.value)).set_context(self.context), None
+
+    def not_equ_to(self, other):
+        return Boolean(int(self.value != other.value)).set_context(self.context), None
+
+    def gre_to(self, other):
+        return Boolean(int(self.value > other.value)).set_context(self.context), None
+
+    def les_to(self, other):
+        return Boolean(int(self.value < other.value)).set_context(self.context), None
+
+    def gre_equ_to(self, other):
+        return Boolean(int(self.value >= other.value)).set_context(self.context), None
+
+    def les_equ_to(self, other):
+        return Boolean(int(self.value <= other.value)).set_context(self.context), None
+
+    def and_to(self, other):
+        return Boolean(int(self.value and other.value)).set_context(self.context), None
+
+    def or_to(self, other):
+
+        return Boolean(int(self.value or other.value)).set_context(self.context), None
+
+    def not_to(self):
+        return Boolean(0 if self.value == 1 else 1).set_context(self.context), None
+
+    def copy(self):
+        return Boolean(self.value).set_pos(self.pos_start, self.pos_end).set_context(self.context)
+
+    def __repr__(self):
+        return "true" if self.value == 1 else "false"
+
+
+class Null(Value):
+    def __init__(self):
+        super().__init__(0)
+
+    def copy(self):
+        return Null().set_pos(self.pos_start, self.pos_end).set_context(self.context)
+
+    def __repr__(self):
+        return "null"
 
 
 class Memory(Value):
@@ -797,32 +847,32 @@ class ClassString(Value):
             )
 
     def equ_to(self, other):
-        return Number(int(self.value == other.value)).set_context(self.context), None
+        return Boolean(int(self.value == other.value)).set_context(self.context), None
 
     def not_equ_to(self, other):
-        return Number(int(self.value != other.value)).set_context(self.context), None
+        return Boolean(int(self.value != other.value)).set_context(self.context), None
 
     def gre_to(self, other):
-        return Number(int(len(self.value) > len(other.value))).set_context(self.context), None
+        return Boolean(int(len(self.value) > len(other.value))).set_context(self.context), None
 
     def les_to(self, other):
-        return Number(int(len(self.value) < len(other.value))).set_context(self.context), None
+        return Boolean(int(len(self.value) < len(other.value))).set_context(self.context), None
 
     def gre_equ_to(self, other):
-        return Number(int(len(self.value) >= len(other.value))).set_context(self.context), None
+        return Boolean(int(len(self.value) >= len(other.value))).set_context(self.context), None
 
     def les_equ_to(self, other):
-        return Number(int(len(self.value) <= len(other.value))).set_context(self.context), None
+        return Boolean(int(len(self.value) <= len(other.value))).set_context(self.context), None
 
     def and_to(self, other):
-        return Number(int(self.value != "" and other.value != "")).set_context(self.context), None
+        return Boolean(int(self.value != "" and other.value != "")).set_context(self.context), None
 
     def or_to(self, other):
 
-        return Number(int(self.value != "" or other.value != "")).set_context(self.context), None
+        return Boolean(int(self.value != "" or other.value != "")).set_context(self.context), None
 
     def not_to(self):
-        return Number(int(self.value != "")).set_context(self.context), None
+        return Boolean(int(self.value != "")).set_context(self.context), None
 
     def assign_from(self, other):
         if isinstance(other, ClassString):
@@ -951,14 +1001,14 @@ class List(Value):
         return str_to_return
 
 
-Number.null = Number(0)
-Number.false = Number(0)
-Number.true = Number(1)
+null = Null()
+false = Boolean(0)
+true = Boolean(1)
 
 
 class PlaceHolder(Value):
     def __init__(self):
-        super().__init__(Number.null)
+        super().__init__(null)
         self.attributes = {
             "value": self.value
         }
@@ -1019,7 +1069,7 @@ class PlaceHolder(Value):
         return placeholder
 
     def __repr__(self):
-        place_string = self.value if self.value != Number.null else "null"
+        place_string = self.value if self.value != null else "null"
         return f"<placeholder: {place_string}>"
 
 
