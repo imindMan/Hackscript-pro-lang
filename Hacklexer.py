@@ -49,7 +49,7 @@ class Lexer:
                               pos_start=self.position))
                 self.advance()
             elif self.curr_char == "'":
-                while self.curr_char != "\n":
+                while self.curr_char not in ";\n":
                     self.advance()
                 continue
             elif self.curr_char == "+":
