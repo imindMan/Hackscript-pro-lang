@@ -21,6 +21,7 @@ Method.push = Method("push", memory)
 Method.random = Method("random", memory)
 Method.len = Method("len", memory)
 Method.type = Method("type", memory)
+Method.range = Method("range", memory)
 
 symbol_table.set("null", null)
 symbol_table.set("true", true)
@@ -39,6 +40,7 @@ symbol_table.set("?", Method.random)
 symbol_table.set("pp", Identifier("pp"))
 symbol_table.set("len", Method.len)
 symbol_table.set("%", Method.type)
+symbol_table.set("rl", Method.range)
 
 
 def run(text, fn):

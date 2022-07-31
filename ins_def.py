@@ -22,6 +22,7 @@ class GeneralInstruction(Value):
         Method.push = Method("push", memory)
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
+        Method.range = Method("range", memory)
 
         symbol_table.set("null", null)
         symbol_table.set("true", true)
@@ -40,6 +41,7 @@ class GeneralInstruction(Value):
         symbol_table.set("pp", Identifier("pp"))
         symbol_table.set("len", Method.len)
         symbol_table.set("%", Method.type)
+        symbol_table.set("rl", Method.range)
 
     def generate_basic_thing(self):
         context = Context(self.name, self.context, self.pos_start)
@@ -141,6 +143,7 @@ class Class(Value):
         Method.push = Method("push", memory)
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
+        Method.range = Method("range", memory)
 
         symbol_table.set("null", null)
         symbol_table.set("true", true)
@@ -159,6 +162,7 @@ class Class(Value):
         symbol_table.set("pp", Identifier("pp"))
         symbol_table.set("len", Method.len)
         symbol_table.set("%", Method.type)
+        symbol_table.set("rl", Method.range)
         for i in self.methods:
             try:
                 symbol_table.set(i.name, i)
@@ -574,3 +578,15 @@ class Method(GeneralInstruction):
         ))
 
     execute_type.arg = [Identifier("type"), Identifier("value")]
+
+    def execute_range(self, context, memory):
+        res = RuntimeResult()
+        if isinstance(memory.symbols_table.get("start"), Number) and isinstance(memory.symbols_table.get("end"), Number):
+            list_ = [Number(i) for i in range(memory.symbols_table.get(
+                "start").value, memory.symbols_table.get("end").value + 1)]
+            return res.success(List(list_))
+        return res.failure(error.InvalidObject(
+            self.pos_start, self.pos_end,
+            "Invalid parameters"
+        ))
+    execute_range.arg = [Identifier("start"), Identifier("end")]
