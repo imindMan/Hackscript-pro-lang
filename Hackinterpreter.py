@@ -289,7 +289,7 @@ class Interpreter:
             res.register(self.visit(node.do, context))
             if res.error:
                 return res
-        return res.success(Number.null)
+        return res.success(null)
 
     def visit_DoNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
@@ -303,7 +303,7 @@ class Interpreter:
             if condition.value != 1:
                 break
 
-        return res.success(Number.null)
+        return res.success(null)
 
     def visit_InsNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
@@ -410,7 +410,7 @@ class Interpreter:
 
                 else:
                     return res.success(attributes.get(name.__repr__(), None).set_pos(node.pos_start, node.pos_end).set_context(context))
-        return res.success(Number.null.set_pos(node.pos_start, node.pos_end).set_context(context))
+        return res.success(null.set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_PlaceHolderNode(self, node, context, value=True, attributes=None):
         res = RuntimeResult()
@@ -433,4 +433,4 @@ class Interpreter:
         elif len(list1) == 1:
             return res.success(list1[0].value.set_pos(node.pos_start, node.pos_end).set_context(context))
 
-        return res.success(Number.null.set_pos(node.pos_start, node.pos_end).set_context(context))
+        return res.success(null.set_pos(node.pos_start, node.pos_end).set_context(context))
