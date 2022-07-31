@@ -23,9 +23,9 @@ class GeneralInstruction(Value):
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
 
-        symbol_table.set("null", Number.null)
-        symbol_table.set("true", Number.true)
-        symbol_table.set("false", Number.false)
+        symbol_table.set("null", null)
+        symbol_table.set("true", true)
+        symbol_table.set("false", false)
         symbol_table.set("!", Method.change_status)
         symbol_table.set("exit", Method.exit)
         symbol_table.set("clear", Method.clear)
@@ -142,9 +142,9 @@ class Class(Value):
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
 
-        symbol_table.set("null", Number.null)
-        symbol_table.set("true", Number.true)
-        symbol_table.set("false", Number.false)
+        symbol_table.set("null", null)
+        symbol_table.set("true", true)
+        symbol_table.set("false", false)
         symbol_table.set("!", Method.change_status)
         symbol_table.set("exit", Method.exit)
         symbol_table.set("clear", Method.clear)
@@ -261,19 +261,19 @@ class Class(Value):
 
     def equ_to(self, other):
         if not isinstance(other, Class):
-            return Number(0).set_context(self.context), None
+            return Boolean(0).set_context(self.context), None
         if (self.name, self.methods, self.parameters, self.run, self.memory, self.super_class, self.attributes) == \
                 (other.name, other.methods, other.parameters, other.run, other.memory, other.super_class, other.attributes):
-            return Number(1).set_context(self.context), None
-        return Number(0).set_context(self.context), None
+            return Boolean(1).set_context(self.context), None
+        return Boolean(0).set_context(self.context), None
 
     def not_equ_to(self, other):
         if not isinstance(other, Class):
-            return Number(0).set_context(self.context), None
+            return Boolean(0).set_context(self.context), None
         if (self.name, self.methods, self.parameters, self.run, self.memory, self.super_class, self.attributes) != \
                 (other.name, other.methods, other.parameters, other.run, other.memory, other.super_class, other.attributes):
-            return Number(1).set_context(self.context), None
-        return Number(0).set_context(self.context), None
+            return Boolean(1).set_context(self.context), None
+        return Boolean(0).set_context(self.context), None
 
     def copy(self):
         class_ = Class(self.name, self.methods, self.parameters,
@@ -335,7 +335,7 @@ class Method(GeneralInstruction):
                 status)
             if err:
                 return res
-            return res.success(Number.null)
+            return res.success(null)
         else:
             return res.failure(error.InvalidStatus(
                 self.pos_start, self.pos_end,
@@ -345,7 +345,7 @@ class Method(GeneralInstruction):
 
     def execute_clear(self, context, memory):
         os.system("cls") if os.name == "nt" else os.system("clear")
-        return RuntimeResult().success(Number.null)
+        return RuntimeResult().success(null)
     execute_clear.arg = []
 
     def execute_exit(self, context, memory):
@@ -358,7 +358,7 @@ class Method(GeneralInstruction):
         if isinstance(memory.symbols_table.get("value"), ConstantPointer):
             parent_memory.set_pos(self.pos_start, self.pos_end).set_context(context).set_constant(
                 memory.symbols_table.get("value").type.value)
-            return res.success(Number.null)
+            return res.success(null)
         else:
             return res.failure(error.InvalidObject(
                 self.pos_start, self.pos_end,
@@ -374,7 +374,7 @@ class Method(GeneralInstruction):
             self.launch_table["pointer_on_launch"] = memory.symbols_table.get(
                 "value")
 
-            return res.success(Number.null)
+            return res.success(null)
         elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
             if parent_memory.access_constant(memory.symbols_table.get("value").type.value) == "Error catching while defined constant pointer":
                 return res.failure(error.InvalidObject(
@@ -384,7 +384,7 @@ class Method(GeneralInstruction):
             self.launch_table["pointer_constant_on_launch"] = memory.symbols_table.get(
                 "value")
 
-            return res.success(Number.null)
+            return res.success(null)
         else:
 
             return res.failure(error.InvalidObject(
@@ -406,7 +406,7 @@ class Method(GeneralInstruction):
                 ))
             del self.launch_table["pointer_on_launch"]
 
-            return res.success(Number.null)
+            return res.success(null)
 
         elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
             if parent_memory.access_constant(memory.symbols_table.get("value").type.value) == "Error catching while defined constant pointer":
@@ -420,7 +420,7 @@ class Method(GeneralInstruction):
                     "No constant pointer detected on launch"
                 ))
             del self.launch_table["pointer_constant_on_launch"]
-            return res.success(Number.null)
+            return res.success(null)
         else:
             return res.failure(error.InvalidObject(
                 self.pos_start, self.pos_end,
@@ -481,7 +481,7 @@ class Method(GeneralInstruction):
                     parent_memory.access_constant(
                         pointer_to_push.type.value).delete()
 
-        return res.success(Number.null)
+        return res.success(null)
 
     execute_push.arg = [Identifier("how_to_push"), Identifier("value")]
 
@@ -503,7 +503,7 @@ class Method(GeneralInstruction):
 
     def execute_type(self, context, memory):
         res = RuntimeResult()
-        if memory.symbols_table.get("type") == Number.null:
+        if memory.symbols_table.get("type") == null:
             if isinstance(memory.symbols_table.get("value"), ClassString):
                 return res.success(ClassString("<string>"))
             elif isinstance(memory.symbols_table.get("value"), List):
@@ -523,6 +523,10 @@ class Method(GeneralInstruction):
             elif isinstance(memory.symbols_table.get("value"), Class):
                 return_string = memory.symbols_table.get("value").__repr__()
                 return res.success(ClassString(return_string))
+            elif isinstance(memory.symbols_table.get("value"), Boolean):
+                return res.success(ClassString("<boolean>"))
+            elif isinstance(memory.symbols_table.get("value"), Null):
+                return res.success(ClassString("<null>"))
 
         elif isinstance(memory.symbols_table.get("type"), ClassString):
             if memory.symbols_table.get("type").value == "num":
