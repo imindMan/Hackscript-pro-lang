@@ -1,4 +1,4 @@
-# Hackscript-pro-lang
+# Hackscript
 
 HackScript is a Turing-complete, estoric-style, "the easy Malbolge", high-level programming language
 
