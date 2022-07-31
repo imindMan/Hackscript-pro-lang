@@ -28,16 +28,19 @@ if len(list_of_files) == 1:
             print(result)
 
 elif len(list_of_files) >= 2:
-    f = open(list_of_files[1], "r")
-    user = f.read()
-    f.close()
-    if checkempty(user) == True:
-        print("File is empty")
-        exit()
-    else:
-        result, error = main_hackscript.run(
-            user, os.path.abspath(list_of_files[1]))
-        if error:
-            print(error.as_string())
+    try:
+        f = open(list_of_files[1], "r")
+        user = f.read()
+        f.close()
+        if checkempty(user) == True:
+            print("File is empty")
+            exit()
         else:
-            print("=>", null)
+            result, error = main_hackscript.run(
+                user, os.path.abspath(list_of_files[1]))
+            if error:
+                print(error.as_string())
+            else:
+                print("=>", null)
+    except FileNotFoundError:
+        print(f"File {list_of_files[1]} not found")
