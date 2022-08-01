@@ -289,6 +289,10 @@ class Interpreter:
             res.register(self.visit(node.do, context))
             if res.error:
                 return res
+            if res.pass_through:
+                continue
+            elif res.interrupt:
+                break
         return res.success(null)
 
     def visit_DoNode(self, node, context, value=True, attributes=None, superclass=None):
@@ -433,18 +437,29 @@ class Interpreter:
                 "No detected classes found"
             ))
 
+    def visit_InterruptNode(self, node, context, value=True, attributes=None, superclass=None):
+        res = RuntimeResult()
+        res.success_interrupt()
+        return res.success(null)
+
+    def visit_PassNode(self, node, context, value=True, attributes=None, superclass=None):
+        res = RuntimeResult()
+        res.success_pass()
+        return res.success(null)
+
     def visit_StatementNode(self, node, context, value=True, attributes=None, superclass=None):
         res = RuntimeResult()
 
         list1 = []
         temp = None
         for i in node.value:
-            res = self.visit(i, context, value,
-                             attributes=attributes, superclass=superclass)
-            temp = res
-            if res.error:
+            result = self.visit(i, context, value,
+                                attributes=attributes, superclass=superclass)
+            temp = result
+            if result.error:
                 break
-            list1.append(res)
+            res.register(result)
+            list1.append(result)
         if temp.error:
             self.error = temp.value
             return temp

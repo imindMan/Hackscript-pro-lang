@@ -7,14 +7,26 @@ class RuntimeResult:
     def __init__(self):
         self.error = None
         self.value = None
+        self.pass_through = False
+        self.interrupt = False
 
     def register(self, res):
+        self.pass_through = res.pass_through
+        self.interrupt = res.interrupt
         if res.error:
             self.error = res.error
         return res.value
 
     def success(self, value):
         self.value = value
+        return self
+
+    def success_pass(self):
+        self.pass_through = True
+        return self
+
+    def success_interrupt(self):
+        self.interrupt = True
         return self
 
     def failure(self, error):
@@ -1324,3 +1336,21 @@ class SuperNode:
 
     def __repr__(self):
         return f"<supercall>"
+
+
+class InterruptNode:
+    def __init__(self, token):
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+
+    def __repr__(self):
+        return f"<interrupt>"
+
+
+class PassNode:
+    def __init__(self, token):
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+
+    def __repr__(self):
+        return f"<pass>"

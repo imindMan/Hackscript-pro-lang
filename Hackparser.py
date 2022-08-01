@@ -86,6 +86,12 @@ class Parser:
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["phd"]):
             res.register(self.advance())
             return res.success(PlaceHolderNode(token))
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["interrupt"]):
+            res.register(self.advance())
+            return res.success(InterruptNode(token))
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["pass"]):
+            res.register(self.advance())
+            return res.success(PassNode(token))
         elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["super"]):
             list_of_para = []
             res.register(self.advance())

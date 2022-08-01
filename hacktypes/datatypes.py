@@ -54,7 +54,9 @@ KEYWORDS = {
     "method": "method",
     "this": "this",
     "phd": "placeholder",
-    "super": "superclass"
+    "super": "superclass",
+    "interrupt": "interrupt",
+    "pass": "pass"
 
 
 }
