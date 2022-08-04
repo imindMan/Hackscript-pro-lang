@@ -1,3 +1,4 @@
+import inspect
 import error.error as error
 import math
 import fractions
@@ -960,6 +961,17 @@ class List(Value):
         list_.set_context(self.context)
         return list_
 
+    def added_to(self, other):
+        if isinstance(other, List):
+            self.value.extend(other.value)
+            return List(self.value), None
+
+    def assign_from(self, other):
+        if isinstance(other, List):
+            self.value = other.value
+
+            return self.set_context(self.context), None
+
     def attribute(self, other):
         if isinstance(other, Identifier):
             name = other
@@ -1084,6 +1096,61 @@ class PlaceHolder(Value):
         place_string = self.value if self.value != null else "null"
         return f"<placeholder: {place_string}>"
 
+
+class CustomFunction(Value):
+    def __init__(self, value):
+        super().__init__(value)
+
+    def execute(self, args):
+        res = RuntimeResult()
+        if args == []:
+            result = self.value()
+        else:
+            result = self.value(args)
+        if result:
+            if isinstance(result, str):
+                return res.success(ClassString(result))
+            elif isinstance(result, int) or isinstance(result, float):
+                return res.success(Number(result))
+            elif isinstance(result, bool):
+                return res.success(Boolean(int(result)))
+            elif isinstance(result, list):
+                return res.success(List(result))
+            else:
+                return res.success(CustomClass(result))
+        return res.success(null)
+
+    def copy(self):
+        func = CustomFunction(self.value)
+        func.set_pos(self.pos_start, self.pos_end)
+        func.set_context(self.context)
+        return func
+
+    def __repr__(self):
+        return f"<instruction: {self.value}>"
+
+
+class CustomClass(Value):
+    def __init__(self, value):
+        super().__init__(value)
+
+    def execute(self, args):
+        res = RuntimeResult()
+        if args == []:
+            self.value()
+        else:
+            self.value(args)
+
+        return res.success(null)
+
+    def copy(self):
+        class_ = CustomClass(self.value)
+        class_.set_pos(self.pos_start, self.pos_end)
+        class_.set_context(self.context)
+        return class_
+
+    def __repr__(self):
+        return f"<class: {self.value}>"
 
 ###################################
 # ALL THE NODES
