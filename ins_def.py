@@ -1,8 +1,21 @@
 import random
 import Hackinterpreter
+import Hackparser
+import Hacklexer
+from hacktypes.datatypes import *
 from hacktypes.impor_type import *
 from error.error import *
 import os
+import importlib
+import types
+import inspect
+
+
+def checkempty(string):
+    for i in string:
+        if i in FULL_SYMBOLS + DIGITS + LETTERS:
+            return False
+    return True
 
 
 class GeneralInstruction(Value):
@@ -600,3 +613,99 @@ class Method(GeneralInstruction):
             "Invalid parameters"
         ))
     execute_range.arg = [Identifier("start"), Identifier("end")]
+
+    def execute_import_a_library(self, context, memory):
+        result = RuntimeResult()
+        name = memory.symbols_table.get("name_of_library").value
+        parent_symbol_table = memory.parent_list_of_memory.symbols_table
+        if os.path.exists(name):
+            f = open(name, "r")
+            file_inc = f.read()
+            f.close()
+            if checkempty(file_inc):
+                return result.success(null)
+            try:
+                lexer = Hacklexer.Lexer(os.path.abspath(name), file_inc)
+                tokens, err = lexer.make_tokens()
+
+                # return tokens, error
+                if err:
+                    return result.failure(error)
+
+                parser = Hackparser.Parser(tokens)
+                ast = parser.parse()
+                if ast.error:
+                    return result.failure(ast.error)
+
+                intepreter = Hackinterpreter.Interpreter(
+                    memory.parent_list_of_memory, parent_symbol_table)
+                res = intepreter.visit(ast.node, context)
+                if res.error:
+                    return result.failure(res.error)
+                return result.success(res.value)
+
+            except RecursionError:
+                return result.failure(RuntimeError(
+                    ast.node.pos_start, ast.node.pos_end,
+                    "Non-stop infinity run (mostly due to recursion)",
+                    context
+                ))
+
+        else:
+            try:
+                f = open(
+                    f"H:\K.DONG\My book\HackScript\library\{name}\main.hack", "r")
+                file_inc = f.read()
+                f.close()
+            except FileNotFoundError:
+                try:
+                    library = importlib.import_module(
+                        f"python_library.{name}.main")
+                    list_sample = []
+
+                    for i in dir(library):
+                        if i[:2] != "__":
+                            list_sample.append(i)
+                    for i in list_sample:
+                        if inspect.isclass(getattr(library, i)):
+                            parent_symbol_table.set(
+                                i, CustomClass(getattr(library, i)))
+                        elif inspect.isfunction(getattr(library, i)):
+                            parent_symbol_table.set(
+                                i, CustomFunction(getattr(library, i)))
+
+                    return result.success(null)
+                except:
+                    return result.failure(error.InvalidObject(
+                        self.pos_start, self.pos_end,
+                        "Undefined library"
+                    ))
+            if checkempty(file_inc):
+                return result.success(null)
+            try:
+                lexer = Hacklexer.Lexer(
+                    f"H:\K.DONG\My book\HackScript\library\{name}\main.hack", file_inc)
+                tokens, err = lexer.make_tokens()
+
+                # return tokens, error
+                if err:
+                    return result.failure(error)
+
+                parser = Hackparser.Parser(tokens)
+                ast = parser.parse()
+                if ast.error:
+                    return result.failure(ast.error)
+
+                intepreter = Hackinterpreter.Interpreter(
+                    memory.parent_list_of_memory, parent_symbol_table)
+                res = intepreter.visit(ast.node, context)
+                if res.error:
+                    return result.failure(res.error)
+                return result.success(res.value)
+            except RecursionError:
+                return result.failure(RuntimeError(
+                    ast.node.pos_start, ast.node.pos_end,
+                    "Non-stop infinity run (mostly due to recursion)",
+                    context
+                ))
+    execute_import_a_library.arg = [Identifier("name_of_library")]
