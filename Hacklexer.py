@@ -202,7 +202,9 @@ class Lexer:
         escape_char = {
             r"\n": "\n",
             r"\t": "\t",
-            r"\.": "."
+            r"\.": ".",
+            r"\\": "\\",
+            r"\"": "\""
         }
         while self.curr_char is not None and self.curr_char != "\"":
             if self.curr_char == "\\":
