@@ -50,6 +50,7 @@ class GeneralInstruction(Value):
         symbol_table.set("in", Identifier("in"))
         symbol_table.set("out", Identifier("out"))
         symbol_table.set("con", Identifier("con"))
+        symbol_table.set("trash", Identifier("trash"))
         symbol_table.set("?", Method.random)
         symbol_table.set("pp", Identifier("pp"))
         symbol_table.set("len", Method.len)
@@ -171,6 +172,7 @@ class Class(Value):
         symbol_table.set("in", Identifier("in"))
         symbol_table.set("out", Identifier("out"))
         symbol_table.set("con", Identifier("con"))
+        symbol_table.set("trash", Identifier("trash"))
         symbol_table.set("?", Method.random)
         symbol_table.set("pp", Identifier("pp"))
         symbol_table.set("len", Method.len)
@@ -505,6 +507,16 @@ class Method(GeneralInstruction):
                         print(r"{}")
                     elif len(constant_pointer.data) > 1:
                         print(List(constant_pointer.data))
+                    parent_memory.access_constant(
+                        pointer_to_push.type.value).delete()
+            elif memory.symbols_table.get("value") == parent_memory.symbols_table.get("trash"):
+
+                if isinstance(pointer_to_push, Pointer):
+
+                    parent_memory.curr_char.delete()
+                elif isinstance(memory.symbols_table.get("value"), ConstantPointer):
+                    constant_pointer = parent_memory.access_constant(
+                        pointer_to_push.type.value)
                     parent_memory.access_constant(
                         pointer_to_push.type.value).delete()
 
