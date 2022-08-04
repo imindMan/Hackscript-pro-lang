@@ -13,28 +13,28 @@ def nfloor(value):
     return math.floor(value[0].value)
 
 
-def nsin():
-    return math.sin()
+def nsin(value):
+    return math.sin(value[0].value)
 
 
-def nsinh():
-    return math.sinh()
+def nsinh(value):
+    return math.sinh(value[0].value)
 
 
-def ncos():
-    return math.cos()
+def ncos(value):
+    return math.cos(value[0].value)
 
 
-def ncosh():
-    return math.cosh()
+def ncosh(value):
+    return math.cosh(value[0].value)
 
 
-def ntan():
-    return math.tan()
+def ntan(value):
+    return math.tan(value[0].value)
 
 
-def ntanh():
-    return math.tanh()
+def ntanh(value):
+    return math.tanh(value[0].value)
 
 
 def nlog(value):
