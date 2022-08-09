@@ -666,7 +666,7 @@ class Method(GeneralInstruction):
         else:
             try:
                 f = open(
-                    f"H:\K.DONG\My book\HackScript\library\{name}\main.hack", "r")
+                    f"{path_original}\library\{name}\main.hack", "r")
                 file_inc = f.read()
                 f.close()
             except FileNotFoundError:
@@ -696,7 +696,7 @@ class Method(GeneralInstruction):
                 return result.success(null)
             try:
                 lexer = Hacklexer.Lexer(
-                    f"H:\K.DONG\My book\HackScript\library\{name}\main.hack", file_inc)
+                    f"{path_original}\library\{name}\main.hack", file_inc)
                 tokens, err = lexer.make_tokens()
 
                 # return tokens, error

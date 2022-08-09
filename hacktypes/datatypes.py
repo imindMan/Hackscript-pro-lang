@@ -60,3 +60,6 @@ KEYWORDS = {
 
 
 }
+
+
+path_original = ""
