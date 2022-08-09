@@ -183,7 +183,7 @@ class Parser:
         ))
 
     def power(self, list_of_attribute=None):
-        power = self.bin_op(self.call_ins, (datatypes.POW_OPE,), self.factor)
+        power = self.bin_op(self.call_ins, ((datatypes.POW_OPE, None), ), self.factor)
         if list_of_attribute != None:
             list_of_attribute.append(power)
         return power
