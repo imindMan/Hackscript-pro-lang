@@ -62,4 +62,3 @@ KEYWORDS = {
 }
 
 
-path_original = ""

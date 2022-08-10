@@ -665,38 +665,31 @@ class Method(GeneralInstruction):
 
         else:
             try:
-                f = open(
-                    f"{path_original}\library\{name}\main.hack", "r")
-                file_inc = f.read()
-                f.close()
-            except FileNotFoundError:
-                try:
-                    library = importlib.import_module(
+                library = importlib.import_module(
                         f"python_library.{name}.main")
-                    list_sample = []
+                list_sample = []
 
-                    for i in dir(library):
-                        if i[:2] != "__":
-                            list_sample.append(i)
-                    for i in list_sample:
-                        if inspect.isclass(getattr(library, i)):
-                            parent_symbol_table.set(
+                for i in dir(library):
+                    if i[:2] != "__":
+                        list_sample.append(i)
+                for i in list_sample:
+                    if inspect.isclass(getattr(library, i)):
+                        parent_symbol_table.set(
                                 i, CustomClass(getattr(library, i)))
-                        elif inspect.isfunction(getattr(library, i)):
-                            parent_symbol_table.set(
+                    elif inspect.isfunction(getattr(library, i)):
+                        parent_symbol_table.set(
                                 i, CustomFunction(getattr(library, i)))
 
-                    return result.success(null)
-                except:
-                    return result.failure(error.InvalidObject(
+                return result.success(null)
+            except:
+                return result.failure(error.InvalidObject(
                         self.pos_start, self.pos_end,
                         "Undefined library"
                     ))
-            if checkempty(file_inc):
-                return result.success(null)
+            
             try:
                 lexer = Hacklexer.Lexer(
-                    f"{path_original}\library\{name}\main.hack", file_inc)
+                        f"<library_main_file: {name}>", file_inc)
                 tokens, err = lexer.make_tokens()
 
                 # return tokens, error
