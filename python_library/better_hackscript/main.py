@@ -18,3 +18,8 @@ Rules of HackScript: (or Theory of HackScript)
 #10: The purpose of HackScript is to be a fun programming language with no way escape (like estoric), but also 
     support high-level features to make it useful at some points.
 Happy coding!""")
+
+def inside(value):
+    if value[0].value in value[1].value:
+        return True
+    return False

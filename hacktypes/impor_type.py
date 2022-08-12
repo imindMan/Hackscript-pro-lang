@@ -1141,7 +1141,45 @@ class CustomClass(Value):
         else:
             self.value(args)
 
-        return res.success(null)
+        return res.success(self)
+
+    def attribute(self, other, args=None):
+        if isinstance(other, Identifier):
+            result = getattr(self.value, other.value, "Undefined")
+            if result == "Undefined":
+                return None, error.InvalidObject(
+                        self.pos_start, self.pos_end,
+                        "Undefined attribute"
+                        )
+            if isinstance(result, str):
+                return ClassString(result), None
+            elif isinstance(result, int) or isinstance(result, float):
+                return Number(result), None
+            elif isinstance(result, bool):
+                return Boolean(int(result)), None
+            elif isinstance(result, list):
+                return List(result), None
+
+            elif inspect.isfunction(result):
+                return_value = None
+                if args is not None:
+                    return_value = result(args)
+                else:
+                    return_value = result([])
+                if isinstance(return_value, str):
+                    return ClassString(return_value), None
+                elif isinstance(return_value, int) or isinstance(return_value, float):
+                    return Number(return_value), None
+                elif isinstance(return_value, bool):
+                    return Boolean(int(return_value)), None
+                elif isinstance(return_value, list):
+                    return List(return_value), None
+                else:
+                    return CustomClass(return_value), None
+            else:
+                return CustomClass(result), None
+   
+
 
     def copy(self):
         class_ = CustomClass(self.value)

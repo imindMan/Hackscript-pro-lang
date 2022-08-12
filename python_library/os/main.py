@@ -1,5 +1,7 @@
 import os
 
+class OS:
+    name = os.name
 
 def name():
     return os.name

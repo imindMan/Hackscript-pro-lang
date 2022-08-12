@@ -326,8 +326,8 @@ class Interpreter:
 
         return res.success(ins_value)
 
-    def visit_CallNode(self, node, context, value=True, attributes=None, superclass=None):
-        if value == True:
+    def visit_CallNode(self, node, context, value=True, attributes=None, superclass=None): 
+        if value == True: 
             res = RuntimeResult()
             args = []
 

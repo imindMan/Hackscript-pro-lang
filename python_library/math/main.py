@@ -1,6 +1,10 @@
 import math
 
+class Math:
+    pi = math.pi
 
+def pow(value):
+    return value[0].value ** value[1].value
 def absolute(value):
     return abs(value[0].value)
 
