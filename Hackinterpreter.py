@@ -460,6 +460,8 @@ class Interpreter:
                 break
             res.register(result)
             list1.append(result)
+            if res.pass_through or res.interrupt:
+                break
         if temp.error:
             self.error = temp.value
             return temp
