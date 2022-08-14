@@ -44,6 +44,7 @@ symbol_table.set("len", Method.len)
 symbol_table.set("%", Method.type)
 symbol_table.set("rl", Method.range)
 symbol_table.set("&^", Method.import_a_library)
+symbol_table.set("tphd", PlaceHolder())
 
 
 def run(text, fn):
