@@ -666,7 +666,7 @@ class Method(GeneralInstruction):
         else:
             try:
                 library = importlib.import_module(
-                        f"python_library.{name}.main")
+                    f"python_library.{name}.main")
                 list_sample = []
 
                 for i in dir(library):
@@ -675,42 +675,16 @@ class Method(GeneralInstruction):
                 for i in list_sample:
                     if inspect.isclass(getattr(library, i)):
                         parent_symbol_table.set(
-                                i, CustomClass(getattr(library, i)))
+                            i, CustomClass(getattr(library, i)))
                     elif inspect.isfunction(getattr(library, i)):
                         parent_symbol_table.set(
-                                i, CustomFunction(getattr(library, i)))
+                            i, CustomFunction(getattr(library, i)))
 
                 return result.success(null)
             except:
                 return result.failure(error.InvalidObject(
-                        self.pos_start, self.pos_end,
-                        "Undefined library"
-                    ))
-            
-            try:
-                lexer = Hacklexer.Lexer(
-                        f"<library_main_file: {name}>", file_inc)
-                tokens, err = lexer.make_tokens()
-
-                # return tokens, error
-                if err:
-                    return result.failure(error)
-
-                parser = Hackparser.Parser(tokens)
-                ast = parser.parse()
-                if ast.error:
-                    return result.failure(ast.error)
-
-                intepreter = Hackinterpreter.Interpreter(
-                    memory.parent_list_of_memory, parent_symbol_table)
-                res = intepreter.visit(ast.node, context)
-                if res.error:
-                    return result.failure(res.error)
-                return result.success(res.value)
-            except RecursionError:
-                return result.failure(RuntimeError(
-                    ast.node.pos_start, ast.node.pos_end,
-                    "Non-stop infinity run (mostly due to recursion)",
-                    context
+                    self.pos_start, self.pos_end,
+                    "Undefined library"
                 ))
+
     execute_import_a_library.arg = [Identifier("name_of_library")]
