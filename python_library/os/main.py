@@ -1,7 +1,9 @@
 import os
 
+
 class OS:
     name = os.name
+
 
 def name():
     return os.name
@@ -16,7 +18,7 @@ def create_a_new_dir(value):
 
 
 def create_a_new_file(value):
-    f = open(value[0].value, "r")
+    f = open(value[0].value, "x")
     f.close()
 
 
