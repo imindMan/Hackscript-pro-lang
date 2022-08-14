@@ -4,7 +4,7 @@ def display(value):
 
 def chr():
     print("""Fundametal of HackScript:
-HackScript is a Turing-based, esoteric-style, the \"easy Malbolge\", and high-level programming language.
+HackScript is a Turing-complete, esoteric-style, the \"easy Malbolge\", and high-level programming language.
 Rules of HackScript: (or Theory of HackScript)
     Note: By following the rules, HackScript makes its own style of code, known as HackScript-like syntax
 #1: Esoteric-style mixs with high-level-style become HackScript
