@@ -1,6 +1,6 @@
 # Hackscript
 
-HackScript is a Turing-based, estoric-style, the "easy Malbolge", and high-level programming language
+HackScript is a Turing-based, esoteric-style, the "easy Malbolge", and high-level programming language
 
 # Version
 

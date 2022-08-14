@@ -1,12 +1,13 @@
 def display(value):
     print(value[0])
 
+
 def chr():
     print("""Fundametal of HackScript:
-HackScript is a Turing-based, estoric-style, the \"easy Malbolge\", and high-level programming language.
+HackScript is a Turing-based, esoteric-style, the \"easy Malbolge\", and high-level programming language.
 Rules of HackScript: (or Theory of HackScript)
     Note: By following the rules, HackScript makes its own style of code, known as HackScript-like syntax
-#1: Estoric-style mixs with high-level-style become HackScript
+#1: Esoteric-style mixs with high-level-style become HackScript
 #2: Completion can be done with replacement 
 #3: No complete support, instead, deal with everything in HackScript, with HackScript no way escape.
 #4: No empty code blocks
@@ -18,6 +19,7 @@ Rules of HackScript: (or Theory of HackScript)
 #10: The purpose of HackScript is to be a fun programming language with no way escape (like estoric), but also 
     support high-level features to make it useful at some points.
 Happy coding!""")
+
 
 def inside(value):
     if value[0].value in value[1].value:
