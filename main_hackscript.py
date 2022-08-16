@@ -74,3 +74,6 @@ def run(text, fn):
             "Non-stop infinity run (mostly due to recursion)",
             context
         )
+    except KeyboardInterrupt:
+        print("status: [stopped] -> info (?still_run, ?interrupt, ?end_run)")
+        return None, None

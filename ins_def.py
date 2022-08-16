@@ -662,11 +662,15 @@ class Method(GeneralInstruction):
                     "Non-stop infinity run (mostly due to recursion)",
                     context
                 ))
+            except KeyboardInterrupt:
+                print(
+                    "status: [stopped] -> info (?still_run, ?interrupt, ?end_run)")
+                return None, None
 
         else:
             try:
                 library = importlib.import_module(
-                    f"python_library.{name}.main")
+                    f"library.{name}.main")
                 list_sample = []
 
                 for i in dir(library):

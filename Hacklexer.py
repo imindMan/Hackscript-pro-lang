@@ -1,6 +1,7 @@
 from hacktypes import datatypes
 from error import error
 from hacktypes.impor_type import *
+import codecs
 
 
 class Token:
@@ -198,28 +199,9 @@ class Lexer:
 
     def make_string(self):
         string = ""
-        pos = self.position
-        escape_char = {
-            r"\n": "\n",
-            r"\t": "\t",
-            r"\.": ".",
-            r"\\": "\\",
-            r"\"": "\""
-        }
         while self.curr_char is not None and self.curr_char != "\"":
-            if self.curr_char == "\\":
-                self.advance()
-                new_char = f"\{self.curr_char}"
-                if new_char in escape_char:
-                    new_char = escape_char[new_char]
-                    string += new_char
-                else:
-                    return None, error.IllegalCharacter(
-                        pos, self.position,
-                        new_char
-                    )
-            else:
-                string += self.curr_char
+            string += self.curr_char
             self.advance()
         self.advance()
+        string = codecs.decode(string, 'unicode_escape')
         return Token(datatypes.STRING, string, pos_start=self.position), None

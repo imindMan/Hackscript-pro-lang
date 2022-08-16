@@ -1,5 +1,8 @@
 def display(value):
-    print(value[0])
+    if len(value) == 1:
+        print(value[0])
+    else:
+        print(value[0], end=value[1].value)
 
 
 def chr():

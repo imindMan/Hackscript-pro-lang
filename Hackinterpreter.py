@@ -33,7 +33,7 @@ class Interpreter:
             return res.success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
         else:
             index = res.register(self.visit(node.index, context))
-            if index.value >= len(node.value) or index.value < 0:
+            if index.value >= len(node.value):
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
                     "Invalid index of the string"
@@ -52,7 +52,7 @@ class Interpreter:
             return res
         if isinstance(val, List) and index:
             list_spe = val
-            if index.value >= len(list_spe.value) or index.value < 0:
+            if index.value >= len(list_spe.value):
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
                     "Invalid index of the list"
@@ -81,7 +81,7 @@ class Interpreter:
             elif isinstance(self.symbol_table.get(node.token.value), ClassString) and node.index:
                 string_spe = self.symbol_table.get(node.token.value)
                 index = res.register(self.visit(node.index, context))
-                if index.value >= len(string_spe.value) or index.value < 0:
+                if index.value >= len(string_spe.value):
                     return res.failure(error.InvalidIndexOfMemory(
                         node.pos_start, node.pos_end,
                         "Invalid index of the string"
@@ -92,7 +92,7 @@ class Interpreter:
             elif isinstance(self.symbol_table.get(node.token.value), List) and node.index:
                 list_spe = self.symbol_table.get(node.token.value)
                 index = res.register(self.visit(node.index, context))
-                if index.value >= len(list_spe.value) or index.value < 0:
+                if index.value >= len(list_spe.value):
                     return res.failure(error.InvalidIndexOfMemory(
                         node.pos_start, node.pos_end,
                         "Invalid index of the list"
@@ -183,7 +183,7 @@ class Interpreter:
         else:
             list_ = [res.register(self.visit(i, context)) for i in node.value]
             index = res.register(self.visit(node.index, context))
-            if index.value >= len(node.value) or index.value < 0:
+            if index.value >= len(node.value):
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
                     "Invalid index of the list"
@@ -202,7 +202,7 @@ class Interpreter:
             return res
         if isinstance(val, List) and index:
             list_spe = val
-            if index.value >= len(list_spe.value) or index.value < 0:
+            if index.value >= len(list_spe.value):
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
                     "Invalid index of the list"
@@ -213,7 +213,7 @@ class Interpreter:
             return res.success(list_spe.set_pos(node.pos_start, node.pos_end).set_context(context))
         elif isinstance(val, ClassString) and index:
             string_spe = val
-            if index.value >= len(string_spe.value) or index.value < 0:
+            if index.value >= len(string_spe.value):
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
                     "Invalid index of the list"
@@ -326,8 +326,8 @@ class Interpreter:
 
         return res.success(ins_value)
 
-    def visit_CallNode(self, node, context, value=True, attributes=None, superclass=None): 
-        if value == True: 
+    def visit_CallNode(self, node, context, value=True, attributes=None, superclass=None):
+        if value == True:
             res = RuntimeResult()
             args = []
 

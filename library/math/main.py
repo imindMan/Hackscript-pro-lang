@@ -1,10 +1,14 @@
 import math
 
+
 class Math:
     pi = math.pi
 
+
 def pow(value):
     return value[0].value ** value[1].value
+
+
 def absolute(value):
     return abs(value[0].value)
 
@@ -15,6 +19,10 @@ def nround(value):
 
 def nfloor(value):
     return math.floor(value[0].value)
+
+
+def nupdate_floor(value):
+    return int(value[0].value)
 
 
 def nsin(value):
@@ -62,5 +70,5 @@ def cube(value):
     return value[0].value * value[0].value * value[0].value
 
 
-def hex(value):
+def nhex(value):
     return hex(value[0].value)

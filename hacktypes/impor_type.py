@@ -923,7 +923,7 @@ class ClassString(Value):
                         "Number type cannot be indexed"
                     )
                 for i in list_of_index:
-                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                    if i.value > len(return_value.value) - 1:
                         return None, error.InvalidIndexOfMemory(
                             self.pos_start, self.pos_end,
                             "Invalid index of the memory"
@@ -966,6 +966,11 @@ class List(Value):
             self.value.extend(other.value)
             return List(self.value), None
 
+    def multiplied_to(self, other):
+        if isinstance(other, Number):
+            self.value = self.value * other.value
+            return List(self.value), None
+
     def assign_from(self, other):
         if isinstance(other, List):
             self.value = other.value
@@ -998,7 +1003,7 @@ class List(Value):
                         "Number type cannot be indexed"
                     )
                 for i in list_of_index:
-                    if i.value < 0 or i.value > len(return_value.value) - 1:
+                    if i.value > len(return_value.value) - 1:
                         return None, error.InvalidIndexOfMemory(
                             self.pos_start, self.pos_end,
                             "Invalid index of the memory"
@@ -1148,9 +1153,9 @@ class CustomClass(Value):
             result = getattr(self.value, other.value, "Undefined")
             if result == "Undefined":
                 return None, error.InvalidObject(
-                        self.pos_start, self.pos_end,
-                        "Undefined attribute"
-                        )
+                    self.pos_start, self.pos_end,
+                    "Undefined attribute"
+                )
             if isinstance(result, str):
                 return ClassString(result), None
             elif isinstance(result, int) or isinstance(result, float):
@@ -1178,8 +1183,6 @@ class CustomClass(Value):
                     return CustomClass(return_value), None
             else:
                 return CustomClass(result), None
-   
-
 
     def copy(self):
         class_ = CustomClass(self.value)
