@@ -27,11 +27,18 @@ def empty(value):
 
 
 def sort(value):
-    value[0].value.sort()
+    temp_list = sorted(list(map(lambda x: x.value, value[0].value)))
+    for i in range(len(temp_list)):
+        value[0].value[i].value = temp_list[i]
+    return value[0].value
 
 
 def sort_rev(value):
-    value[0].value.sort(reverse=True)
+    temp_list = sorted(
+        list(map(lambda x: x.value, value[0].value)), reverse=True)
+    for i in range(len(temp_list)):
+        value[0].value[i].value = temp_list[i]
+    return value[0].value
 
 
 def rev(value):
