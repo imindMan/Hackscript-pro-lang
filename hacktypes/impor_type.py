@@ -610,6 +610,23 @@ class ListofMemory:
                 return i
         return ClassString("Error catching while defined constant pointer")
 
+    def delete_constant(self, name):
+        pass_it = False
+        for i in range(len(self.value)):
+            if self.value[i].name == name.type.value:
+                pass_it = True
+                break
+        if pass_it == False:
+
+            return error.InvalidObject(
+                self.pos_start, self.pos_end,
+                "Cannot find the constant pointer"
+            )
+        else:
+            self.symbols_table.remove(self.value[i].name)
+            self.value.remove(self.value[i])
+            self.value.append(Memory("10"))
+
     def move(self, number):
         if type(number.value) == type(float()):
             return None, error.OperatorNotSupported(

@@ -692,3 +692,21 @@ class Method(GeneralInstruction):
                 ))
 
     execute_import_a_library.arg = [Identifier("name_of_library")]
+
+    def execute_remove(self, context, memory):
+        res = RuntimeResult()
+        if isinstance(memory.symbols_table.get("value"), ConstantPointer):
+            if memory.symbols_table.get("value").__repr__() == "Error catching while defined constant pointer":
+                return res.failure(error.InvalidObject(
+                    self.pos_start, self.pos_end,
+                    "The constant pointer cannot be defined"
+                ))
+            parent_memory = memory.parent_list_of_memory
+            parent_memory.delete_constant(
+                memory.symbols_table.get("value"))
+            return res.success(null)
+        return res.failure(error.InvalidObject(
+            self.pos_start, self.pos_end,
+            "Invalid type"
+        ))
+    execute_remove.arg = [Identifier("value")]
