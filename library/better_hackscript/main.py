@@ -25,6 +25,7 @@ Happy coding!""")
 
 
 def inside(value):
-    if value[0].value in value[1].value:
+    temp_list = list(map(lambda x: x.value, value[1].value))
+    if value[0].value in temp_list:
         return True
     return False

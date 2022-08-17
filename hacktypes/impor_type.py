@@ -1112,13 +1112,13 @@ class CustomFunction(Value):
             result = self.value()
         else:
             result = self.value(args)
-        if result:
+        if result != None:
             if isinstance(result, str):
                 return res.success(ClassString(result))
-            elif isinstance(result, int) or isinstance(result, float):
-                return res.success(Number(result))
             elif isinstance(result, bool):
                 return res.success(Boolean(int(result)))
+            elif isinstance(result, int) or isinstance(result, float):
+                return res.success(Number(result))
             elif isinstance(result, list):
                 return res.success(List(result))
             else:
@@ -1158,10 +1158,10 @@ class CustomClass(Value):
                 )
             if isinstance(result, str):
                 return ClassString(result), None
-            elif isinstance(result, int) or isinstance(result, float):
-                return Number(result), None
             elif isinstance(result, bool):
                 return Boolean(int(result)), None
+            elif isinstance(result, int) or isinstance(result, float):
+                return Number(result), None
             elif isinstance(result, list):
                 return List(result), None
 
@@ -1173,10 +1173,10 @@ class CustomClass(Value):
                     return_value = result([])
                 if isinstance(return_value, str):
                     return ClassString(return_value), None
-                elif isinstance(return_value, int) or isinstance(return_value, float):
-                    return Number(return_value), None
                 elif isinstance(return_value, bool):
                     return Boolean(int(return_value)), None
+                elif isinstance(return_value, int) or isinstance(return_value, float):
+                    return Number(return_value), None
                 elif isinstance(return_value, list):
                     return List(return_value), None
                 else:

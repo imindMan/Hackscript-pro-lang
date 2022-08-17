@@ -4,7 +4,7 @@ HackScript is a Turing-complete, esoteric-style, the "easy Malbolge", and high-l
 
 # Version
 
-HackScript is still in development and experimental. Current version: `v0.11.15 (Beta) HSD-E`
+HackScript is in experimental. Current version: `v0.11.16 (Beta) HSE`
 
 # License
 
