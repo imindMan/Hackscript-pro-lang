@@ -3,6 +3,7 @@ import os
 
 class OS:
     name = os.name
+    arg = os.argv
 
 
 def name():
