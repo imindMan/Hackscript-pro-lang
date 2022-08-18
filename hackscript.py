@@ -14,33 +14,39 @@ def checkempty(string):
     return True
 
 
-if len(list_of_files) == 1:
-    while True:
+def main():
 
-        user = input("hackscript>")
+    if len(list_of_files) == 1:
+        while True:
 
-        if checkempty(user) == True:
-            continue
-        result, error = main_hackscript.run(user, "<stdin>")
-        if error:
-            print(error.as_string())
-        else:
-            print(result)
+            user = input("hackscript>")
 
-elif len(list_of_files) >= 2:
-    try:
-        f = open(list_of_files[1], "r")
-        user = f.read()
-        f.close()
-        if checkempty(user) == True:
-            print("File is empty")
-            exit()
-        else:
-            result, error = main_hackscript.run(
-                user, os.path.abspath(list_of_files[1]))
+            if checkempty(user) == True:
+                continue
+            result, error = main_hackscript.run(user, "<stdin>")
             if error:
                 print(error.as_string())
             else:
-                print("=>", null)
-    except FileNotFoundError:
-        print(f"File {list_of_files[1]} not found")
+                print(result)
+
+    elif len(list_of_files) >= 2:
+        try:
+            f = open(list_of_files[1], "r")
+            user = f.read()
+            f.close()
+            if checkempty(user) == True:
+                print("File is empty")
+                exit()
+            else:
+                result, error = main_hackscript.run(
+                    user, os.path.abspath(list_of_files[1]))
+                if error:
+                    print(error.as_string())
+                else:
+                    print("=>", null)
+        except FileNotFoundError:
+            print(f"File {list_of_files[1]} not found")
+
+
+if __name__ == "__main__":
+    main()
