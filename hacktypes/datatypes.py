@@ -56,7 +56,9 @@ KEYWORDS = {
     "phd": "placeholder",
     "super": "superclass",
     "interrupt": "interrupt",
-    "pass": "pass"
+    "pass": "pass",
+    "try": "try",
+    "catch": "catch"
 
 
 }

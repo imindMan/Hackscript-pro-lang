@@ -24,40 +24,64 @@ class IllegalCharacter(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "IllegalCharacter", details)
 
+    def name(self):
+        return "IllegalCharacter"
+
 
 class SyntaxError(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "SyntaxError", details)
+
+    def name(self):
+        return "SyntaxError"
 
 
 class NoVisitError(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "NoVisitError", details)
 
+    def name(self):
+        return "NoVisitError"
+
 
 class InvalidIndexOfMemory(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "InvalidIndexOfMemory", details)
+
+    def name(self):
+        return "InvalidIndexOfMemory"
 
 
 class OperatorNotSupported(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "OperatorNotSupported", details)
 
+    def name(self):
+        return "OperatorNotSupported"
+
 
 class InvalidObject(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "InvalidObject", details)
+
+    def name(self):
+        return "InvalidObject"
 
 
 class InvalidStatus(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "InvalidStatus", details)
 
+    def name(self):
+        return "InvalidStatus"
+
 
 class IllegalChangeType(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, "IllegalChangeType", details)
+
+    def name(self):
+        return "IllegalChangeType"
 
 
 class RuntimeError(Error):
@@ -91,3 +115,6 @@ class RuntimeError(Error):
             ctx = ctx.parent
 
         return result
+
+    def name(self):
+        return "RuntimeError"

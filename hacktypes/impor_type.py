@@ -1479,3 +1479,14 @@ class PassNode:
 
     def __repr__(self):
         return f"<pass>"
+
+
+class TryCatchNode:
+    def __init__(self, do_try, do_catch):
+        self.do_try = do_try
+        self.do_catch = do_catch
+        self.pos_start = self.do_try.pos_start
+        self.pos_end = self.do_catch.pos_end
+
+    def __repr__(self):
+        return f"<try: {self.do_try} catch: {self.do_catch}>"

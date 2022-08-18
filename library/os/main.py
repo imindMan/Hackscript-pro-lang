@@ -17,9 +17,8 @@ def create_a_new_dir(value):
     os.makedirs(value[0].value, exist_ok=True)
 
 
-def create_a_new_file(value):
-    f = open(value[0].value, "x")
-    f.close()
+def delete_dir(value):
+    os.rmdir(value[0].value)
 
 
 def list_files():

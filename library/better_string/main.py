@@ -1,3 +1,6 @@
+import codecs
+
+
 def slice_part(value):
     return value[0].value[value[1].value:value[2].value]
 
@@ -32,3 +35,12 @@ def split(value):
 
 def capitalize(value):
     return value[0].value.capitalize()
+
+
+def unraw(value):
+    value[0].value = codecs.decode(value[0].value, 'unicode_escape')
+
+
+def raw(value):
+    value[0].value = '%r' % value[0].value
+    value[0].value = value[0].value[1:-1]

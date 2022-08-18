@@ -177,13 +177,16 @@ class Parser:
                 if list_of_attribute != None:
                     list_of_attribute.append(AttributeNode(name))
                 return res.success(AttributeNode(name))
+        elif token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["try"]):
+            return self.try_catch(list_of_attribute)
         return res.failure(error.SyntaxError(
             token.pos_start, token.pos_end,
             "Expected int or float, pointer, expression, '+', '-', '(', ')', '=', '<', '>', '<=', '>=', '!=', '<-', ':', ^, `, and, or"
         ))
 
     def power(self, list_of_attribute=None):
-        power = self.bin_op(self.call_ins, ((datatypes.POW_OPE, None), ), self.factor)
+        power = self.bin_op(
+            self.call_ins, ((datatypes.POW_OPE, None), ), self.factor)
         if list_of_attribute != None:
             list_of_attribute.append(power)
         return power
@@ -797,6 +800,46 @@ class Parser:
             if list_of_attribute != None:
                 list_of_attribute.append(identifier)
         return res.success(identifier)
+
+    def try_catch(self, list_of_attribute=None):
+        res = ParserResult()
+        token = self.curr_token
+        if token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["try"]):
+            res.register(self.advance())
+            if not self.curr_token.type == datatypes.THEN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ':'"
+                ))
+            res.register(self.advance())
+
+            do_try = res.register(self.atom(list_of_attribute))
+            if res.error:
+                return res
+            while self.curr_token.type == datatypes.NEWLINE:
+                res.register(self.advance())
+
+            if not self.curr_token.matches(datatypes.KEYWORD, datatypes.KEYWORDS["catch"]):
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected 'catch'"
+                ))
+
+            res.register(self.advance())
+            if not self.curr_token.type == datatypes.THEN:
+                return res.failure(error.SyntaxError(
+                    self.curr_token.pos_start, self.curr_token.pos_end,
+                    "Expected ':'"
+                ))
+            res.register(self.advance())
+
+            do_catch = res.register(self.atom(list_of_attribute))
+            if res.error:
+                return res
+            try_catch_block = TryCatchNode(do_try, do_catch)
+            if list_of_attribute != None:
+                list_of_attribute.append(try_catch_block)
+            return res.success(try_catch_block)
 
     def bin_op(self, func, ops, func2=None):
         if func2 == None:

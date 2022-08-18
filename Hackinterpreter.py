@@ -33,6 +33,8 @@ class Interpreter:
             return res.success(ClassString(node.value).set_pos(node.pos_start, node.pos_end).set_context(context))
         else:
             index = res.register(self.visit(node.index, context))
+            if res.error:
+                return res
             if index.value >= len(node.value):
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
@@ -81,6 +83,8 @@ class Interpreter:
             elif isinstance(self.symbol_table.get(node.token.value), ClassString) and node.index:
                 string_spe = self.symbol_table.get(node.token.value)
                 index = res.register(self.visit(node.index, context))
+                if res.error:
+                    return res
                 if index.value >= len(string_spe.value):
                     return res.failure(error.InvalidIndexOfMemory(
                         node.pos_start, node.pos_end,
@@ -92,6 +96,8 @@ class Interpreter:
             elif isinstance(self.symbol_table.get(node.token.value), List) and node.index:
                 list_spe = self.symbol_table.get(node.token.value)
                 index = res.register(self.visit(node.index, context))
+                if res.error:
+                    return res
                 if index.value >= len(list_spe.value):
                     return res.failure(error.InvalidIndexOfMemory(
                         node.pos_start, node.pos_end,
@@ -109,6 +115,8 @@ class Interpreter:
                 return res.success(Identifier(node.token.value).set_pos(node.pos_start, node.pos_end).set_context(context))
             else:
                 index = res.register(self.visit(node.index, context))
+                if res.error:
+                    return res
                 return res.success(Identifier(node.token.value, index).set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_BinOpNode(self, node, context, value=True, attributes=None, superclass=None):
@@ -179,10 +187,16 @@ class Interpreter:
         if not node.index:
             list_in = [res.register(self.visit(i, context))
                        for i in node.value]
+            if res.error:
+                return res
             return res.success(List(list_in).set_pos(node.pos_start, node.pos_end).set_context(context))
         else:
             list_ = [res.register(self.visit(i, context)) for i in node.value]
+            if res.error:
+                return res
             index = res.register(self.visit(node.index, context))
+            if res.error:
+                return res
             if index.value >= len(node.value):
                 return res.failure(error.InvalidIndexOfMemory(
                     node.pos_start, node.pos_end,
@@ -271,9 +285,13 @@ class Interpreter:
             return res
         if condition.value == 1:
             true = res.register(self.visit(node.value_if_true, context))
+            if res.error:
+                return res
             return res.success(true.set_pos(node.pos_start, node.pos_end).set_context(context))
         elif condition.value == 0:
             false = res.register(self.visit(node.value_if_false, context))
+            if res.error:
+                return res
             return res.success(false.set_pos(node.pos_start, node.pos_end).set_context(context))
 
     def visit_WhileNode(self, node, context, value=True, attributes=None, superclass=None):
@@ -370,13 +388,19 @@ class Interpreter:
     def visit_ClassNode(self, node, context, value=True, attributes=None, superclass=None):
         res = RuntimeResult()
         name = res.register(self.visit(node.name, context, False))
+        if res.error:
+            return res
         arg_list = [arg_name.token for arg_name in node.parameter]
         body = StatementNode(node.name, node.run)
         methods = [res.register(self.visit(i, context, False))
                    for i in node.methods]
+        if res.error:
+            return res
 
         if node.superclass:
             super_class = res.register(self.visit(node.superclass, context))
+            if res.error:
+                return res
             class_ = ins_def.Class(
                 name.__repr__(), methods, arg_list, body, self.list_of_memory, super_class)
             self.symbol_table.set(name.__repr__(), class_)
@@ -397,12 +421,19 @@ class Interpreter:
         else:
             if node.value:
                 val = res.register(self.visit(node.value, context))
+                if res.error:
+                    return res
                 name = res.register(self.visit(node.name, context, False))
+
+                if res.error:
+                    return res
                 attributes[name.__repr__()] = val
                 self.symbol_table.set(name.__repr__(), val)
 
             else:
                 name = res.register(self.visit(node.name, context))
+                if res.error:
+                    return res
 
                 if attributes.get(name.__repr__(), None) is None:
 
@@ -425,6 +456,8 @@ class Interpreter:
             res = RuntimeResult()
             arg = [res.register(self.visit(i, context))
                    for i in node.list_of_para]
+            if res.error:
+                return res
             superclass.execute(arg)
             for i in superclass.attributes:
                 self.symbol_table.set(i, superclass.attributes[i])
@@ -446,6 +479,20 @@ class Interpreter:
         res = RuntimeResult()
         res.success_pass()
         return res.success(null)
+
+    def visit_TryCatchNode(self, node, context, value=True, attributes=None, superclass=None):
+        res = RuntimeResult()
+        res.register(self.visit(node.do_try, context))
+        if res.error:
+            self.symbol_table.set("err", res.error.name())
+            res.error = None
+            res.register(self.visit(node.do_catch, context))
+            if res.error:
+                return res
+            return res.success(null)
+
+        else:
+            return res.success(null)
 
     def visit_StatementNode(self, node, context, value=True, attributes=None, superclass=None):
         res = RuntimeResult()
