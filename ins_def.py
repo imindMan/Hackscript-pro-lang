@@ -601,11 +601,7 @@ class Method(GeneralInstruction):
                     val = str(val)
                     return res.success(ClassString(val))
                 elif isinstance(memory.symbols_table.get("value"), List):
-                    val = memory.symbols_table.get("value").value
-                    empty_str = ""
-                    for i in val:
-                        empty_str += str(i.value)
-                    return res.success(ClassString(empty_str))
+                    return res.success(ClassString(str(memory.symbols_table.get("value").__repr__())))
 
         return res.failure(error.InvalidObject(
             self.pos_start, self.pos_end,
