@@ -1131,6 +1131,14 @@ class CustomFunction(Value):
             result = self.value(args)
         if result != None:
             if isinstance(result, str):
+                if result[0:12] == "<code> err: ":
+                    info = result[12:].split("/")
+                    result = getattr(error, info[0])
+
+                    return res.failure(result(
+                        self.pos_start, self.pos_end,
+                        info[1]
+                    ))
                 return res.success(ClassString(result))
             elif isinstance(result, bool):
                 return res.success(Boolean(int(result)))
@@ -1174,6 +1182,15 @@ class CustomClass(Value):
                     "Undefined attribute"
                 )
             if isinstance(result, str):
+                if isinstance(result, str):
+                    if result[0:12] == "<code> err: ":
+                        info = result[12:].split("/")
+                        result = getattr(error, info[0])
+
+                        return None, result(
+                            self.pos_start, self.pos_end,
+                            info[1]
+                        )
                 return ClassString(result), None
             elif isinstance(result, bool):
                 return Boolean(int(result)), None
@@ -1189,6 +1206,15 @@ class CustomClass(Value):
                 else:
                     return_value = result([])
                 if isinstance(return_value, str):
+                    if isinstance(result, str):
+                        if result[0:12] == "<code> err: ":
+                            info = result[12:].split("/")
+                            result = getattr(error, info[0])
+
+                            return None, result(
+                                self.pos_start, self.pos_end,
+                                info[1]
+                            )
                     return ClassString(return_value), None
                 elif isinstance(return_value, bool):
                     return Boolean(int(return_value)), None

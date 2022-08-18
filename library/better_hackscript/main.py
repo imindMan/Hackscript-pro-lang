@@ -2,6 +2,8 @@ def display(value):
     if len(value) == 1:
         print(value[0])
     else:
+        if not isinstance(value[1].value, str):
+            return "<code> err: InvalidObject/The end must be a string"
         print(value[0], end=value[1].value)
 
 
@@ -25,6 +27,8 @@ Happy coding!""")
 
 
 def inside(value):
+    if not isinstance(value[1].value, list):
+        return "<code> err: InvalidObject/The 2nd parameter is not a list"
     temp_list = list(map(lambda x: x.value, value[1].value))
     if value[0].value in temp_list:
         return True

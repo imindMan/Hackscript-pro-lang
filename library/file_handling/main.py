@@ -2,31 +2,49 @@ import os
 
 
 def create(value):
-    with open(value[0].value, "x") as f:
-        pass
+    try:
+        with open(value[0].value, "x") as f:
+            pass
+    except:
+        return "<code> err: InvalidObject/The file is existed"
 
 
 def read(value):
-    with open(value[0].value, "r") as f:
-        return f.read()
+    try:
+        with open(value[0].value, "r") as f:
+            return f.read()
+    except FileNotFoundError:
+        return "<code> err: InvalidObject/Undefined file"
 
 
 def write(value):
-    with open(value[0].value, "w") as f:
-        f.write(value[1].value)
+    try:
+        with open(value[0].value, "w") as f:
+            f.write(value[1].value)
+    except FileNotFoundError:
+        return "<code> err: InvalidObject/Undefined file"
 
 
 def delete_file(value):
-    if os.path.exists(value[0].value):
+    try:
+
         os.remove(value[0].value)
+    except FileNotFoundError:
+        return "<code> err: InvalidObject/Undefined file"
 
 
 def read_char(value):
-    with open(value[0].value, "r") as f:
-        return f.read(value[1].value)
+    try:
+        with open(value[0].value, "r") as f:
+            return f.read(value[1].value)
+    except FileNotFoundError:
+        return "<code> err: InvalidObject/Undefined file"
 
 
 def read_line(value):
-    with open(value[0].value, "r") as f:
+    try:
+        with open(value[0].value, "r") as f:
 
-        return f.readline()
+            return f.readline()
+    except FileNotFoundError:
+        return "<code> err: InvalidObject/Undefined file"
