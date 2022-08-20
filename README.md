@@ -10,9 +10,9 @@ It took me 3 months to first release the official version of HackScript (18/8/20
 
 # Caution
 
-#1: Even though this is the official version of HackScript, but still in Beta version, so there's something missing here, like no error occurs sometimes, so you can contribute freely. Read more in <a href="https://github.com/imindMan/Hackscript-pro-lang/edit/master/README.md#contributions">#Contributions</a><br>
+#1: Even though this is the official version of HackScript, but still in Beta version, so there's something missing here, like no error occurs sometimes, so you can contribute freely. Read more in <a href="https://github.com/imindMan/Hackscript-pro-lang#contributions">#Contributions</a><br>
 #2: This programming language is built on top of Python, so that's why it's super slow. But the purpose of this programming language isn't to build any serious project. But, hopefully, I'll make another HackScript based on C.<br>
-#3: Read tutorials here: <a href="">Tutorial</a> to get the basic of HackScript, and be sure to read <a href="https://github.com/imindMan/Hackscript-pro-lang/edit/master/README.md#the-sign-of-hackscript">the sign of HackScript</a> (in case you get some troubles actually) 
+#3: Read tutorials here: <a href="">Tutorial</a> to get the basic of HackScript, and be sure to read <a href="https://github.com/imindMan/Hackscript-pro-lang#the-sign-of-hackscript">the sign of HackScript</a> (in case you get some troubles actually) 
 
 # The sign of HackScript
 Note: you can read the sign of HackScript again by running this code <br>
