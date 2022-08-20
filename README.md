@@ -13,9 +13,13 @@ HackScript is a Turing-complete, esoteric-style, the "easy Malbolge", and high-l
     <img src=".\extra\default_logo.png" alt="HackScript">
 </div>
 
+# Caution
+
+    #1: Even though this is the official version of HackScript, but still in Beta version, so there's something missing here, like no error occurs sometimes, so you can contribute freely. Read more in # Contributions
+
 # Version
 
-HackScript is in official release (contribution requires). Current version: `v1.0.0 (Official) HSO`
+HackScript is in official release (contribution requires). Current version: `v1.0.0 (Beta-Official) HSO`
 
 # License
 
