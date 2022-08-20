@@ -48,7 +48,7 @@ Requirements:
 <br>
 The commands <br>
 ```> git clone https://github.com/imindMan/Hackscript-pro-lang.git```<br>
-```> python <the-path-to-the-"Hackscript-pro-lang/hackscript.py-file"> <the-Hackscript-file>```<br>
+```> python <the-path-to-the-"Hackscript-pro-lang/hackscript.py-file"> <the-Hackscript-file(usually-is-*.hack)>```<br>
 If you wanna use the executable file, you can clone it, and execute the project via pyinstaller (using ```pip install pyinstaller```) and use it.<br>
 
 # Version
