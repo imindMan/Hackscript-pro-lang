@@ -36,6 +36,7 @@ class GeneralInstruction(Value):
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
         Method.range = Method("range", memory)
+        Method.remove = Method("remove", memory)
 
         symbol_table.set("null", null)
         symbol_table.set("true", true)
@@ -56,6 +57,7 @@ class GeneralInstruction(Value):
         symbol_table.set("len", Method.len)
         symbol_table.set("%", Method.type)
         symbol_table.set("rl", Method.range)
+        symbol_table.set("dd", Method.remove)
 
     def generate_basic_thing(self):
         context = Context(self.name, self.context, self.pos_start)
@@ -158,6 +160,7 @@ class Class(Value):
         Method.random = Method("random", memory)
         Method.type = Method("type", memory)
         Method.range = Method("range", memory)
+        Method.remove = Method("remove", memory)
 
         symbol_table.set("null", null)
         symbol_table.set("true", true)
@@ -178,6 +181,7 @@ class Class(Value):
         symbol_table.set("len", Method.len)
         symbol_table.set("%", Method.type)
         symbol_table.set("rl", Method.range)
+        symbol_table.set("dd", Method.remove)
         for i in self.methods:
             try:
                 symbol_table.set(i.name, i)
