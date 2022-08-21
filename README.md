@@ -10,11 +10,11 @@ It took me 3 months to first release the official version of HackScript (18/8/20
 
 #1: Even though this is the official version of HackScript, but still in Beta version, so there's something missing here, like no error occurs sometimes, so you can contribute freely. Read more in <a href="https://github.com/imindMan/Hackscript-pro-lang#contributions">#Contributions</a><br>
 #2: This programming language is built on top of Python, so that's why it's super slow. But the purpose of this programming language isn't to build any serious project. But, hopefully, I'll make another HackScript based on C.<br>
-#3: Read tutorials here: <a href="">Tutorial</a> to get the basic of HackScript, and be sure to read <a href="https://github.com/imindMan/Hackscript-pro-lang#the-sign-of-hackscript">the sign of HackScript</a> (in case you get some troubles actually)
+#3: Read tutorials here: <a href="">Tutorial</a> to get the basic of HackScript, and be sure to read <a href="https://github.com/imindMan/Hackscript-pro-lang#hackscript-in-general">Hackscript in general</a> (in case you get some troubles actually)
 
-# The sign of HackScript
+# Hackscript in general
 
-Note: you can read the sign of HackScript again by running this code <br>
+Note: you can read Hackscript in general again by running this code <br>
 
 ```
 &^ #"better_hackscript"
@@ -22,13 +22,12 @@ Note: you can read the sign of HackScript again by running this code <br>
 chr ##
 ```
 
-This is the whole content of The sign of HackScript.
+This is the whole content of Hackscript in general.
 
 ```
 Fundametal of HackScript:
 HackScript is a Turing-complete, esoteric-style, the "easy Malbolge", and high-level programming language.
 Rules of HackScript: (or Theory of HackScript)
-    Note: By following the rules, HackScript makes its own style of code, known as HackScript-like syntax
 #1: Esoteric-style mixs with high-level-style become HackScript
 #2: Completion can be done with replacement
 #3: No complete support, instead, deal with everything in HackScript, with HackScript no way escape.
