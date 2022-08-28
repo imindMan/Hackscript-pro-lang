@@ -55,7 +55,7 @@ If you wanna use the executable file, you can clone it, and execute the project 
 
 # Version
 
-HackScript is in official release (contribution requires). Current version: `v1.0.0 (Beta-Official) HSO`
+HackScript is in official release (contribution requires). Current version: `v1.0.1 (Beta-Official) HSO`
 
 # Contributions
 
