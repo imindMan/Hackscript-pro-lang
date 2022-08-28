@@ -623,6 +623,7 @@ class ListofMemory:
                 "Cannot find the constant pointer"
             )
         else:
+            self.index -= 1
             self.symbols_table.remove(self.value[i].name)
             self.value.remove(self.value[i])
             self.value.append(Memory("10"))
