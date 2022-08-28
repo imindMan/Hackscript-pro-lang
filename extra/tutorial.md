@@ -152,3 +152,68 @@ $ #$2
   pu #out, con
 . #$2
 ```
+# Comment
+Comment in HackScript starts with ' character. <br>
+E.g: `' This is a comment`
+
+# Variables 
+HackScript doesn't have variables, however, you can use constant pointer instead. <br>
+To make a constatnt pointer, we can use the set method. E.g 
+```
+s #$<name_of_the_variable>
+```
+Now you can use it as a normal pointer: you can launch it, change the status, push the data, etc. <br>
+Equivalent HackScript to Python: 
+```
+Python:         HackScript:
+a = 3           s #$a ' Set the constant pointer
+                $ #$a ' Launch it
+                  pu #in, 3 ' Push into the pointer
+                . #$a  ' End launch it.
+
+```
+
+# Data types
+There're a few basic data types in HackScript. <br>
+1. Number <br>
+  Number holds integers or floats.
+2. String <br>
+  String is an array of characters. E.g `"Hello, World!"`
+3. List <br>
+  List is an array. You can get the multi-dimensional list, too.
+  E.g `{1, 2, 3}`
+4. Booleans <br>
+  Booleans can be `true` or `false`.
+5. Null <br>
+  Null is nothing `null`.
+6. Placeholder <br>
+  Placeholder is a empty box let you place some data into (this is useful, you can read more to get the details).<br>
+  Keyword: `phd`.
+## Casting
+  This is the way you can get casting: `Number <-> String <-> List` <br>
+  You can cast by using the `%` method. <br>
+  e.g `% #"string", 1 ' change the 1 to "1"`
+# Get the variable value
+By tracing the `value` attribute. E.g `$<name_of_var> -> value`. You have to follow strictly the syntax (even the spaces) <br>
+# Change the variable value
+We can use the `<-` keyword. <br>
+Note: `<-` can only change the current value to other value if **they are in the same data type**. <br>
+So, how can we change the current value to other value if **they are not in the same data type**. This is the point where `placeholder` useful. <br>
+Placeholder let you place data and change the data even the new data is not in the same of the data. <br> 
+This is the sample code of using Placeholder. <br>
+
+```
+s #$a
+$ #$a
+  pu #in, phd
+. #$a
+
+' Now, $a -> value is phd
+' For instance, we want to push the data 1 into $a, we simply
+($a -> value) <- 1
+' It can be understand like it. `phd <- 1` (phd let you assign directly without tracing the value attribute)
+' We want to change the $a -> value to "Hello, world!"
+' Simply just
+($a -> value) <- "Hello, world!" ' can be understand as `phd <- "Hello, world!"`
+' Get the value of $a will be $a -> value -> value (return "Hello, world!").
+```
