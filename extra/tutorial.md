@@ -192,11 +192,13 @@ There're a few basic data types in HackScript. <br>
 ## Casting
   This is the way you can get casting: `Number <-> String <-> List` <br>
   You can cast by using the `%` method. <br>
-  e.g `% #"string", 1 ' change the 1 to "1"`
+  e.g `% #"string", 1 ' change the 1 to "1"` <br>
+  We can use `%` to get the type of some value. <br>
+  
 # Get the variable value
 By tracing the `value` attribute. E.g `$<name_of_var> -> value`. You have to follow strictly the syntax (even the spaces) <br>
 # Change the variable value
-We can use the `<-` keyword. <br>
+We can use the `<-` keyword. E.g. `($a -> value) <- 1 ' assume that $a -> value is a number`<br>
 Note: `<-` can only change the current value to other value if **they are in the same data type**. <br>
 So, how can we change the current value to other value if **they are not in the same data type**. This is the point where `placeholder` useful. <br>
 Placeholder let you place data and change the data even the new data is not in the same of the data. <br> 
@@ -216,4 +218,81 @@ $ #$a
 ' Simply just
 ($a -> value) <- "Hello, world!" ' can be understand as `phd <- "Hello, world!"`
 ' Get the value of $a will be $a -> value -> value (return "Hello, world!").
+```
+HackScript supports another Placeholder: total placeholder, `tphd`. `tphd` can be accessed everywhere. <br>
+
+# Operators
+Few basic operators. <br>
+1. "+": Plus
+2. "-": Minus
+3. "*": Multiply
+4. "/": Divide
+5. "=": same thing as "=="
+6. "!=", "<", "<=", ">=", ">": same thing to another programming language  <br>
+
+# Check
+HackScript doesn't have if-else statements. Instead, check. <br>
+Check simply just checks the condition, if that condition is true, do the true block, if that condition is false, do the false block. <br>
+Syntax: `check (..condition..): (true: (...do something...) false: (...do something...))`
+
+# Loop
+HackScript doesn't have for loop. You can use while loop and do-while loop <br>
+Syntax: `while (..condition..): (do: (..do somthing..))` (this is while loop) <br>
+Syntax: `do: (..do something..) while (..condition..)`
+
+# Instruction
+HackScript doesn't have function, but instead, instruction. <br>
+Instruction cannot be returned, it just runs once and that's all. <br>
+Syntax: `inst <name_of_instruction>(<para1>, <para2>): (..do something..) ' in case there's no parameters pass it, just left it`
+Call an instruction: see [General Syntax](#general-syntax)
+
+# Class-incomplete
+Class in HackScript is like a combination of Class and Struct. <br>
+Declare a class: 
+```
+class NameOfClass: (
+  cons: (
+    ' attribute here, if nothing to write, just write null
+  )
+  method: (
+    ' method here, if nothing to write, just write null
+  )
+)
+' Note that cons: () block must in the class when declare a class
+```
+
+Methods is something that the class can do. <br>
+Methods don't connect to class, this is the example. <br>
+
+```
+class SampleClass: (
+  cons: (
+    this -> value: 1
+    this -> value_two: 2
+  )
+  method: (
+    inst value_say(sampleclass): (
+      ' this method doesn't connect to class, so to print the value attribute, you have to put the sampleclass in
+      ! #200
+      $ #$2
+        pu #in, (sampleclass -> value)
+      . #$2
+      ! #200
+      $ #$2
+        pu #out, con
+      . #$2
+    )
+  )
+)
+```
+## Call a class
+E.g: 
+```
+SampleClass ## -> value ' get the value attribute in SampleClass
+SampleClass ## -> <inst> ## ' call the method in SampleClass
+
+
+' Equivalent to Python:
+' SampleClass().value
+' SampleClass().<inst>() 
 ```
