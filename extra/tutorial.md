@@ -1,6 +1,6 @@
 # Introduction
 
-This is a very quick tutorial that helps you understand all the concepts in HackScript after around 10 minutes to read
+This is a very quick tutorial that helps you understand all the concepts in HackScript after around 1 hour to read <br>
 
 # List of Memory
 
@@ -152,18 +152,24 @@ $ #$2
   pu #out, con
 . #$2
 ```
+
 # Comment
+
 Comment in HackScript starts with ' character. <br>
 E.g: `' This is a comment`
 
-# Variables 
+# Variables
+
 HackScript doesn't have variables, however, you can use constant pointer instead. <br>
-To make a constatnt pointer, we can use the set method. E.g 
+To make a constatnt pointer, we can use the set method. E.g
+
 ```
 s #$<name_of_the_variable>
 ```
+
 Now you can use it as a normal pointer: you can launch it, change the status, push the data, etc. <br>
-Equivalent HackScript to Python: 
+Equivalent HackScript to Python:
+
 ```
 Python:         HackScript:
 a = 3           s #$a ' Set the constant pointer
@@ -172,38 +178,46 @@ a = 3           s #$a ' Set the constant pointer
                 . #$a  ' End launch it.
 
 ```
+
 You can deallocate the constant pointer by using the `dd` method. <br>
 E.g `dd #$a`
 
 # Data types
+
 There're a few basic data types in HackScript. <br>
+
 1. Number <br>
-  Number holds integers or floats.
+   Number holds integers or floats.
 2. String <br>
-  String is an array of characters. E.g `"Hello, World!"`
+   String is an array of characters. E.g `"Hello, World!"`
 3. List <br>
-  List is an array. You can get the multi-dimensional list, too.
-  E.g `{1, 2, 3}`
+   List is an array. You can get the multi-dimensional list, too.
+   E.g `{1, 2, 3}`
 4. Booleans <br>
-  Booleans can be `true` or `false`.
+   Booleans can be `true` or `false`.
 5. Null <br>
-  Null is nothing `null`.
+   Null is nothing `null`.
 6. Placeholder <br>
-  Placeholder is a empty box let you place some data into (this is useful, you can read more to get the details).<br>
-  Keyword: `phd`.
+   Placeholder is a empty box let you place some data into (this is useful, you can read more to get the details).<br>
+   Keyword: `phd`.
+
 ## Casting
-  This is the way you can get casting: `Number <-> String <-> List` <br>
-  You can cast by using the `%` method. <br>
-  e.g `% #"string", 1 ' change the 1 to "1"` <br>
-  We can use `%` to get the type of some value. E.g `%#null, "string" ' will return a string "<string>"` <br>
-  
+
+This is the way you can get casting: `Number <-> String <-> List` <br>
+You can cast by using the `%` method. <br>
+e.g `% #"string", 1 ' change the 1 to "1"` <br>
+We can use `%` to get the type of some value. E.g `%#null, "string" ' will return a string "<string>"` <br>
+
 # Get the variable value
+
 By tracing the `value` attribute. E.g `$<name_of_var> -> value`. You have to follow strictly the syntax (even the spaces) <br>
+
 # Change the variable value
+
 We can use the `<-` keyword. E.g. `($a -> value) <- 1 ' assume that $a -> value is a number`<br>
 Note: `<-` can only change the current value to other value if **they are in the same data type**. <br>
 So, how can we change the current value to other value if **they are not in the same data type**. This is the point where `placeholder` useful. <br>
-Placeholder let you place data and change the data even the new data is not in the same of the data. <br> 
+Placeholder let you place data and change the data even the new data is not in the same of the data. <br>
 This is the sample code of using Placeholder. <br>
 
 ```
@@ -221,36 +235,44 @@ $ #$a
 ($a -> value) <- "Hello, world!" ' can be understand as `phd <- "Hello, world!"`
 ' Get the value of $a will be $a -> value -> value (return "Hello, world!").
 ```
+
 HackScript supports another Placeholder: total placeholder, `tphd`. `tphd` can be accessed everywhere. <br>
 
 # Operators
+
 Few basic operators. <br>
+
 1. "+": Plus
 2. "-": Minus
-3. "*": Multiply
+3. "\*": Multiply
 4. "/": Divide
 5. "=": same thing as "=="
-6. "!=", "<", "<=", ">=", ">": same thing to another programming language  <br>
+6. "!=", "<", "<=", ">=", ">": same thing to another programming language <br>
 
 # Check
+
 HackScript doesn't have if-else statements. Instead, check. <br>
 Check simply just checks the condition, if that condition is true, do the true block, if that condition is false, do the false block. <br>
 Syntax: `check (..condition..): (true: (...do something...) false: (...do something...))`
 
 # Loop
+
 HackScript doesn't have for loop. You can use while loop and do-while loop <br>
 Syntax: `while (..condition..): (do: (..do somthing..))` (this is while loop) <br>
 Syntax: `do: (..do something..) while (..condition..)`
 
 # Instruction
+
 HackScript doesn't have function, but instead, instruction. <br>
 Instruction cannot be returned, it just runs once and that's all. <br>
 Syntax: `inst <name_of_instruction>(<para1>, <para2>): (..do something..) ' in case there's no parameters pass it, just left it`
 Call an instruction: see [General Syntax](#general-syntax)
 
 # Class-incomplete
+
 Class in HackScript is like a combination of Class and Struct. <br>
-Declare a class: 
+Declare a class:
+
 ```
 class NameOfClass: (
   cons: (
@@ -262,7 +284,7 @@ class NameOfClass: (
 )
 ' Note that cons: () block must in the class when declare a class
 ' If you need some parameters to pass it the class, just make cons (..put parameters in..): ()
-' E.g 
+' E.g
 ' class NameOfClass: (
 '   cons (para_one) : (
 '      this -> para_one: para_one ' this line is to assign the attribute in class
@@ -294,8 +316,11 @@ class SampleClass: (
   )
 )
 ```
+
 ## Call a class
-E.g: 
+
+E.g:
+
 ```
 SampleClass ## -> value ' get the value attribute in SampleClass
 SampleClass ## -> value_say ## ' call the method in SampleClass
@@ -303,10 +328,13 @@ SampleClass ## -> value_say ## ' call the method in SampleClass
 
 ' Equivalent to Python:
 ' SampleClass().value
-' SampleClass().value_say() 
+' SampleClass().value_say()
 ```
+
 ## Inheritance
-E.g: 
+
+E.g:
+
 ```
 ' Make a sample class
 class Human: (
@@ -321,7 +349,7 @@ class (Human) Pro: (
         super (age)
         this -> hi: age + 1
     )
-) 
+)
 ```
 
 # Import a library
@@ -330,6 +358,7 @@ You can import a library in HackScript using the `&^` keyword.<br>
 
 `&^` accepts a string as a parameter. E.g `&^ #"my_library"` <br>
 There're 7 built-in libraries until (18/8/2022), so far they're: <br>
+
 1. better_hackscript
 2. better_list
 3. better_string
@@ -337,9 +366,10 @@ There're 7 built-in libraries until (18/8/2022), so far they're: <br>
 5. math
 6. os
 7. regex <br>
-You can check out the source code here https://github.com/imindMan/Hackscript-pro-lang/tree/master/library to get the details. <br>
-Anyway the very useful function that I will introduce is the `display` function in better_hackscript library. You can use it to display something onto the terminal <br>
-So, instead of: 
+   You can check out the source code here https://github.com/imindMan/Hackscript-pro-lang/tree/master/library to get the details. <br>
+   Anyway the very useful function that I will introduce is the `display` function in better_hackscript library. You can use it to display something onto the terminal <br>
+   So, instead of:
+
 ```
 ! #200
 $ #$2
@@ -350,12 +380,15 @@ $ #$2
   pu #out, con
 . #$2
 ```
-We can rewrite like this: 
+
+We can rewrite like this:
+
 ```
 &^ #"better_hackscript" ' import the better_hackscript library
 
 display #"Hello, world!"
 ```
+
 This `&^` method can be used to import another file (get it as a library). E.g <br>
 
 ```
@@ -375,40 +408,50 @@ hi ##
 ```
 
 The OUTPUT will be `Hi guys!`
+
 # Some other useful methods
+
 ```
 ?#<obj> - take the value in <obj> randomly, if the <obj> is pp, it will get the input of the keyboard. E.g: ? #pp.
 rl#<start_point>, <end_point> - will return a list of range <start_point> to <end_point>. (both must be numbers)
 exit## - exit the program
-clear## - clear the screen 
+clear## - clear the screen
 ```
+
 # Some common errors
-Error 1: Empty code block. E.g 
+
+Error 1: Empty code block. E.g
+
 ```
 check (2 = 2): (
-   true : () ' will get error here 
+   true : () ' will get error here
    false: (2 + 2)
 )
 ```
-Instead. 
+
+Instead.
+
 ```
 check (2 = 2): (
    true : (
       null
-   ) 
+   )
    false: (2 + 2)
 )
 ```
 
 Error 2: The syntax.
+
 ```
 $a -> value <- $a -> value + 1 ' will get errors.
 ' When getting errors in HackScript, people usually forget to wrap some elements in parentheses.
 ' It should be
 ($a -> value) <- (($a -> value) + 1)
 ```
+
 Error 3: Invisible Constant Pointer <br>
 Check this example <br>
+
 ```
 &^ #"better_hackscript"
 
@@ -429,13 +472,15 @@ while (($a -> value) >= 0): (
         display #$b -> value
         ($b -> value) <- (($b -> value) - 1)
       )
-    
-    )     
+
+    )
     ($a -> value) <- (($a -> value) - 1)
   )
 )
 ```
-Here, we see this code will take the two nested loops. The OUTPUT should be: 
+
+Here, we see this code will take the two nested loops. The OUTPUT should be:
+
 ```
 Catch the outside loop
 3
@@ -462,7 +507,9 @@ Catch the outside loop
 1
 0
 ```
-But it comes out: 
+
+But it comes out:
+
 ```
 Catch the outside loop
 3
@@ -477,22 +524,28 @@ Catch the outside loop
 Catch the outside loop
 0
 ```
+
 The reason is because after the first loop the List of Memory will look like this
+
 ```
 a     [3]       220
 b     [-1]      220
 3     []        200    <- $2
 ...
 ```
+
 So the next loop, it will make another constant pointer `b`. But it doesn't overwrite it, it's just make another constant pointer. It looks like this <br>
+
 ```
 a    [3]       220
 b    [-1]      220
 b    []        200
 ...
 ```
+
 However, HackScript doesn't detect the new `b` constant pointer, it just gets the old `b` as `b`. So the condition after that is false. And so on ... <br>
-To fix that error, we need to deallocate the old $b after done the loop. It will look like this 
+To fix that error, we need to deallocate the old $b after done the loop. It will look like this
+
 ```
 &^ #"better_hackscript"
 
@@ -513,16 +566,20 @@ while (($a -> value) >= 0): (
         display #$b -> value
         ($b -> value) <- (($b -> value) - 1)
       )
-    
-    )     
+
+    )
     dd #$b ' this line here
     ($a -> value) <- (($a -> value) - 1)
   )
 )
 ```
+
 So, it should run as expected.
 
 # Version
+
 HackScript `v1.0.1 (Beta-Official) HSO`
-# License 
+
+# License
+
 MIT
