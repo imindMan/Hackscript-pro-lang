@@ -172,6 +172,8 @@ a = 3           s #$a ' Set the constant pointer
                 . #$a  ' End launch it.
 
 ```
+You can deallocate the constant pointer by using the `dd` method. <br>
+E.g `dd #$a`
 
 # Data types
 There're a few basic data types in HackScript. <br>
@@ -259,6 +261,13 @@ class NameOfClass: (
   )
 )
 ' Note that cons: () block must in the class when declare a class
+' If you need some parameters to pass it the class, just make cons (..put parameters in..): ()
+' E.g 
+' class NameOfClass: (
+'   cons (para_one) : (
+'      this -> para_one: para_one ' this line is to assign the attribute in class
+'   )
+' )
 ```
 
 Methods is something that the class can do. <br>
@@ -296,3 +305,222 @@ SampleClass ## -> value_say ## ' call the method in SampleClass
 ' SampleClass().value
 ' SampleClass().value_say() 
 ```
+## Inheritance
+E.g: 
+```
+' Make a sample class
+class Human: (
+    cons (age): (
+        this -> age: age
+    )
+)
+
+
+class (Human) Pro: (
+    cons (age): (
+        super (age)
+        this -> hi: age + 1
+    )
+) 
+```
+
+# Import a library
+
+You can import a library in HackScript using the `&^` keyword.<br>
+
+`&^` accepts a string as a parameter. E.g `&^ #"my_library"` <br>
+There're 7 built-in libraries until (18/8/2022), so far they're: <br>
+1. better_hackscript
+2. better_list
+3. better_string
+4. file_handling
+5. math
+6. os
+7. regex
+You can check out the source code here https://github.com/imindMan/Hackscript-pro-lang/tree/master/library to get the details. <br>
+Anyway the very useful function that I will introduce is the `display` function in better_hackscript library. You can use it to display something onto the terminal <br>
+So, instead of: 
+```
+! #200
+$ #$2
+  pu #in, "Hello, world!"
+. #$2
+! #200
+$ #$2
+  pu #out, con
+. #$2
+```
+We can rewrite like this: 
+```
+&^ #"better_hackscript" ' import the better_hackscript library
+
+display #"Hello, world!"
+```
+This `&^` method can be used to import another file (get it as a library). E.g <br>
+
+```
+...extra.hack...
+&^ #"better_hackscript"
+
+inst hi(): (
+  display #"Hi guys!"
+)
+```
+
+```
+...main.hack...
+&^ #"extra.hack"
+
+hi ##
+```
+
+The OUTPUT will be `Hi guys!`
+# Some other useful methods
+```
+?#<obj> - take the value in <obj> randomly, if the <obj> is pp, it will get the input of the keyboard. E.g: ? #pp.
+rl#<start_point>, <end_point> - will return a list of range <start_point> to <end_point>. (both must be numbers)
+```
+# Some common errors
+Error 1: Empty code block. E.g 
+```
+check (2 = 2): (
+   true : () ' will get error here 
+   false: (2 + 2)
+)
+```
+Instead. 
+```
+check (2 = 2): (
+   true : (
+      null
+   ) 
+   false: (2 + 2)
+)
+```
+
+Error 2: The syntax.
+```
+$a -> value <- $a -> value + 1 ' will get errors.
+' When getting errors in HackScript, people usually forget to wrap some elements in parentheses.
+' It should be
+($a -> value) <- (($a -> value) + 1)
+```
+Error 3: Invisible Constant Pointer <br>
+Check this example <br>
+```
+&^ #"better_hackscript"
+
+s #$a
+$ #$a
+  pu #in, 3
+. #$a
+while (($a -> value) >= 0): (
+  do: (
+    display #"Catch the outside loop"
+    display #$a -> value
+    s #$b
+    $ #$b
+      pu #in, 3
+    . #$b
+    while (($b -> value) >= 0): (
+      do: (
+        display #$b -> value
+        ($b -> value) <- (($b -> value) - 1)
+      )
+    
+    )     
+    ($a -> value) <- (($a -> value) - 1)
+  )
+)
+```
+Here, we see this code will take the two nested loops. The OUTPUT should be: 
+```
+Catch the outside loop
+3
+3
+2
+1
+0
+Catch the outside loop
+2
+3
+2
+1
+0
+Catch the outside loop
+1
+3
+2
+1
+0
+Catch the outside loop
+0
+3
+2
+1
+0
+```
+But it comes out: 
+```
+Catch the outside loop
+3
+3
+2
+1
+0
+Catch the outside loop
+2
+Catch the outside loop
+1
+Catch the outside loop
+0
+```
+The reason is because after the first loop the List of Memory will look like this
+```
+a     [3]       220
+b     [-1]      220
+3     []        200    <- $2
+...
+```
+So the next loop, it will make another constant pointer `b`. But it doesn't overwrite it, it's just make another constant pointer. It looks like this <br>
+```
+a    [3]       220
+b    [-1]      220
+b    []        200
+...
+```
+However, HackScript doesn't detect the new `b` constant pointer, it just gets the old `b` as `b`. So the condition after that is false. And so on ... <br>
+To fix that error, we need to deallocate the old $b after done the loop. It will look like this 
+```
+&^ #"better_hackscript"
+
+s #$a
+$ #$a
+  pu #in, 3
+. #$a
+while (($a -> value) >= 0): (
+  do: (
+    display #"Catch the outside loop"
+    display #$a -> value
+    s #$b
+    $ #$b
+      pu #in, 3
+    . #$b
+    while (($b -> value) >= 0): (
+      do: (
+        display #$b -> value
+        ($b -> value) <- (($b -> value) - 1)
+      )
+    
+    )     
+    dd #$b ' this line here
+    ($a -> value) <- (($a -> value) - 1)
+  )
+)
+```
+So, it should run as expected.
+
+# Version
+HackScript `v1.0.1 (Beta-Official) HSO`
+# License 
+MIT
