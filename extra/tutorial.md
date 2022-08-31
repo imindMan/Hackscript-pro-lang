@@ -193,7 +193,7 @@ There're a few basic data types in HackScript. <br>
   This is the way you can get casting: `Number <-> String <-> List` <br>
   You can cast by using the `%` method. <br>
   e.g `% #"string", 1 ' change the 1 to "1"` <br>
-  We can use `%` to get the type of some value. <br>
+  We can use `%` to get the type of some value. E.g `%#null, "string" ' will return a string "<string>"` <br>
   
 # Get the variable value
 By tracing the `value` attribute. E.g `$<name_of_var> -> value`. You have to follow strictly the syntax (even the spaces) <br>
@@ -289,10 +289,10 @@ class SampleClass: (
 E.g: 
 ```
 SampleClass ## -> value ' get the value attribute in SampleClass
-SampleClass ## -> <inst> ## ' call the method in SampleClass
+SampleClass ## -> value_say ## ' call the method in SampleClass
 
 
 ' Equivalent to Python:
 ' SampleClass().value
-' SampleClass().<inst>() 
+' SampleClass().value_say() 
 ```
