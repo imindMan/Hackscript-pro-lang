@@ -336,7 +336,7 @@ There're 7 built-in libraries until (18/8/2022), so far they're: <br>
 4. file_handling
 5. math
 6. os
-7. regex
+7. regex <br>
 You can check out the source code here https://github.com/imindMan/Hackscript-pro-lang/tree/master/library to get the details. <br>
 Anyway the very useful function that I will introduce is the `display` function in better_hackscript library. You can use it to display something onto the terminal <br>
 So, instead of: 
