@@ -379,6 +379,8 @@ The OUTPUT will be `Hi guys!`
 ```
 ?#<obj> - take the value in <obj> randomly, if the <obj> is pp, it will get the input of the keyboard. E.g: ? #pp.
 rl#<start_point>, <end_point> - will return a list of range <start_point> to <end_point>. (both must be numbers)
+exit## - exit the program
+clear## - clear the screen 
 ```
 # Some common errors
 Error 1: Empty code block. E.g 
