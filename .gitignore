@@ -131,3 +131,5 @@ dmypy.json
 test/
 .vscode/
 grammar.txt
+# Output folder
+bin/
