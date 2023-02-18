@@ -15,7 +15,7 @@ use std::io::{self, Write};
 
 // input a command then run Hackscript 
 
-fn main() 
+fn main() -> Result<(), io::Error> 
 {
 
     loop {
@@ -35,6 +35,6 @@ fn main()
 // run the command 
 fn run(command: String) -> String 
 {
-    // for now, let's just return the string itself 
+    // custom chadlang interpreter engine
     command
 }
