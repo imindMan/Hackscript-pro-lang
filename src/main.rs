@@ -12,7 +12,7 @@
 // main file hackscript 
 
 use std::io::{self, Write};
-
+pub mod chadlang;
 // input a command then run Hackscript 
 
 fn main() -> Result<(), io::Error> 
@@ -36,5 +36,7 @@ fn main() -> Result<(), io::Error>
 fn run(command: String) -> String 
 {
     // custom chadlang interpreter engine, let's goooooooooo
+    let mut _interpreter = chadlang::Interpreter::new();
+
     command
 }
