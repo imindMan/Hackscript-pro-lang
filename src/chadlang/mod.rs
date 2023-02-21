@@ -8,8 +8,12 @@
 // Let's start with this file
 
 
-// WHAT: Declare an Interpreter Struct for runtime engine
+use std::fs::File;
+use std::io::prelude::*;
+use std::path::Path;
 
+
+// WHAT: Declare an Interpreter Struct for runtime engine
 pub struct Interpreter {
     // WHAT INSIDE:
     // - Input string: the string to run
@@ -21,12 +25,19 @@ pub struct Interpreter {
 }
 
 impl Interpreter {
+    // This function will initialize a new Interpreterengine
     pub fn new() -> Interpreter {
+        
         Interpreter {
             input_string: String::from(""),
             power: false,
         }
 
     }
+    // This function will initialize all the json config file (followed by the given path)
+    // and then config it into this engine
+    pub fn config(path: &str) -> std::io::Result<(), io::Error>{
+        let path = Path::new(path);
 
+    }
 }
