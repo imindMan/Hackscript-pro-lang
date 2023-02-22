@@ -37,7 +37,24 @@ impl Interpreter {
     // This function will initialize all the json config file (followed by the given path)
     // and then config it into this engine
     pub fn config(path: &str) -> std::io::Result<(), io::Error>{
-        let path = Path::new(path);
 
     }
+}
+
+
+// WHAT: Declare a config struct for configuration
+
+
+pub struct Config {
+    // general configuration
+    auto_start: bool,
+    log: bool,
+}
+
+impl Config {
+    // this function will initialize a new config
+    pub fn new() -> Config {
+        
+    }
+
 }
