@@ -7,7 +7,6 @@
 //
 // Let's start with this file
 
-
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
@@ -36,8 +35,26 @@ impl Interpreter {
     }
     // This function will initialize all the json config file (followed by the given path)
     // and then config it into this engine
-    pub fn config(path: &str) -> std::io::Result<(), io::Error>{
+    pub fn config(&self, _path: &str) -> String {
+        let path = Path::new(_path);
+        
+        // Open the path in read-only mode, returns `io::Result<File>`
+        let mut file = match File::open(&path) {
+            Err(why) => panic!("couldn't open {}: {}", path.display(), why),
+            Ok(file) => file,
+        };
 
+        // Read the file contents into a string, returns `io::Result<usize>`
+        let mut s = String::new();
+        match file.read_to_string(&mut s) {
+            Err(why) => panic!("couldn't read {}: {}", path.display(), why),
+            Ok(s) => s,
+        };
+        let s_slice: &str = &s[..];
+        let json: serde_json::Value =
+            serde_json::from_str(s_slice).expect("JSON was not well-formatted");
+        println!("{:?}", json);
+        s
     }
 }
 
@@ -45,7 +62,7 @@ impl Interpreter {
 // WHAT: Declare a config struct for configuration
 
 
-pub struct Config {
+struct Config {
     // general configuration
     auto_start: bool,
     log: bool,
@@ -53,8 +70,6 @@ pub struct Config {
 
 impl Config {
     // this function will initialize a new config
-    pub fn new() -> Config {
-        
-    }
+    
 
 }

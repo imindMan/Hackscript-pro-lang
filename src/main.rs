@@ -37,6 +37,6 @@ fn run(command: String) -> String
 {
     // custom chadlang interpreter engine, let's goooooooooo
     let mut _interpreter = chadlang::Interpreter::new();
-
+    let s = _interpreter.config("/home/dev-vons/Hackscript-pro-lang/src/test.json");
     command
 }
