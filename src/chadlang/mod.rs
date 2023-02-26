@@ -10,7 +10,9 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use serde::{Deserialize, Serialize};
 
+pub mod logger;
 
 // WHAT: Declare an Interpreter Struct for runtime engine
 pub struct Interpreter {
@@ -20,7 +22,7 @@ pub struct Interpreter {
     
     input_string: String,
     power: bool,
-
+    config: Config
 }
 
 impl Interpreter {
@@ -30,12 +32,13 @@ impl Interpreter {
         Interpreter {
             input_string: String::from(""),
             power: false,
+            config: Config::new()
         }
 
     }
     // This function will initialize all the json config file (followed by the given path)
     // and then config it into this engine
-    pub fn config(&self, _path: &str) -> String {
+    pub fn config(&mut self, _path: &str) {
         let path = Path::new(_path);
         
         // Open the path in read-only mode, returns `io::Result<File>`
@@ -50,18 +53,56 @@ impl Interpreter {
             Err(why) => panic!("couldn't read {}: {}", path.display(), why),
             Ok(s) => s,
         };
+        // read the json data
         let s_slice: &str = &s[..];
-        let json: serde_json::Value =
+        let json: Config =
             serde_json::from_str(s_slice).expect("JSON was not well-formatted");
-        println!("{:?}", json);
-        s
+    
+        self.config = json;
+        
+        // start configuring some basic attributes
+        match self.config.auto_start {
+            true => self.power = true,
+            false => self.power = false,
+        };
+
+    }
+    // This function will start the engine 
+    pub fn start(&mut self) {
+        if self.config.log == false {
+            match self.power {
+                false => self.power = true,
+                true => panic!("This machine has already started!"),
+            }
+        }
+        else {
+            let _logger = logger::Logger::new();
+            match self.power {
+                false => {
+                    _logger.show_process("Power up..."); 
+                    self.power = true; 
+                    _logger.show_success("Successfully powered up!");
+                },
+                true => {
+                    _logger.show_error("Error when checking! Panic starting...");
+                    panic!("This machine has already started!"); 
+                },
+            }
+        }
+    }
+    // This function will end the engine 
+    pub fn end(&mut self) {
+        match self.power {
+            true => self.power = false,
+            false => panic!("This machine has already ended!"),
+        }
     }
 }
 
 
 // WHAT: Declare a config struct for configuration
 
-
+#[derive(Serialize, Deserialize)]
 struct Config {
     // general configuration
     auto_start: bool,
@@ -70,6 +111,12 @@ struct Config {
 
 impl Config {
     // this function will initialize a new config
-    
+    pub fn new() -> Config {
+        Config {
+            // default settings 
+            auto_start: false,
+            log: false,
+        }
+    } 
 
 }
