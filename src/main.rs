@@ -38,6 +38,5 @@ fn run(command: String) -> String
     // custom chadlang interpreter engine, let's goooooooooo
     let mut _interpreter = chadlang::Interpreter::new();
     _interpreter.config("src/settings.json");
-    _interpreter.start();
     command
 }

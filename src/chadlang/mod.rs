@@ -92,10 +92,27 @@ impl Interpreter {
     }
     // This function will end the engine 
     pub fn end(&mut self) {
-        match self.power {
-            true => self.power = false,
-            false => panic!("This machine has already ended!"),
+        if self.config.log == false {
+            match self.power {
+                true => self.power = false,
+                false => panic!("This machine has already ended!"),
+            }
         }
+        else {
+            let _logger = logger::Logger::new();
+            match self.power {
+                true => {
+                    _logger.show_process("Shut down..."); 
+                    self.power = true; 
+                    _logger.show_success("Successfully shut down!");
+                },
+                false => {
+                    _logger.show_error("Error when checking! Panic starting...");
+                    panic!("This machine has already ended!"); 
+                },
+            }
+        }
+
     }
 }
 
