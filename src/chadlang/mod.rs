@@ -10,10 +10,10 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
-use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 pub mod logger;
-
+use logger::Logger;
 // WHAT: Declare an Interpreter Struct for runtime engine
 pub struct Interpreter {
     // WHAT INSIDE:
@@ -55,14 +55,14 @@ impl Interpreter {
         };
         // read the json data
         let s_slice: &str = &s[..];
-        let json: serde_json::Value = serde_json::from_str(s_slice).expect("JSON formatted wrong");
+        let json: Value = serde_json::from_str(s_slice).expect("JSON formatted wrong");
         // start parsing the attributes
         match json["auto_start"] {
-            serde_json::Value::Bool(true) => {self.config.auto_start = true; self.power = true},
+            Value::Bool(true) => {self.config.auto_start = true; self.power = true},
             _ => (),
         }
         match json["log"] {
-            serde_json::Value::Bool(true) => {self.config.log = true;},
+            Value::Bool(true) => {self.config.log = true;},
             _ => (),
         }
     }
@@ -75,7 +75,7 @@ impl Interpreter {
             }
         }
         else {
-            let _logger = logger::Logger::new();
+            let _logger = Logger::new();
             match self.power {
                 false => {
                     _logger.show_process("Power up..."); 
@@ -98,7 +98,7 @@ impl Interpreter {
             }
         }
         else {
-            let _logger = logger::Logger::new();
+            let _logger = Logger::new();
             match self.power {
                 true => {
                     _logger.show_process("Shut down..."); 
@@ -118,7 +118,6 @@ impl Interpreter {
 
 // WHAT: Declare a config struct for configuration
 
-#[derive(Serialize, Deserialize)]
 struct Config {
     // general configuration
     auto_start: bool,

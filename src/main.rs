@@ -40,7 +40,6 @@ fn run(command: String) -> String
     // start the interpreter
     let mut _interpreter = chadlang::Interpreter::new();
     _interpreter.config("src/settings.json");
-    _interpreter.start(); 
     // first make the lexer step
     
     command
