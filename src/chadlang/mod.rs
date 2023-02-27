@@ -55,17 +55,16 @@ impl Interpreter {
         };
         // read the json data
         let s_slice: &str = &s[..];
-        let json: Config =
-            serde_json::from_str(s_slice).expect("JSON was not well-formatted");
-    
-        self.config = json;
-        
-        // start configuring some basic attributes
-        match self.config.auto_start {
-            true => self.power = true,
-            false => self.power = false,
-        };
-
+        let json: serde_json::Value = serde_json::from_str(s_slice).expect("JSON formatted wrong");
+        // start parsing the attributes
+        match json["auto_start"] {
+            serde_json::Value::Bool(true) => {self.config.auto_start = true; self.power = true},
+            _ => (),
+        }
+        match json["log"] {
+            serde_json::Value::Bool(true) => {self.config.log = true;},
+            _ => (),
+        }
     }
     // This function will start the engine 
     pub fn start(&mut self) {

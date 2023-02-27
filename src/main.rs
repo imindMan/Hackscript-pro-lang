@@ -36,7 +36,12 @@ fn main() -> Result<(), io::Error>
 fn run(command: String) -> String 
 {
     // custom chadlang interpreter engine, let's goooooooooo
+    
+    // start the interpreter
     let mut _interpreter = chadlang::Interpreter::new();
     _interpreter.config("src/settings.json");
+    _interpreter.start(); 
+    // first make the lexer step
+    
     command
 }
