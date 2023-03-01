@@ -7,4 +7,18 @@
  * 
 */
 
+// token initialization
+pub struct Token {
+    
+    _type: String,
+    value: String,
 
+}
+
+
+pub struct Lexer {
+
+    input_string: String,
+    tokens: Vec<Token>,
+    
+}

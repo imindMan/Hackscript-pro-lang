@@ -38,7 +38,7 @@ fn run(command: String) -> String
     // custom chadlang interpreter engine, let's goooooooooo
     
     // start the interpreter
-    let mut _interpreter = chadlang::Interpreter::new();
+    let mut _interpreter = chadlang::Interpreter::new(command.clone());
     _interpreter.config("src/settings.json");
     // first make the lexer step
     

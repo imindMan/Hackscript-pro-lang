@@ -14,6 +14,8 @@ use serde_json::Value;
 
 pub mod logger;
 use logger::Logger;
+pub mod lexer;
+use lexer::Lexer;
 // WHAT: Declare an Interpreter Struct for runtime engine
 pub struct Interpreter {
     // WHAT INSIDE:
@@ -27,10 +29,10 @@ pub struct Interpreter {
 
 impl Interpreter {
     // This function will initialize a new Interpreterengine
-    pub fn new() -> Interpreter {
+    pub fn new(string: String) -> Interpreter {
         
         Interpreter {
-            input_string: String::from(""),
+            input_string: string,
             power: false,
             config: Config::new()
         }
