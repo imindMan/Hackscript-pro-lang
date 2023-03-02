@@ -16,6 +16,7 @@ pub mod logger;
 use logger::Logger;
 pub mod lexer;
 use lexer::Lexer;
+
 // WHAT: Declare an Interpreter Struct for runtime engine
 pub struct Interpreter {
     // WHAT INSIDE:
