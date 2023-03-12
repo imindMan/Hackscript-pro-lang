@@ -1,9 +1,8 @@
 [package]
-name = "error_handling"
+name = "position"
 version = "0.1.0"
 edition = "2021"
 
 
 [dependencies]
 
-position = { path = "../position" }
