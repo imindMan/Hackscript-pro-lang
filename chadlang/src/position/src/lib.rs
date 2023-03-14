@@ -1,3 +1,16 @@
+/*
+ * Position implementation
+ *
+ * Really, position uses to keep track on the token position. 
+ * Use mainly for error handling, it's good
+ *
+ *
+ *
+ *
+ * **/
+
+
+// Position initialization
 pub struct Position
 {
 
@@ -7,8 +20,9 @@ pub struct Position
     pub fcontent: String,
 }
 
+// implementation
 impl Position {
-
+    // ofc, a new function to allocate a Position struct
     pub fn new(column: i32, row: i32, fname: String, fcontent: String) -> Position {
 
         Position {
@@ -18,6 +32,8 @@ impl Position {
             fcontent: fcontent
         }
     }
+
+    // make a clone
     pub fn clone(&self) -> Position {
         Position {
             col: self.col,
@@ -28,6 +44,15 @@ impl Position {
     }
 }
 
+// NOTE: syntax while reading the doc: Position(row, column)
+// check if the position is in the valid scope
+//
+// For example: Position(0, 1) is valid in the scope where 
+//                                  pos_start: Position(0, 0)
+//                                  pos_end: Position(0, 5)
+//              Position(0, 2) is invalid in the scope where
+//                                  pos_start: Position(0, 3)
+//                                  pos_end: Position(0, 5)
 pub fn valid_pos
 (
     check_pos: Position,
