@@ -6,7 +6,7 @@
  *
  * 
 */
-
+use std::collections::HashMap;
 // token initialization
 
 pub struct Token {
@@ -21,7 +21,7 @@ pub struct Lexer {
 
     input_string: String,
     tokens: Vec<Token>,
-    
+    type_of_tokens: HashMap<String, String>,
 }
 
 
@@ -54,7 +54,7 @@ impl Lexer {
     
 
     pub fn make_tokens(&self) {
-
+        
     }
 
 
