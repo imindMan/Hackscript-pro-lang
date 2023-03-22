@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "error_handling",
  "lexer",
+ "logger",
  "serde",
  "serde_json",
 ]
@@ -34,6 +35,15 @@ checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
 
 [[package]]
 name = "lexer"
+version = "0.1.0"
+dependencies = [
+ "logger",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "logger"
 version = "0.1.0"
 
 [[package]]

@@ -11,6 +11,7 @@
 
 
 // Position initialization
+#[derive(Debug)]
 pub struct Position
 {
 

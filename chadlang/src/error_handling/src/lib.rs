@@ -11,6 +11,7 @@
  * */
 
 use position::Position;
+#[derive(Debug)]
 pub struct Error 
 {
 

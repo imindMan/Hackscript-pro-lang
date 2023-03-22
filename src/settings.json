@@ -1,4 +1,11 @@
 {
-	"auto_start": true,
-	"log": true
+	"log": true,
+
+
+	"lexer": [
+		["+", "PLUS", "<bool>null"],
+		["-", "MINUS", "<bool>null"],
+		["*", "MUL", "<bool>null"],
+		["/", "DIV", "<bool>null"]
+	] 
 }

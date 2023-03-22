@@ -41,6 +41,5 @@ fn run(command: String) -> String
     let mut _interpreter = Interpreter::new(command.clone());
     _interpreter.config("src/settings.json");
     // first make the lexer step
-    
     command
 }

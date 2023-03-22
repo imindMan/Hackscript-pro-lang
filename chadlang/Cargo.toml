@@ -9,3 +9,4 @@ serde_json = "1.0.48"
 
 error_handling = { path = "src/error_handling" }
 lexer = { path = "src/lexer" }
+logger = {path = "src/logger"}
