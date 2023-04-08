@@ -12,7 +12,6 @@
 // main file hackscript 
 
 use std::io::{self, Write};
-use chadlang::Interpreter;
 // input a command then run Hackscript 
 
 fn main() -> Result<(), io::Error> 
@@ -35,11 +34,5 @@ fn main() -> Result<(), io::Error>
 // run the command 
 fn run(command: String) -> String 
 {
-    // custom chadlang interpreter engine, let's goooooooooo
-    
-    // start the interpreter
-    let mut _interpreter = Interpreter::new(command.clone());
-    _interpreter.config("src/settings.json");
-    // first make the lexer step
     command
 }

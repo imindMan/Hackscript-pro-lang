@@ -13,5 +13,4 @@ Cargo.lock
 # other ignore files
 
 
-chadlang/target
-chadlang/src/**/target
+src/**/target
