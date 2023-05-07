@@ -12,6 +12,7 @@
 // main file hackscript 
 
 use std::io::{self, Write};
+use lexer::Lexer;
 // input a command then run Hackscript 
 
 fn main() -> Result<(), io::Error> 
@@ -34,5 +35,8 @@ fn main() -> Result<(), io::Error>
 // run the command 
 fn run(command: String) -> String 
 {
+    // start lexing
+    let lexer = Lexer::new(String::from("stdin").clone(), command.clone());
+    // let (tokens, error) = lexer.make_tokens();
     command
 }
