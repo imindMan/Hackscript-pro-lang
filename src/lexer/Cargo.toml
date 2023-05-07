@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-
-
-serde = { version = "1.0.104", features = ["derive"] }
-serde_json = "1.0.48"
+hacktypes = {path = "../hacktypes/"}
+error_handling = {path = "../error_handling" }
+position = { path = "../position"}

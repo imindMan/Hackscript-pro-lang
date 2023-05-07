@@ -3,5 +3,35 @@
 version = 3
 
 [[package]]
+name = "error_handling"
+version = "0.1.0"
+dependencies = [
+ "position",
+]
+
+[[package]]
 name = "hackscript"
+version = "0.1.0"
+dependencies = [
+ "lexer",
+]
+
+[[package]]
+name = "hacktypes"
+version = "0.1.0"
+dependencies = [
+ "position",
+]
+
+[[package]]
+name = "lexer"
+version = "0.1.0"
+dependencies = [
+ "error_handling",
+ "hacktypes",
+ "position",
+]
+
+[[package]]
+name = "position"
 version = "0.1.0"
