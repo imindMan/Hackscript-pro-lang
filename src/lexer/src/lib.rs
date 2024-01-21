@@ -24,7 +24,6 @@ impl Token {
         }
     }
 }
-
 // Lexer definition
 pub struct Lexer {
     curr_char: Option<char>,
@@ -81,7 +80,6 @@ impl Lexer {
             self.curr_char = None;
         }
     }
-
     // make some tokens
     pub fn make_tokens(&mut self) -> (Option<Vec<Token>>, Option<Error>) {
         let mut tokens: Option<Vec<Token>> = Some(Vec::new());
