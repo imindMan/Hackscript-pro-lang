@@ -39,7 +39,7 @@ impl Lexer {
         Lexer {
             curr_char: match String::from(fcontent.clone()).as_str().chars().nth(0) {
                 Some(char) => Some(char),
-                _ => panic!("NO EXISTED CHARACTER!!!!!"),
+                _ => panic!("No existed character detected"),
             },
             fname: fname.clone(),
             fcontent: fcontent.clone(),

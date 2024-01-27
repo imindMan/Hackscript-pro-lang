@@ -60,7 +60,7 @@ impl Error {
             current_index += 1;
             let current_char = match text.as_str().chars().nth(current_index) {
                 Some(char) => char,
-                _ => panic!("NO EXISTED CHARACTER!!!!!"),
+                _ => panic!("No existed character detected"),
             };
 
             if current_char == '\n' {
@@ -76,7 +76,7 @@ impl Error {
         while check_pos.row <= pos_end.row {
             error_message.push(match text.as_str().chars().nth(current_index) {
                 Some(char) => char,
-                _ => panic!("NO EXISTED CHARACTER!!!!!"),
+                _ => panic!("No existed character detected"),
             });
             current_index += 1;
             buffer_col += 1; // buffer_col basically keeps track of how many characters in the current
@@ -84,7 +84,7 @@ impl Error {
 
             let current_char = match text.as_str().chars().nth(current_index) {
                 Some(char) => char,
-                _ => panic!("NO EXISTED CHARACTER!!!!!"),
+                _ => panic!("No existed character detected"),
             };
             // ahh, we get the end of a row, let's add of highlighting!
             if current_char == '\n' {
