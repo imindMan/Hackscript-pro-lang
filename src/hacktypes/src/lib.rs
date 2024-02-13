@@ -13,3 +13,4 @@ pub const DIVIDE: &str = "/";
 // numbering shouldn't be so complicated
 
 pub const NUMBER: &str = "NUMBER";
+pub const NUMBERLIST: &str = "0123456789";

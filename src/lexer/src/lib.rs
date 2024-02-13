@@ -80,6 +80,48 @@ impl Lexer {
             self.curr_char = None;
         }
     }
+    // number creator
+    pub fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
+        let mut value: String = String::new();
+        value.push(self.curr_char.unwrap());
+
+        while hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == true {
+            self.advance();
+            if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == true {
+                value.push(self.curr_char.unwrap());
+            } else if self.curr_char.unwrap() == '.' {
+                value.push(self.curr_char.unwrap());
+                self.advance();
+                if self.curr_char == None
+                    || hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == false
+                {
+                    let tok: Option<Token> = None;
+
+                    let mut err = Some(Error::new("Undefined character".to_string()));
+                    self.curr_pos.literal_pos -= 1;
+                    if self.curr_char.unwrap() == '\n' {
+                        self.curr_pos.col = self.curr_pos.col - 1;
+                        self.curr_pos.row = 0;
+                    } else {
+                        self.curr_pos.col = self.curr_pos.col - 1;
+                    };
+
+                    err.as_mut().unwrap().error_message = err
+                        .as_mut()
+                        .unwrap()
+                        .error_messaging(self.curr_pos.clone(), self.curr_pos.clone());
+                    return (tok, err);
+                } else {
+                    value.push(self.curr_char.unwrap());
+                    continue;
+                }
+            }
+        }
+        let tok: Option<Token> = Some(Token::new(String::from(hacktypes::NUMBER), value));
+        let err: Option<Error> = None;
+        (tok, err)
+    }
+
     // make some tokens
     pub fn make_tokens(&mut self) -> (Option<Vec<Token>>, Option<Error>) {
         let mut tokens: Option<Vec<Token>> = Some(Vec::new());
@@ -112,6 +154,15 @@ impl Lexer {
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
+            } else if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == true {
+                let (token, error) = self.number_token();
+                if error.is_some() {
+                    tokens = None;
+                    err = error;
+                    break;
+                } else {
+                    tokens.as_mut().unwrap().push(token.unwrap())
+                }
             } else {
                 tokens = None;
                 err = Some(Error::new("Undefined character".to_string()));

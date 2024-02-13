@@ -1,11 +1,9 @@
-// This is the Hackscript rebuild project written by imindMan
+// INFO: This is the Hackscript rebuild project written by imindMan
 // Due to slow speed of Hackscript in Python, Hackscript will be recreated again.
-//
 // Author: imindMan
 // Date: 12-02-2023 08:35 PM (GMT +7)
 // Description: all the description you can find in the official repo
 // https://github.com/imindMan/Hackscript-pro-lang
-//
 // Rebuild in Rust
 
 // main file hackscript
