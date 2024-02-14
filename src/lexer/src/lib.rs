@@ -154,6 +154,18 @@ impl Lexer {
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
+            } else if self.curr_char.unwrap() == '(' {
+                let token: Token =
+                    self.create_a_token(String::from(hacktypes::PARENTHESE_OPEN), String::from(""));
+                tokens.as_mut().unwrap().push(token);
+                self.advance();
+                continue;
+            } else if self.curr_char.unwrap() == ')' {
+                let token: Token = self
+                    .create_a_token(String::from(hacktypes::PARENTHESE_CLOSE), String::from(""));
+                tokens.as_mut().unwrap().push(token);
+                self.advance();
+                continue;
             } else if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == true {
                 let (token, error) = self.number_token();
                 if error.is_some() {
