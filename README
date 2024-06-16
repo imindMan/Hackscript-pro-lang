@@ -1,6 +1,6 @@
 Firstly, this language is designed to hack your brain. Specifically, your programming style. It mainly focuses on short syntax, makes sure your code is as short as possible.
 Pretty good for speedcoding actually. Although nowadays people can use code autocomplete or even Copilot, this may be useful for someone who loves to write code in a fast and different way.
 
-Hackscript is written in Rust. Quite some effort to switch to C, C++ or maybe Nim? Anyway for now Rust.
+Hackscript is written in Rust.
 
 Available soon.
