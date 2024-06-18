@@ -1,5 +1,7 @@
 // Some Hackscript types are defined here
 
+// END-OF-LIFE
+pub const EOF: &str = "EOF";
 // Operators
 
 pub const PLUS: &str = "PLUS";

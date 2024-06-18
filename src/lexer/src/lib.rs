@@ -239,7 +239,16 @@ impl Lexer {
                 break; // Exit the loop in case of an undefined character
             }
         }
-
-        (tokens, err)
+        if err.is_none() {
+            tokens.as_mut().unwrap().push(self.create_a_token(
+                String::from(hacktypes::EOF),
+                String::from(""),
+                self.curr_pos.clone(),
+                self.curr_pos.clone(),
+            ));
+            (tokens, err)
+        } else {
+            (tokens, err)
+        }
     }
 }

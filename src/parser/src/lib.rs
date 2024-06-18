@@ -29,4 +29,12 @@ impl Parser {
         }
         self.curr_tok = self.tokens[self.curr_index].clone();
     }
+
+    // pub fn factor(&self) -> nodes::NumberNode {}
+    // pub fn term(&self) -> nodes::FormingCalc {}
+    // // for now this is the highest node
+    // pub fn calc(&self) -> nodes::FormingCalc {
+    //     // create term
+    //     let term = self.term();
+    // }
 }
