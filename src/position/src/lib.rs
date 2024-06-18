@@ -33,7 +33,13 @@ impl Position {
     }
 
     // make a clone
-    pub fn clone(&self) -> Position {
+    pub fn display(&self) {
+        print!("({}, {})", self.row, self.col);
+    }
+}
+
+impl Clone for Position {
+    fn clone(&self) -> Self {
         Position {
             col: self.col,
             row: self.row,
@@ -41,9 +47,6 @@ impl Position {
             fname: self.fname.clone(),
             fcontent: self.fcontent.clone(),
         }
-    }
-    pub fn display(&self) {
-        print!("({}, {})", self.row, self.col);
     }
 }
 
@@ -74,5 +77,5 @@ pub fn valid_pos(check_pos: Position, pos_start: Position, pos_end: Position) ->
             return true;
         }
     }
-    return false;
+    false
 }

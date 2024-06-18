@@ -14,6 +14,7 @@ name = "hackscript"
 version = "0.1.0"
 dependencies = [
  "lexer",
+ "parser",
 ]
 
 [[package]]
@@ -29,6 +30,27 @@ version = "0.1.0"
 dependencies = [
  "error_handling",
  "hacktypes",
+ "position",
+]
+
+[[package]]
+name = "nodes"
+version = "0.1.0"
+dependencies = [
+ "error_handling",
+ "hacktypes",
+ "lexer",
+ "position",
+]
+
+[[package]]
+name = "parser"
+version = "0.1.0"
+dependencies = [
+ "error_handling",
+ "hacktypes",
+ "lexer",
+ "nodes",
  "position",
 ]
 

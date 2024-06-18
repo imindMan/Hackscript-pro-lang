@@ -1,0 +1,11 @@
+[package]
+name = "parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lexer = {path = "../lexer"}
+nodes = {path = "../nodes"}
+error_handling = {path = "../error_handling" }
+position = { path = "../position"}
+hacktypes = {path = "../hacktypes/"}

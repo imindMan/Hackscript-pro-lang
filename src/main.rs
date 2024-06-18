@@ -32,7 +32,7 @@ fn main() -> Result<(), io::Error> {
 // run the command
 fn run(command: String) {
     // start lexing
-    let mut lexer = Lexer::new(String::from("stdin").clone(), command.clone());
+    let mut lexer = Lexer::new(String::from("stdin"), command);
     let (tokens, error) = lexer.make_tokens();
     if error.is_some() {
         print!(

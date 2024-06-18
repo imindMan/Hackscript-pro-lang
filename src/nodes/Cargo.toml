@@ -1,0 +1,10 @@
+[package]
+name = "nodes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lexer = {path =  "../lexer/"}
+error_handling = {path = "../error_handling" }
+position = { path = "../position"}
+hacktypes = {path = "../hacktypes/"}

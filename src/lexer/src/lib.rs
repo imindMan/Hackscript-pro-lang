@@ -13,17 +13,33 @@ use position::Position;
 #[derive(Debug)]
 pub struct Token {
     _type: String,
-    value: String,
+    pub value: String,
+    pos_start: Position,
+    pos_end: Position,
 }
 
 impl Token {
-    pub fn new(_type: String, value: String) -> Token {
+    pub fn new(_type: String, value: String, pos_start_: Position, pos_end_: Position) -> Token {
         Token {
-            _type: _type.clone(),
-            value: value.clone(),
+            _type: _type,
+            value: value,
+            pos_start: pos_start_,
+            pos_end: pos_end_,
         }
     }
 }
+
+impl Clone for Token {
+    fn clone(&self) -> Self {
+        Token {
+            _type: self._type.clone(),
+            value: self.value.clone(),
+            pos_start: self.pos_start.clone(),
+            pos_end: self.pos_end.clone(),
+        }
+    }
+}
+
 // Lexer definition
 pub struct Lexer {
     curr_char: Option<char>,
@@ -37,7 +53,7 @@ impl Lexer {
     // Lexer constructor
     pub fn new(fname: String, fcontent: String) -> Lexer {
         Lexer {
-            curr_char: match String::from(fcontent.clone()).as_str().chars().nth(0) {
+            curr_char: match fcontent.clone().as_str().chars().next() {
                 Some(char) => Some(char),
                 _ => panic!("No existed character detected"),
             },
@@ -47,8 +63,14 @@ impl Lexer {
         }
     }
     // create a token instance
-    pub fn create_a_token(&self, _type: String, value: String) -> Token {
-        let tok = Token::new(_type.clone(), value.clone());
+    pub fn create_a_token(
+        &self,
+        _type: String,
+        value: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> Token {
+        let tok = Token::new(_type, value, pos_start, pos_end);
         tok
     }
 
@@ -57,7 +79,9 @@ impl Lexer {
         // check if the position is valid
         let temp_pos = self.curr_pos.literal_pos + 1;
 
-        let curr_char = match String::from(self.fcontent.clone())
+        let curr_char = match self
+            .fcontent
+            .clone()
             .as_str()
             .chars()
             .nth(temp_pos.try_into().unwrap())
@@ -67,13 +91,13 @@ impl Lexer {
         };
         if curr_char != 'N' {
             // change the current position
-            self.curr_pos.literal_pos = self.curr_pos.literal_pos + 1;
+            self.curr_pos.literal_pos += 1;
 
             if self.curr_char.unwrap() == '\n' {
-                self.curr_pos.col = self.curr_pos.col + 1;
+                self.curr_pos.col += 1;
                 self.curr_pos.row = 0;
             } else {
-                self.curr_pos.col = self.curr_pos.col + 1;
+                self.curr_pos.col += 1;
             };
             self.curr_char = Some(curr_char);
         } else {
@@ -82,6 +106,7 @@ impl Lexer {
     }
     // number creator
     pub fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
+        let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
         value.push(self.curr_char.unwrap());
 
@@ -100,10 +125,10 @@ impl Lexer {
                     let mut err = Some(Error::new("Undefined character".to_string()));
                     self.curr_pos.literal_pos -= 1;
                     if self.curr_char.unwrap() == '\n' {
-                        self.curr_pos.col = self.curr_pos.col - 1;
+                        self.curr_pos.col -= 1;
                         self.curr_pos.row = 0;
                     } else {
-                        self.curr_pos.col = self.curr_pos.col - 1;
+                        self.curr_pos.col -= 1;
                     };
 
                     err.as_mut().unwrap().error_message = err
@@ -117,7 +142,12 @@ impl Lexer {
                 }
             }
         }
-        let tok: Option<Token> = Some(Token::new(String::from(hacktypes::NUMBER), value));
+        let tok: Option<Token> = Some(Token::new(
+            String::from(hacktypes::NUMBER),
+            value,
+            pos_start,
+            self.curr_pos.clone(),
+        ));
         let err: Option<Error> = None;
         (tok, err)
     }
@@ -131,38 +161,62 @@ impl Lexer {
                 self.advance();
                 continue;
             } else if self.curr_char.unwrap() == '+' {
-                let token: Token =
-                    self.create_a_token(String::from(hacktypes::PLUS), String::from(""));
+                let token: Token = self.create_a_token(
+                    String::from(hacktypes::PLUS),
+                    String::from(""),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                );
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
             } else if self.curr_char.unwrap() == '-' {
-                let token: Token =
-                    self.create_a_token(String::from(hacktypes::MINUS), String::from(""));
+                let token: Token = self.create_a_token(
+                    String::from(hacktypes::MINUS),
+                    String::from(""),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                );
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
             } else if self.curr_char.unwrap() == '*' {
-                let token: Token =
-                    self.create_a_token(String::from(hacktypes::MULTIPLY), String::from(""));
+                let token: Token = self.create_a_token(
+                    String::from(hacktypes::MULTIPLY),
+                    String::from(""),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                );
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
             } else if self.curr_char.unwrap() == '/' {
-                let token: Token =
-                    self.create_a_token(String::from(hacktypes::DIVIDE), String::from(""));
+                let token: Token = self.create_a_token(
+                    String::from(hacktypes::DIVIDE),
+                    String::from(""),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                );
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
             } else if self.curr_char.unwrap() == '(' {
-                let token: Token =
-                    self.create_a_token(String::from(hacktypes::PARENTHESE_OPEN), String::from(""));
+                let token: Token = self.create_a_token(
+                    String::from(hacktypes::PARENTHESE_OPEN),
+                    String::from(""),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                );
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
             } else if self.curr_char.unwrap() == ')' {
-                let token: Token = self
-                    .create_a_token(String::from(hacktypes::PARENTHESE_CLOSE), String::from(""));
+                let token: Token = self.create_a_token(
+                    String::from(hacktypes::PARENTHESE_CLOSE),
+                    String::from(""),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                );
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;

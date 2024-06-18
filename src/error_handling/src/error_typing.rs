@@ -8,6 +8,7 @@ pub fn error_type_handling(_type: String) -> String {
     let error_type: String;
     match _type.as_str() {
         "Undefined character" => error_type = undefined_character(_type.clone()),
+        "Number error" => error_type = number_error(_type.clone()),
         _ => panic!("Unspecified error type"),
     }
     error_type
@@ -20,5 +21,11 @@ pub fn error_type_handling(_type: String) -> String {
 // Undefined character type
 fn undefined_character(_type: String) -> String {
     let error_string: String = "Error type: ".to_string() + &_type;
+    error_string
+}
+
+fn number_error(_type: String) -> String {
+    let error_string: String =
+        "Error type: ".to_string() + &_type + ". This number cannot be defined";
     error_string
 }
