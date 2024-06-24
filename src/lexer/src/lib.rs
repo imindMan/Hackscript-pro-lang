@@ -12,7 +12,7 @@ use position::Position;
 // Token definition
 #[derive(Debug)]
 pub struct Token {
-    _type: String,
+    pub _type: String,
     pub value: String,
     pos_start: Position,
     pos_end: Position,
@@ -117,12 +117,12 @@ impl Lexer {
             } else if self.curr_char.unwrap() == '.' {
                 value.push(self.curr_char.unwrap());
                 self.advance();
-                if self.curr_char == None
+                if self.curr_char.is_none()
                     || hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == false
                 {
                     let tok: Option<Token> = None;
 
-                    let mut err = Some(Error::new("Undefined character".to_string()));
+                    let mut err = Some(Error::new("Undefined character".to_string(), value));
                     self.curr_pos.literal_pos -= 1;
                     if self.curr_char.unwrap() == '\n' {
                         self.curr_pos.col -= 1;
@@ -231,7 +231,10 @@ impl Lexer {
                 }
             } else {
                 tokens = None;
-                err = Some(Error::new("Undefined character".to_string()));
+                err = Some(Error::new(
+                    "Undefined character".to_string(),
+                    self.curr_char.expect("No character here").to_string(),
+                ));
                 err.as_mut().unwrap().error_message = err
                     .as_mut()
                     .unwrap()

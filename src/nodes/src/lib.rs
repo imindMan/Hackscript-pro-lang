@@ -5,24 +5,6 @@
 
 use lexer::Token;
 
-// AST container itself
-// For now, the FormingCalc is the root of everything
-
-pub struct AST {
-    root: FormingCalc,
-    level: i32,
-}
-
-impl AST {
-    pub fn new(root_: FormingCalc) -> AST {
-        AST {
-            root: root_,
-            level: 0,
-        }
-    }
-    pub fn display() {}
-}
-
 // NUMBER NODE: for numbers only
 pub struct NumberNode {
     token: Token,
@@ -44,16 +26,35 @@ impl NumberNode {
     }
 }
 
-// Serve for forming the calculation between those number nodes
-pub struct FormingCalc {
+// For now, Term class is served for the multiplication
+
+pub struct Term {
     node1: NumberNode,
     operator: String,
     node2: NumberNode,
 }
 
-impl FormingCalc {
-    pub fn new(node1_: NumberNode, operator_: String, node2_: NumberNode) -> FormingCalc {
-        FormingCalc {
+impl Term {
+    pub fn new(node1_: NumberNode, operator_: String, node2_: NumberNode) -> Term {
+        Term {
+            node1: node1_,
+            operator: operator_,
+            node2: node2_,
+        }
+    }
+}
+
+// And Expr class is served for the whole arithmetic expression
+
+pub struct Expr {
+    node1: Term,
+    operator: String,
+    node2: Term,
+}
+
+impl Expr {
+    pub fn new(node1_: Term, operator_: String, node2_: Term) -> Expr {
+        Expr {
             node1: node1_,
             operator: operator_,
             node2: node2_,

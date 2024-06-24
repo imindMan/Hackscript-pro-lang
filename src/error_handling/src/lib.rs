@@ -9,13 +9,15 @@ use position::Position;
 #[derive(Debug)]
 pub struct Error {
     kind: String,
+    extra_string: String,
     pub error_message: String,
 }
 
 impl Error {
-    pub fn new(kind: String) -> Error {
+    pub fn new(kind: String, extra_string: String) -> Error {
         Error {
             kind: kind,
+            extra_string: extra_string,
             error_message: String::from(""),
         }
     }
@@ -106,7 +108,10 @@ impl Error {
             }
             // the loop will continue...
         }
-        error_message.push_str(&error_typing::error_type_handling(self.kind.clone()));
+        error_message.push_str(&error_typing::error_type_handling((
+            self.kind.clone(),
+            self.extra_string.clone(),
+        )));
         error_message
     }
 }

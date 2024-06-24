@@ -2,6 +2,8 @@
 //
 // This bit of code contains some parser initialization to get into the interpreter.
 
+use error_handling::Error;
+use hacktypes;
 use lexer::Token;
 use nodes;
 
@@ -30,11 +32,20 @@ impl Parser {
         self.curr_tok = self.tokens[self.curr_index].clone();
     }
 
-    // pub fn factor(&self) -> nodes::NumberNode {}
-    // pub fn term(&self) -> nodes::FormingCalc {}
-    // // for now this is the highest node
-    // pub fn calc(&self) -> nodes::FormingCalc {
-    //     // create term
-    //     let term = self.term();
-    // }
+    pub fn factor(&mut self) -> (Option<nodes::NumberNode>, Option<Error>) {
+        if self.curr_tok._type == hacktypes::NUMBER {
+            self.advance();
+            let factor: Option<nodes::NumberNode> =
+                Some(nodes::NumberNode::new(self.curr_tok.clone()));
+            let err: Option<Error> = None;
+            (factor, err)
+        } else {
+            let factor: Option<nodes::NumberNode> = None;
+            let err: Option<Error> = Some(Error::new(
+                "Expect".to_string(),
+                "A number type token has been expected".to_string(),
+            ));
+            (factor, err)
+        }
+    }
 }
