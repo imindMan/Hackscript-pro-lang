@@ -15,7 +15,7 @@ use std::io::{self, Write};
 fn main() -> Result<(), io::Error> {
     loop {
         // create a string to store command
-        let mut command = String::new();
+        let mut command: String = String::new();
 
         print!("hackscript>");
 

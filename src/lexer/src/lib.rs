@@ -122,7 +122,8 @@ impl Lexer {
                 {
                     let tok: Option<Token> = None;
 
-                    let mut err = Some(Error::new("Undefined character".to_string(), value));
+                    let mut err = Some(Error::new("Number error".to_string(), value));
+                    
                     self.curr_pos.literal_pos -= 1;
                     if self.curr_char.unwrap() == '\n' {
                         self.curr_pos.col -= 1;
@@ -134,7 +135,7 @@ impl Lexer {
                     err.as_mut().unwrap().error_message = err
                         .as_mut()
                         .unwrap()
-                        .error_messaging(self.curr_pos.clone(), self.curr_pos.clone());
+                        .error_messaging(pos_start, self.curr_pos.clone());
                     return (tok, err);
                 } else {
                     value.push(self.curr_char.unwrap());
