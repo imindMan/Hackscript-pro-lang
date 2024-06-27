@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 lexer = {path = "../lexer"}
-nodes = {path = "../nodes"}
+ast = {path = "../ast"}
 error_handling = {path = "../error_handling" }
 position = { path = "../position"}
 hacktypes = {path = "../hacktypes/"}

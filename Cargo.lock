@@ -3,6 +3,16 @@
 version = 3
 
 [[package]]
+name = "ast"
+version = "0.1.0"
+dependencies = [
+ "error_handling",
+ "hacktypes",
+ "lexer",
+ "position",
+]
+
+[[package]]
 name = "error_handling"
 version = "0.1.0"
 dependencies = [
@@ -34,23 +44,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "nodes"
-version = "0.1.0"
-dependencies = [
- "error_handling",
- "hacktypes",
- "lexer",
- "position",
-]
-
-[[package]]
 name = "parser"
 version = "0.1.0"
 dependencies = [
+ "ast",
  "error_handling",
  "hacktypes",
  "lexer",
- "nodes",
  "position",
 ]
 

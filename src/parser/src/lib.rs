@@ -2,10 +2,10 @@
 //
 // This bit of code contains some parser initialization to get into the interpreter.
 
+use ast;
 use error_handling::Error;
 use hacktypes;
 use lexer::Token;
-use nodes;
 
 struct Parser {
     tokens: Vec<Token>,
@@ -32,15 +32,30 @@ impl Parser {
         self.curr_tok = self.tokens[self.curr_index].clone();
     }
 
-    pub fn factor(&mut self) -> (Option<nodes::NumberNode>, Option<Error>) {
+    // pub fn factor(&mut self) -> (Option<ast::NumberNode>, Option<Error>) {
+    //     if self.curr_tok._type == hacktypes::NUMBER {
+    //         self.advance();
+    //         let factor: Option<ast::NumberNode> = Some(ast::NumberNode::new(self.curr_tok.clone()));
+    //         let err: Option<Error> = None;
+    //         (factor, err)
+    //     } else {
+    //         let factor: Option<ast::NumberNode> = None;
+    //         let err: Option<Error> = Some(Error::new(
+    //             "Expect".to_string(),
+    //             "A number type token has been expected".to_string(),
+    //         ));
+    //         (factor, err)
+    //     }
+    // }
+    //
+    pub fn factor(&mut self) -> (Option<ast::AST>, Option<Error>) {
         if self.curr_tok._type == hacktypes::NUMBER {
             self.advance();
-            let factor: Option<nodes::NumberNode> =
-                Some(nodes::NumberNode::new(self.curr_tok.clone()));
+            let factor: Option<ast::AST> = Some(ast::AST::new_factor(self.curr_tok.clone()));
             let err: Option<Error> = None;
             (factor, err)
         } else {
-            let factor: Option<nodes::NumberNode> = None;
+            let factor: Option<ast::AST> = None;
             let err: Option<Error> = Some(Error::new(
                 "Expect".to_string(),
                 "A number type token has been expected".to_string(),
@@ -48,6 +63,4 @@ impl Parser {
             (factor, err)
         }
     }
-
-    
 }
