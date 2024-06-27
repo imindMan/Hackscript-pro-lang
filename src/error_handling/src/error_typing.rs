@@ -27,13 +27,14 @@ fn undefined_character(_type: String, character_not_defined: String) -> String {
 }
 
 fn number_error(_type: String, number_not_defined: String) -> String {
-    let error_string: String =
-        "Error type: ".to_string() + &_type + ". This number cannot be defined: " + &number_not_defined;
+    let error_string: String = "Error type: ".to_string()
+        + &_type
+        + ". This number cannot be defined: "
+        + &number_not_defined;
     error_string
 }
 
 fn expect(_type: String, string: String) -> String {
-    let error_string: String =
-        "Error type: ".to_string() + &_type + "\n" + "What to expect: " + &string;
+    let error_string: String = "Error: ".to_string() + &_type + " " + &string;
     error_string
 }

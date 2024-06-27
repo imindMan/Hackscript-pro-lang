@@ -9,6 +9,7 @@
 // main file hackscript
 
 use lexer::Lexer;
+use parser::Parser;
 use std::io::{self, Write};
 // input a command then run Hackscript
 
@@ -40,6 +41,19 @@ fn run(command: String) {
             error.unwrap().error_message
         );
     } else {
-        print!("{:#?}", tokens);
+        let mut parser = Parser::new(tokens.unwrap());
+        let (ast, err) = parser.parse();
+        if err.is_some() {
+            print!(
+                "HackScript detected some error(s): \n{} \n",
+                err.unwrap().error_message
+            );
+        } else {
+            if ast.is_none() {
+                print!("");
+            } else {
+                print!("Parser:\n{:#?}\n", ast.unwrap());
+            }
+        }
     }
 }

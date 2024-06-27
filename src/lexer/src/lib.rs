@@ -10,12 +10,12 @@ use error_handling::Error;
 use position::Position;
 
 // Token definition
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     pub _type: String,
     pub value: String,
-    pos_start: Position,
-    pos_end: Position,
+    pub pos_start: Position,
+    pub pos_end: Position,
 }
 
 impl Token {
@@ -25,17 +25,6 @@ impl Token {
             value: value,
             pos_start: pos_start_,
             pos_end: pos_end_,
-        }
-    }
-}
-
-impl Clone for Token {
-    fn clone(&self) -> Self {
-        Token {
-            _type: self._type.clone(),
-            value: self.value.clone(),
-            pos_start: self.pos_start.clone(),
-            pos_end: self.pos_end.clone(),
         }
     }
 }
@@ -104,6 +93,7 @@ impl Lexer {
             self.curr_char = None;
         }
     }
+
     // number creator
     pub fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
         let pos_start = self.curr_pos.clone();
@@ -123,7 +113,7 @@ impl Lexer {
                     let tok: Option<Token> = None;
 
                     let mut err = Some(Error::new("Number error".to_string(), value));
-                    
+
                     self.curr_pos.literal_pos -= 1;
                     if self.curr_char.unwrap() == '\n' {
                         self.curr_pos.col -= 1;

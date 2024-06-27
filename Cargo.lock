@@ -23,6 +23,7 @@ dependencies = [
 name = "hackscript"
 version = "0.1.0"
 dependencies = [
+ "ast",
  "lexer",
  "parser",
 ]

@@ -3,27 +3,8 @@
 //
 //
 use lexer::Token;
-// // NUMBER NODE: for numbers only
-// pub struct NumberNode {
-//     token: Token,
-//     identifier: String,
-// }
 
-// impl NumberNode {
-//     pub fn new(token_: Token) -> NumberNode {
-//         let mut identifier_: String = String::new();
-//         if token_.value.contains('.') {
-//             identifier_.push_str("float");
-//         } else {
-//             identifier_.push_str("integer");
-//         }
-//         NumberNode {
-//             token: token_,
-//             identifier: identifier_,
-//         }
-//     }
-// }
-
+#[derive(Debug, Clone)]
 pub enum AST {
     Factor {
         identifier: String,
