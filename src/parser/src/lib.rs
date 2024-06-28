@@ -5,6 +5,7 @@
 use ast::AST;
 use error_handling::Error;
 use lexer::Token;
+use position::Position;
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -41,6 +42,21 @@ impl Parser {
         self.curr_tok = self.tokens[self.curr_index].clone();
     }
 
+    fn generate_error(
+        &mut self,
+        r#type: String,
+        extra_string: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> (Option<AST>, Option<Error>) {
+        let ast: Option<AST> = None;
+        let mut err: Option<Error> = Some(Error::new(r#type, extra_string));
+        err.as_mut()
+            .unwrap()
+            .imply_error_message(pos_start, pos_end);
+        (ast, err)
+    }
+
     fn factor(&mut self) -> (Option<AST>, Option<Error>) {
         if self.curr_tok._type == hacktypes::NUMBER {
             let factor: Option<AST> = Some(AST::new_factor(self.curr_tok.clone()));
@@ -48,28 +64,19 @@ impl Parser {
             self.advance();
             (factor, err)
         } else if self.curr_tok._type == hacktypes::EOF {
-            let factor: Option<AST> = None;
-            let mut err: Option<Error> = Some(Error::new(
+            return self.generate_error(
                 "Expect".to_string(),
                 "a number type token, found EOF".to_string(),
-            ));
-            err.as_mut().unwrap().imply_error_message(
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
-            (factor, err)
         } else {
-            let factor: Option<AST> = None;
-            let mut err: Option<Error> = Some(Error::new(
+            return self.generate_error(
                 "Expect".to_string(),
                 "a number type token".to_string(),
-            ));
-            err.as_mut().unwrap().imply_error_message(
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
-
-            (factor, err)
         }
     }
 
@@ -79,16 +86,12 @@ impl Parser {
             return (node1, err1);
         }
         if self.curr_tok._type == hacktypes::NUMBER {
-            let term: Option<AST> = None;
-            let mut err: Option<Error> = Some(Error::new(
+            return self.generate_error(
                 "Expect".to_string(),
-                "an operator like '+', '-', '*', or '/', found a number".to_string(),
-            ));
-            err.as_mut().unwrap().imply_error_message(
+                "an operator like '+', '-', '*' or '/', found a number".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
-            return (term, err);
         }
 
         let mut term: Option<AST> = None;
@@ -125,16 +128,12 @@ impl Parser {
             return (node1, err1);
         }
         if self.curr_tok._type == hacktypes::NUMBER {
-            let expr: Option<AST> = None;
-            let mut err: Option<Error> = Some(Error::new(
+            return self.generate_error(
                 "Expect".to_string(),
-                "an operator like '+', '-', '*', or '/', found a number".to_string(),
-            ));
-            err.as_mut().unwrap().imply_error_message(
+                "an operator like '+', '-', '*' or '/', found a number".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
-            return (expr, err);
         }
         let mut expr: Option<AST> = None;
 

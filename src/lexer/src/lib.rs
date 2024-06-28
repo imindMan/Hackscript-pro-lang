@@ -52,7 +52,7 @@ impl Lexer {
         }
     }
     // create a token instance
-    pub fn create_a_token(
+    fn create_a_token(
         &self,
         _type: String,
         value: String,
@@ -64,7 +64,7 @@ impl Lexer {
     }
 
     // move to another character
-    pub fn advance(&mut self) {
+    fn advance(&mut self) {
         // check if the position is valid
         let temp_pos = self.curr_pos.literal_pos + 1;
 
@@ -95,7 +95,7 @@ impl Lexer {
     }
 
     // number creator
-    pub fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
+    fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
         let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
         value.push(self.curr_char.unwrap());
