@@ -100,15 +100,15 @@ impl Lexer {
         let mut value: String = String::new();
         value.push(self.curr_char.unwrap());
 
-        while hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == true {
+        while hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
             self.advance();
-            if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == true {
+            if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
                 value.push(self.curr_char.unwrap());
             } else if self.curr_char.unwrap() == '.' {
                 value.push(self.curr_char.unwrap());
                 self.advance();
                 if self.curr_char.is_none()
-                    || hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == false
+                    || !hacktypes::NUMBERLIST.contains(self.curr_char.unwrap())
                 {
                     let tok: Option<Token> = None;
 
@@ -121,11 +121,10 @@ impl Lexer {
                     } else {
                         self.curr_pos.col -= 1;
                     };
-
-                    err.as_mut().unwrap().error_message = err
-                        .as_mut()
+                    err.as_mut()
                         .unwrap()
-                        .error_messaging(pos_start, self.curr_pos.clone());
+                        .imply_error_message(pos_start, self.curr_pos.clone());
+
                     return (tok, err);
                 } else {
                     value.push(self.curr_char.unwrap());
@@ -211,7 +210,7 @@ impl Lexer {
                 tokens.as_mut().unwrap().push(token);
                 self.advance();
                 continue;
-            } else if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) == true {
+            } else if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
                 let (token, error) = self.number_token();
                 if error.is_some() {
                     tokens = None;
@@ -226,10 +225,9 @@ impl Lexer {
                     "Undefined character".to_string(),
                     self.curr_char.expect("No character here").to_string(),
                 ));
-                err.as_mut().unwrap().error_message = err
-                    .as_mut()
+                err.as_mut()
                     .unwrap()
-                    .error_messaging(self.curr_pos.clone(), self.curr_pos.clone());
+                    .imply_error_message(self.curr_pos.clone(), self.curr_pos.clone());
                 break; // Exit the loop in case of an undefined character
             }
         }

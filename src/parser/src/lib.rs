@@ -53,7 +53,7 @@ impl Parser {
                 "Expect".to_string(),
                 "a number type token, found EOF".to_string(),
             ));
-            err.as_mut().unwrap().error_message = err.as_mut().unwrap().error_messaging(
+            err.as_mut().unwrap().imply_error_message(
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
@@ -64,7 +64,7 @@ impl Parser {
                 "Expect".to_string(),
                 "a number type token".to_string(),
             ));
-            err.as_mut().unwrap().error_message = err.as_mut().unwrap().error_messaging(
+            err.as_mut().unwrap().imply_error_message(
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
@@ -84,7 +84,7 @@ impl Parser {
                 "Expect".to_string(),
                 "an operator like '+', '-', '*', or '/', found a number".to_string(),
             ));
-            err.as_mut().unwrap().error_message = err.as_mut().unwrap().error_messaging(
+            err.as_mut().unwrap().imply_error_message(
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
@@ -130,7 +130,7 @@ impl Parser {
                 "Expect".to_string(),
                 "an operator like '+', '-', '*', or '/', found a number".to_string(),
             ));
-            err.as_mut().unwrap().error_message = err.as_mut().unwrap().error_messaging(
+            err.as_mut().unwrap().imply_error_message(
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );

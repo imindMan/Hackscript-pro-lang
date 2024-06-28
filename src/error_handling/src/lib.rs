@@ -16,12 +16,17 @@ pub struct Error {
 impl Error {
     pub fn new(kind: String, extra_string: String) -> Error {
         Error {
-            kind: kind,
-            extra_string: extra_string,
+            kind,
+            extra_string,
             error_message: String::from(""),
         }
     }
-    pub fn error_messaging(&self, pos_start: Position, pos_end: Position) -> String {
+
+    pub fn imply_error_message(&mut self, pos_start: Position, pos_end: Position) {
+        self.error_message = self.error_messaging(pos_start, pos_end);
+    }
+
+    fn error_messaging(&self, pos_start: Position, pos_end: Position) -> String {
         // IDEA:
         //
         //
