@@ -64,7 +64,7 @@ impl Parser {
         pos_end: Position,
     ) -> (Option<AST>, Option<Error>) {
         let ast: Option<AST> = None;
-        let mut err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
+        let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
         (ast, err)
     }
 
