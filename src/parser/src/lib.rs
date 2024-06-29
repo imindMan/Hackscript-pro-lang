@@ -1,7 +1,3 @@
-// Start of the parser
-//
-// This bit of code contains some parser initialization to get into the interpreter.
-
 use ast::AST;
 use error_handling::Error;
 use lexer::Token;
@@ -12,6 +8,16 @@ pub struct Parser {
     curr_tok: Token,
     curr_index: usize,
 }
+
+// INFO: General grammar rules with improvisation, this is the roles of all the AST nodes in
+// Hackscript
+// Factor (the smallest unit of Hackscript until now): Number
+//         Unary: (PLUS||MINUS)((PLUS|MINUS) Number)*
+//         LEFT_PAREN expr RIGHT_PAREN
+// Term (or new name: FormingCalc lvl1): Factor ((MUL||DIV) Factor)*
+// Expr (or new name: Forming Calc lvl2): Term ((PLUS||MINUS) Term)*
+//
+//
 
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Parser {
@@ -24,15 +30,23 @@ impl Parser {
         }
     }
 
+    // since the parser only has one function, that is to parse tokens into AST, this is the only
+    // method beside the init method that is publicized
     pub fn parse(&mut self) -> (Option<AST>, Option<Error>) {
         if self.curr_tok._type == hacktypes::EOF {
             let expr: Option<AST> = None;
             let err: Option<Error> = None;
             return (expr, err);
         }
+        // for now the FormingCalc AST (see the src/ast for more information) is the top node
         let (expr, err) = self.expr();
         (expr, err)
     }
+
+    // ------------------------------------------------------------------
+    // INFO: Below (until the next block of comment like this)
+    // are the necessary methods that are generally used in the parser
+    // -----------------------------------------------------------------
 
     fn advance(&mut self) {
         self.curr_index += 1;
@@ -50,19 +64,75 @@ impl Parser {
         pos_end: Position,
     ) -> (Option<AST>, Option<Error>) {
         let ast: Option<AST> = None;
-        let mut err: Option<Error> = Some(Error::new(r#type, extra_string));
-        err.as_mut()
-            .unwrap()
-            .imply_error_message(pos_start, pos_end);
+        let mut err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
         (ast, err)
     }
 
+    // ----------------------------------------------------
+    // INFO: Below (until the next block of comment like this)
+    // are all the sub-methods for the factor method, which
+    // plays a role to make the smallest units of Hackscript (see the grammar description above)
+    // It's the smallest unit, but it doesn't mean it needs to be "small". It should act like it's
+    // small because if it doesn't behave like that, the code will mess up.
+    // ->
+    // For example: (1 + 2) * 3 + 4
+    // (1 + 2) is clearly not the small unit in this arithmetic expression. But in general
+    // it is **indeed** a factor in the (1 + 2) * 3 method, which means it's the smallest unit
+    // of the code
+    // ----------------------------------------------------
+    //
+    fn number_making(&mut self) -> (Option<AST>, Option<Error>) {
+        let factor: Option<AST> = Some(AST::new_factor(self.curr_tok.clone()));
+        let err: Option<Error> = None;
+        self.advance();
+        (factor, err)
+    }
+
+    fn unary_number_making(&mut self) -> (Option<AST>, Option<Error>) {
+        let sign: String = self.curr_tok._type.clone();
+        self.advance();
+        let (factor, err) = self.factor();
+        if err.is_some() {
+            return (factor, err);
+        } else {
+            let unary: Option<AST> = Some(AST::new_unaryfactor(
+                sign,
+                Box::new(factor.unwrap().clone()),
+            ));
+            return (unary, err);
+        }
+    }
+    fn in_parentheses_expr(&mut self) -> (Option<AST>, Option<Error>) {
+        let pos_start = self.curr_tok.pos_start.clone();
+        self.advance();
+        let (factor, err) = self.expr();
+        if err.is_some() {
+            return (factor, err);
+        } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {
+            return self.generate_error(
+                "Expect".to_string(),
+                "the expression should be closed by a ')' (close parenthese), found EOF."
+                    .to_string(),
+                pos_start,
+                self.curr_tok.pos_end.clone(),
+            );
+        } else {
+            self.advance();
+            return (factor, err);
+        }
+    }
+
+    // ------------------------------------------------------
+    // INFO: THIS IS THE MAIN PART OF THE PARSER
+    // ------------------------------------------------------
+
     fn factor(&mut self) -> (Option<AST>, Option<Error>) {
         if self.curr_tok._type == hacktypes::NUMBER {
-            let factor: Option<AST> = Some(AST::new_factor(self.curr_tok.clone()));
-            let err: Option<Error> = None;
-            self.advance();
-            (factor, err)
+            return self.number_making();
+        } else if [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
+            return self.unary_number_making();
+        } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
+            return self.in_parentheses_expr();
         } else if self.curr_tok._type == hacktypes::EOF {
             return self.generate_error(
                 "Expect".to_string(),
@@ -70,37 +140,6 @@ impl Parser {
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
-        } else if [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
-            let sign: String = self.curr_tok._type.clone();
-            self.advance();
-            let (factor, err) = self.factor();
-            if err.is_some() {
-                return (factor, err);
-            } else {
-                let unary: Option<AST> = Some(AST::new_unaryfactor(
-                    sign,
-                    Box::new(factor.unwrap().clone()),
-                ));
-                return (unary, err);
-            }
-        } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
-            let pos_start = self.curr_tok.pos_start.clone();
-            self.advance();
-            let (factor, err) = self.expr();
-            if err.is_some() {
-                return (factor, err);
-            } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {
-                return self.generate_error(
-                    "Expect".to_string(),
-                    "the expression should be closed by a ')' (close parenthese), found EOF."
-                        .to_string(),
-                    pos_start,
-                    self.curr_tok.pos_end.clone(),
-                );
-            } else {
-                self.advance();
-                return (factor, err);
-            }
         } else {
             self.advance();
             return self.generate_error(
@@ -113,7 +152,9 @@ impl Parser {
     }
 
     fn term(&mut self) -> (Option<AST>, Option<Error>) {
+        // Parse the Factor
         let (node1, err1) = self.factor();
+        let mut term: Option<AST> = None;
         if err1.is_some() {
             return (node1, err1);
         }
@@ -126,7 +167,7 @@ impl Parser {
             );
         }
 
-        let mut term: Option<AST> = None;
+        // Parse the ((MUL||DIV) Term)*
 
         while [hacktypes::MULTIPLY, hacktypes::DIVIDE].contains(&self.curr_tok._type.as_str()) {
             let operator: String = self.curr_tok._type.to_string();
@@ -155,7 +196,9 @@ impl Parser {
     }
 
     fn expr(&mut self) -> (Option<AST>, Option<Error>) {
+        // parse the Term
         let (node1, err1) = self.term();
+        let mut expr: Option<AST> = None;
         if err1.is_some() {
             return (node1, err1);
         }
@@ -167,8 +210,8 @@ impl Parser {
                 self.curr_tok.pos_end.clone(),
             );
         }
-        let mut expr: Option<AST> = None;
 
+        // parse the ((PLUS||MINUS) Expr)*
         while [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
             let operator: String = self.curr_tok._type.to_string();
             self.advance();

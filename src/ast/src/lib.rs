@@ -1,6 +1,5 @@
-// Nodes for the AST
-//
-//
+// INFO: This is the file for the AST
+// NOTE: To understand what are the roles of those nodes in the AST, head over to src/parser/lib.rs
 //
 use lexer::Token;
 
@@ -26,7 +25,7 @@ pub enum AST {
 }
 
 impl AST {
-    // This is by default
+    // This is the initialization method by default
     pub fn new() -> AST {
         AST::Nil
     }

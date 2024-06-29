@@ -6,21 +6,20 @@
 // https://github.com/imindMan/Hackscript-pro-lang
 // Rebuild in Rust
 
-// main file hackscript
-
 use lexer::Lexer;
 use parser::Parser;
 use std::io::{self, Write};
-// input a command then run Hackscript
 
+// INFO: Main function
+// For now, this function is going to take user's inputs then print the result out,
+// just like Python.
 fn main() -> Result<(), io::Error> {
     loop {
-        // create a string to store command
         let mut command: String = String::new();
 
         print!("hackscript>");
 
-        // input a command
+        // input
         let _ = io::stdout().flush();
         io::stdin()
             .read_line(&mut command)
@@ -32,7 +31,7 @@ fn main() -> Result<(), io::Error> {
 
 // run the command
 fn run(command: String) {
-    // start lexing
+    // Lexing
     let mut lexer = Lexer::new(String::from("stdin"), command);
     let (tokens, error) = lexer.make_tokens();
     if error.is_some() {
@@ -41,6 +40,7 @@ fn run(command: String) {
             error.unwrap().error_message()
         );
     } else {
+        // Parsing
         let mut parser = Parser::new(tokens.unwrap());
         let (ast, err) = parser.parse();
         if err.is_some() {

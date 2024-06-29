@@ -1,4 +1,4 @@
-/*
+/* INFO:
  * This module will help handling the error
  *
  * */
@@ -14,22 +14,13 @@ pub struct Error {
 }
 
 impl Error {
-    pub fn new(kind: String, extra_string: String) -> Error {
-        Error {
-            kind,
-            extra_string,
-            error_message: String::from(""),
-        }
-    }
-
-    pub fn imply_error_message(&mut self, pos_start: Position, pos_end: Position) {
-        self.error_message = self.error_messaging(pos_start, pos_end);
-    }
-    pub fn error_message(&self) -> String {
-        self.error_message.clone()
-    }
-
-    fn error_messaging(&self, pos_start: Position, pos_end: Position) -> String {
+    pub fn new(
+        kind: String,
+        extra_string: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> Error {
+        // Initalize the error_message
         // IDEA:
         //
         //
@@ -115,9 +106,19 @@ impl Error {
             // the loop will continue...
         }
         error_message.push_str(&error_typing::error_type_handling((
-            self.kind.clone(),
-            self.extra_string.clone(),
+            kind.clone(),
+            extra_string.clone(),
         )));
-        error_message
+        Error {
+            kind,
+            extra_string,
+            error_message,
+        }
+    }
+
+    // Return that error message from the Error. 'Cause obviously we don't return the whole Error
+    // struct to the output, we just need the message
+    pub fn error_message(&self) -> String {
+        self.error_message.clone()
     }
 }

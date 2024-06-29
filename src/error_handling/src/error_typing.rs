@@ -19,7 +19,6 @@ pub fn error_type_handling(_type: (String, String)) -> String {
 // EVERY SINGLE ERROR TYPE-DEFINING FUNCTIONS ARE DEFINED HERE
 // -----------------------------------------------------------
 
-// Undefined character type
 fn undefined_character(_type: String, character_not_defined: String) -> String {
     let error_string: String =
         "Error type: ".to_string() + &_type + " \"" + &character_not_defined + "\"";

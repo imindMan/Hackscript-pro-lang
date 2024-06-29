@@ -1,6 +1,6 @@
-// Some Hackscript types are defined here
+// INFO: All the general Hackscript types are defined here
 
-// END-OF-LIFE
+// END-OF-FILE token
 pub const EOF: &str = "EOF";
 // Operators
 

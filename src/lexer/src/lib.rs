@@ -1,15 +1,10 @@
-/*
- * Lexer first start
- *
- * Lexer will parse through every characters and create tokens
- * So tokens can be defined in here, too
- *
- * */
+//  INFO:  Lexer first start.
+//  Lexer will parse through every characters and create tokens
+//  So tokens can be defined in here, too
 
 use error_handling::Error;
 use position::Position;
 
-// Token definition
 #[derive(Debug, Clone)]
 pub struct Token {
     pub _type: String,
@@ -29,7 +24,6 @@ impl Token {
     }
 }
 
-// Lexer definition
 pub struct Lexer {
     curr_char: Option<char>,
     curr_pos: Position,
@@ -37,9 +31,7 @@ pub struct Lexer {
     fcontent: String,
 }
 
-// implement Lexer
 impl Lexer {
-    // Lexer constructor
     pub fn new(fname: String, fcontent: String) -> Lexer {
         Lexer {
             curr_char: match fcontent.clone().as_str().chars().next() {
@@ -51,7 +43,10 @@ impl Lexer {
             curr_pos: Position::new(0, 0, 0, fname, fcontent),
         }
     }
-    // create a token instance
+    // ------------------------------------------------------------------
+    // INFO: Below are some methods that are frequently used in the lexer
+    // ------------------------------------------------------------------
+
     fn create_a_token(
         &self,
         _type: String,
@@ -62,10 +57,30 @@ impl Lexer {
         let tok = Token::new(_type, value, pos_start, pos_end);
         tok
     }
+    fn generate_error(
+        &self,
+        r#type: String,
+        extra_string: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> (Option<Vec<Token>>, Option<Error>) {
+        let tok: Option<Vec<Token>> = None;
+        let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
+        (tok, err)
+    }
+    fn generate_individual_error(
+        &self,
+        r#type: String,
+        extra_string: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> (Option<Token>, Option<Error>) {
+        let tok: Option<Token> = None;
+        let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
+        (tok, err)
+    }
 
-    // move to another character
     fn advance(&mut self) {
-        // check if the position is valid
         let temp_pos = self.curr_pos.literal_pos + 1;
 
         let curr_char = match self
@@ -94,7 +109,6 @@ impl Lexer {
         }
     }
 
-    // number creator
     fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
         let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
@@ -110,10 +124,6 @@ impl Lexer {
                 if self.curr_char.is_none()
                     || !hacktypes::NUMBERLIST.contains(self.curr_char.unwrap())
                 {
-                    let tok: Option<Token> = None;
-
-                    let mut err = Some(Error::new("Number error".to_string(), value));
-
                     self.curr_pos.literal_pos -= 1;
                     if self.curr_char.unwrap() == '\n' {
                         self.curr_pos.col -= 1;
@@ -121,11 +131,13 @@ impl Lexer {
                     } else {
                         self.curr_pos.col -= 1;
                     };
-                    err.as_mut()
-                        .unwrap()
-                        .imply_error_message(pos_start, self.curr_pos.clone());
 
-                    return (tok, err);
+                    return self.generate_individual_error(
+                        "Number error".to_string(),
+                        value,
+                        pos_start,
+                        self.curr_pos.clone(),
+                    );
                 } else {
                     value.push(self.curr_char.unwrap());
                     continue;
@@ -220,15 +232,12 @@ impl Lexer {
                     tokens.as_mut().unwrap().push(token.unwrap())
                 }
             } else {
-                tokens = None;
-                err = Some(Error::new(
+                return self.generate_error(
                     "Undefined character".to_string(),
-                    self.curr_char.expect("No character here").to_string(),
-                ));
-                err.as_mut()
-                    .unwrap()
-                    .imply_error_message(self.curr_pos.clone(), self.curr_pos.clone());
-                break; // Exit the loop in case of an undefined character
+                    self.curr_char.expect("No character").to_string(),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                );
             }
         }
         if err.is_none() {
