@@ -83,7 +83,26 @@ impl Parser {
                 ));
                 return (unary, err);
             }
+        } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
+            let pos_start = self.curr_tok.pos_start.clone();
+            self.advance();
+            let (factor, err) = self.expr();
+            if err.is_some() {
+                return (factor, err);
+            } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {
+                return self.generate_error(
+                    "Expect".to_string(),
+                    "the expression should be closed by a ')' (close parenthese), found EOF."
+                        .to_string(),
+                    pos_start,
+                    self.curr_tok.pos_end.clone(),
+                );
+            } else {
+                self.advance();
+                return (factor, err);
+            }
         } else {
+            self.advance();
             return self.generate_error(
                 "Expect".to_string(),
                 "a number type token".to_string(),
@@ -101,7 +120,7 @@ impl Parser {
         if self.curr_tok._type == hacktypes::NUMBER {
             return self.generate_error(
                 "Expect".to_string(),
-                "an operator like '+', '-', '*' or '/', found a number".to_string(),
+                "an operator like '+', '-', '*' or '/', found a number type token".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
@@ -143,7 +162,7 @@ impl Parser {
         if self.curr_tok._type == hacktypes::NUMBER {
             return self.generate_error(
                 "Expect".to_string(),
-                "an operator like '+', '-', '*' or '/', found a number".to_string(),
+                "an operator like '+', '-', '*' or '/', found a number type token".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
