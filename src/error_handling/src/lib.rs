@@ -8,8 +8,6 @@ use position::Position;
 
 #[derive(Debug)]
 pub struct Error {
-    kind: String,
-    extra_string: String,
     error_message: String,
 }
 
@@ -109,11 +107,7 @@ impl Error {
             kind.clone(),
             extra_string.clone(),
         )));
-        Error {
-            kind,
-            extra_string,
-            error_message,
-        }
+        Error { error_message }
     }
 
     // Return that error message from the Error. 'Cause obviously we don't return the whole Error
