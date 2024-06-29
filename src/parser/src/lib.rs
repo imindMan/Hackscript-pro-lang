@@ -70,6 +70,19 @@ impl Parser {
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
+        } else if [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
+            let sign: String = self.curr_tok._type.clone();
+            self.advance();
+            let (factor, err) = self.factor();
+            if err.is_some() {
+                return (factor, err);
+            } else {
+                let unary: Option<AST> = Some(AST::new_unaryfactor(
+                    sign,
+                    Box::new(factor.unwrap().clone()),
+                ));
+                return (unary, err);
+            }
         } else {
             return self.generate_error(
                 "Expect".to_string(),

@@ -11,6 +11,11 @@ pub enum AST {
         token: Token,
     },
 
+    UnaryFactor {
+        sign: String,
+        value: Box<AST>,
+    },
+
     FormingCalc {
         node1: Box<AST>,
         operator: String,
@@ -43,5 +48,8 @@ impl AST {
             operator,
             node2,
         }
+    }
+    pub fn new_unaryfactor(sign: String, value: Box<AST>) -> AST {
+        AST::UnaryFactor { sign, value }
     }
 }

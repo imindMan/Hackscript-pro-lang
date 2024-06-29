@@ -10,7 +10,7 @@ use position::Position;
 pub struct Error {
     kind: String,
     extra_string: String,
-    pub error_message: String,
+    error_message: String,
 }
 
 impl Error {
@@ -24,6 +24,9 @@ impl Error {
 
     pub fn imply_error_message(&mut self, pos_start: Position, pos_end: Position) {
         self.error_message = self.error_messaging(pos_start, pos_end);
+    }
+    pub fn error_message(&self) -> String {
+        self.error_message.clone()
     }
 
     fn error_messaging(&self, pos_start: Position, pos_end: Position) -> String {
@@ -92,10 +95,8 @@ impl Error {
                 error_message.push(current_char);
                 current_index += 1;
                 // now this is the main part of the highlighting
-                while check_pos.col <= buffer_col - 1 {
-                    if position::valid_pos(check_pos.clone(), pos_start.clone(), pos_end.clone())
-                        == false
-                    {
+                while check_pos.col < buffer_col {
+                    if !position::valid_pos(check_pos.clone(), pos_start.clone(), pos_end.clone()) {
                         error_message.push(' ');
                         check_pos.col += 1;
                     } else {

@@ -25,7 +25,7 @@ fn main() -> Result<(), io::Error> {
         io::stdin()
             .read_line(&mut command)
             .expect("Error reading from STDIN");
-        let output = run(command);
+        run(command);
         //print!("{}", output);
     }
 }
@@ -38,7 +38,7 @@ fn run(command: String) {
     if error.is_some() {
         print!(
             "HackScript detected some error(s): \n{} \n",
-            error.unwrap().error_message
+            error.unwrap().error_message()
         );
     } else {
         let mut parser = Parser::new(tokens.unwrap());
@@ -46,7 +46,7 @@ fn run(command: String) {
         if err.is_some() {
             print!(
                 "HackScript detected some error(s): \n{} \n",
-                err.unwrap().error_message
+                err.unwrap().error_message()
             );
         } else {
             if ast.is_none() {
