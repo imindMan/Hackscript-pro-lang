@@ -17,7 +17,7 @@ pub enum AST {
 
     FormingCalc {
         node1: Box<AST>,
-        operator: String,
+        operator: Option<Token>,
         node2: Box<AST>,
     },
 
@@ -26,7 +26,7 @@ pub enum AST {
 
 impl AST {
     // This is the initialization method by default
-    pub fn new() -> AST {
+    pub fn default() -> AST {
         AST::Nil
     }
 
@@ -41,7 +41,7 @@ impl AST {
         AST::Factor { identifier, token }
     }
 
-    pub fn new_formingcalc(node1: Box<AST>, operator: String, node2: Box<AST>) -> AST {
+    pub fn new_formingcalc(node1: Box<AST>, operator: Option<Token>, node2: Box<AST>) -> AST {
         AST::FormingCalc {
             node1,
             operator,

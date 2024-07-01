@@ -170,7 +170,7 @@ impl Parser {
         // Parse the ((MUL||DIV) Term)*
 
         while [hacktypes::MULTIPLY, hacktypes::DIVIDE].contains(&self.curr_tok._type.as_str()) {
-            let operator: String = self.curr_tok._type.to_string();
+            let operator: Option<Token> = Some(self.curr_tok.clone());
             self.advance();
             let (term2, err2) = self.term();
             if err2.is_some() {
@@ -184,11 +184,12 @@ impl Parser {
             }
         }
 
+        let operator: Option<Token> = None;
         if term.is_none() {
             term = Some(AST::new_formingcalc(
                 Box::new(node1.unwrap()),
-                String::new(),
-                Box::new(AST::new()),
+                operator,
+                Box::new(AST::default()),
             ));
         }
         let err: Option<Error> = None;
@@ -213,7 +214,7 @@ impl Parser {
 
         // parse the ((PLUS||MINUS) Expr)*
         while [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
-            let operator: String = self.curr_tok._type.to_string();
+            let operator: Option<Token> = Some(self.curr_tok.clone());
             self.advance();
             let (expr2, err2) = self.expr();
             if err2.is_some() {
@@ -227,11 +228,13 @@ impl Parser {
             }
         }
 
+        let operator: Option<Token> = None;
+
         if expr.is_none() {
             expr = Some(AST::new_formingcalc(
                 Box::new(node1.unwrap()),
-                String::new(),
-                Box::new(AST::new()),
+                operator,
+                Box::new(AST::default()),
             ));
         }
         let err: Option<Error> = None;
