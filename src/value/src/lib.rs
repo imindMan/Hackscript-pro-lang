@@ -22,8 +22,10 @@ impl Value {
         value: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> number::Number {
-        return number::Number::new(sign, identifier, value, pos_start, pos_end);
+    ) -> Value {
+        Value::Number(number::Number::new(
+            sign, identifier, value, pos_start, pos_end,
+        ))
     }
 
     fn create_error(
@@ -34,12 +36,7 @@ impl Value {
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
         let value: Option<Value> = None;
-        let error: Option<Error> = Some(Error::new(
-            r#type,
-            extra_string,
-            pos_start.clone(),
-            pos_end.clone(),
-        ));
+        let error: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
         (value, error)
     }
 }
