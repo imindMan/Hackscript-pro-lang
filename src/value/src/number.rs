@@ -65,12 +65,12 @@ impl Number {
             let err: Option<Error> = None;
             (final_number, err)
         } else {
-            return self.generate_error(
+            self.generate_error(
                 "RuntimeError".to_string(),
                 "Currently there's no support for float addition".to_string(),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
-            );
+            )
         }
     }
 }

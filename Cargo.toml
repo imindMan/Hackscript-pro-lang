@@ -8,5 +8,4 @@ edition = "2021"
 [dependencies]
 lexer = {path = "src/lexer"}
 parser = {path = "src/parser"}
-ast = {path = "src/ast"}
-interpreter = {path = "./src/interpreter"}
+#interpreter = {path = "./src/interpreter"}

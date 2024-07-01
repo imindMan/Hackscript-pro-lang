@@ -23,8 +23,6 @@ dependencies = [
 name = "hackscript"
 version = "2.0.0"
 dependencies = [
- "ast",
- "interpreter",
  "lexer",
  "parser",
 ]
@@ -34,19 +32,6 @@ name = "hacktypes"
 version = "0.1.0"
 dependencies = [
  "position",
-]
-
-[[package]]
-name = "interpreter"
-version = "0.1.0"
-dependencies = [
- "ast",
- "error_handling",
- "hacktypes",
- "lexer",
- "parser",
- "position",
- "value",
 ]
 
 [[package]]
@@ -72,14 +57,3 @@ dependencies = [
 [[package]]
 name = "position"
 version = "0.1.0"
-
-[[package]]
-name = "value"
-version = "0.1.0"
-dependencies = [
- "ast",
- "error_handling",
- "hacktypes",
- "lexer",
- "position",
-]

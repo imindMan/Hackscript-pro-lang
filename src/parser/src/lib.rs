@@ -89,7 +89,8 @@ impl Parser {
     }
 
     fn unary_number_making(&mut self) -> (Option<AST>, Option<Error>) {
-        let sign: String = self.curr_tok._type.clone();
+        let sign = self.curr_tok.clone();
+        let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
         let (factor, err) = self.factor();
         if err.is_some() {
