@@ -28,7 +28,13 @@ impl Interpreter {
                 node2,
                 pos_start,
                 pos_end,
-            } => self.visit_forming_calc(node1.clone(), operator.unwrap().clone(), node2.clone()),
+            } => self.visit_forming_calc(
+                node1.clone(),
+                operator.unwrap().clone(),
+                node2.clone(),
+                pos_start.clone(),
+                pos_end.clone(),
+            ),
             AST::Factor {
                 identifier,
                 value,
@@ -66,6 +72,14 @@ impl Interpreter {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
+        let sign: String = String::from(hacktypes::PLUS);
+
+        let factor: Option<Value> = Some(Value::new_number(
+            sign, identifier, value, pos_start, pos_end,
+        ));
+        let err: Option<Error> = None;
+
+        (factor, err)
     }
 
     fn visit_unary(
@@ -75,6 +89,42 @@ impl Interpreter {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
+        let top_sign: String = sign.clone();
+        let (factor, err) = self.visit(*value);
+        if err.is_some() {
+            return (factor, err);
+        }
+
+        if factor.is_some() {
+            let final_value = factor.unwrap();
+            match &final_value {
+                Value::Number(number) => {
+                    let final_sign: String;
+                    if sign.as_str() == number.sign.as_str() {
+                        final_sign = String::from(hacktypes::PLUS);
+                    } else if sign.as_str() != number.sign.as_str() {
+                        final_sign = String::from(hacktypes::MINUS);
+                    };
+
+                    let final_number: Option<Value> = Some(Value::new_number(
+                        final_sign,
+                        number.identifier.clone(),
+                        number.value.clone(),
+                        pos_start,
+                        number.pos_end.clone(),
+                    ));
+                    let err: Option<Error> = None;
+                    return (final_number, err);
+                }
+                Value::Nil => {
+                    let final_number: Option<Value> = None;
+                    let err: Option<Error> = None;
+                    return (final_number, err);
+                }
+            }
+        } else {
+            return (factor, err);
+        }
     }
 
     fn visit_forming_calc(
@@ -82,6 +132,8 @@ impl Interpreter {
         node1: Box<AST>,
         operator: Token,
         node2: Box<AST>,
+        pos_start: Position,
+        pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
     }
 }

@@ -12,11 +12,10 @@ pub enum Value {
 
 impl Value {
     // by default
-    pub fn new(&self) -> Value {
+    pub fn new() -> Value {
         Value::Nil
     }
     pub fn new_number(
-        &self,
         sign: String,
         identifier: String,
         value: String,
@@ -26,17 +25,5 @@ impl Value {
         Value::Number(number::Number::new(
             sign, identifier, value, pos_start, pos_end,
         ))
-    }
-
-    fn create_error(
-        &self,
-        r#type: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> (Option<Value>, Option<Error>) {
-        let value: Option<Value> = None;
-        let error: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
-        (value, error)
     }
 }
