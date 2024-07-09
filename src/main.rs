@@ -50,7 +50,7 @@ fn run(command: String) {
                 err.unwrap().error_message()
             );
         } else {
-            let mut interpreter = Interpreter::new(ast.unwrap().clone());
+            let interpreter = Interpreter::new(ast.unwrap().clone());
             let (value, err_final) = interpreter.interpret();
 
             if err_final.is_some() {
