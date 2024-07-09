@@ -17,7 +17,7 @@ impl Interpreter {
     }
 
     pub fn interpret(&self) -> (Option<Value>, Option<Error>) {
-        return self.visit(self.ast.clone());
+        self.visit(self.ast.clone())
     }
 
     fn visit(&self, ast: AST) -> (Option<Value>, Option<Error>) {
@@ -89,14 +89,11 @@ impl Interpreter {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
-        let top_sign: String = sign.clone();
         let (factor, err) = self.visit(*value);
         if err.is_some() {
             return (factor, err);
         }
-
-        let final_value = factor.unwrap();
-        match &final_value {
+        match factor.clone().unwrap() {
             Value::Number(number) => {
                 let mut final_sign: String = String::from(hacktypes::PLUS);
                 if sign.as_str() == number.sign.as_str() {
@@ -113,6 +110,7 @@ impl Interpreter {
                     number.pos_end.clone(),
                 ));
                 let err: Option<Error> = None;
+
                 (final_number, err)
             }
             Value::Nil => {

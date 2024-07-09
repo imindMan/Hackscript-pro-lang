@@ -110,12 +110,18 @@ impl AST {
                 pos_start: _,
                 pos_end,
             } => pos_end,
+            AST::UnaryFactor {
+                sign: _,
+                value: _,
+                pos_start: _,
+                pos_end,
+            } => pos_end,
             _ => panic!("No unary factor doesn't have a single value"),
         };
 
         AST::UnaryFactor {
-            sign: sign.value.clone(),
-            value: value,
+            sign: sign._type.clone(),
+            value,
             pos_start: sign.pos_start.clone(),
             pos_end: pos_end.clone(),
         }

@@ -63,14 +63,14 @@ impl Value {
                     sign, identifier, value, pos_start, pos_end,
                 )),
             };
-            return (res_value, err);
+            (res_value, err)
         } else {
-            return self.generate_error(
+            self.generate_error(
                 "TypeError".to_string(),
                 "the types aren't the same".to_string(),
                 value_origin.pos_start.clone(),
                 value_origin.pos_end.clone(),
-            );
+            )
         }
     }
 

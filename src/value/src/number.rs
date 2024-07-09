@@ -65,10 +65,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 *= -1.0;
             };
+            let final_res = number1 + number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0.0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 + number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -84,10 +91,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 = -number2;
             };
+            let final_res = number1 + number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 + number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -113,10 +127,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 *= -1.0;
             };
+            let final_res = number1 - number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0.0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 - number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -132,10 +153,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 = -number2;
             };
+            let final_res = number1 - number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 - number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -161,10 +189,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 *= -1.0;
             };
+            let final_res = number1 * number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0.0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 * number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -180,10 +215,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 = -number2;
             };
+            let final_res = number1 * number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 * number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -209,10 +251,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 *= -1.0;
             };
+            let final_res = number1 / number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0.0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 / number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -228,10 +277,17 @@ impl Number {
             if number.sign.as_str() == hacktypes::MINUS {
                 number2 = -number2;
             };
+            let final_res = number1 / number2;
+            let mut sign: String = String::from(hacktypes::PLUS);
+
+            if final_res < 0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+
             let final_number: Option<Number> = Some(Number::new(
-                self.sign.clone(),
+                sign,
                 self.identifier.clone(),
-                format!("{value}", value = number1 / number2),
+                format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
