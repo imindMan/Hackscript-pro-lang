@@ -34,7 +34,7 @@ impl Parser {
     // method beside the init method that is publicized
     pub fn parse(&mut self) -> (Option<AST>, Option<Error>) {
         if self.curr_tok._type == hacktypes::EOF {
-            let expr: Option<AST> = None;
+            let expr: Option<AST> = Some(AST::Nil);
             let err: Option<Error> = None;
             return (expr, err);
         }
@@ -63,7 +63,7 @@ impl Parser {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<AST>, Option<Error>) {
-        let ast: Option<AST> = None;
+        let ast: Option<AST> = Some(AST::Nil);
         let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
         (ast, err)
     }

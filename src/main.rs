@@ -6,6 +6,7 @@
 // https://github.com/imindMan/Hackscript-pro-lang
 // Rebuild in Rust
 
+use interpreter::Interpreter;
 use lexer::Lexer;
 use parser::Parser;
 use std::io::{self, Write};
@@ -49,10 +50,16 @@ fn run(command: String) {
                 err.unwrap().error_message()
             );
         } else {
-            if ast.is_none() {
-                print!("");
+            let mut interpreter = Interpreter::new(ast.unwrap().clone());
+            let (value, err_final) = interpreter.interpret();
+
+            if err_final.is_some() {
+                print!(
+                    "HackScript detected some error(s): \n {} \n",
+                    err_final.unwrap().error_message()
+                );
             } else {
-                print!("Parser:\n{:#?}\n", ast.unwrap());
+                println!("{:#?}", value);
             }
         }
     }

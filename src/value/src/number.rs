@@ -4,6 +4,7 @@ use hacktypes;
 use lexer::Token;
 use position::Position;
 
+#[derive(Debug, Clone)]
 pub struct Number {
     pub sign: String,
     pub identifier: String,
