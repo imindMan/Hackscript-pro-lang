@@ -6,10 +6,12 @@
 // https://github.com/imindMan/Hackscript-pro-lang
 // Rebuild in Rust
 
+use error_handling::Error;
 use interpreter::Interpreter;
 use lexer::Lexer;
 use parser::Parser;
 use std::io::{self, Write};
+use value::Value;
 
 // INFO: Main function
 // For now, this function is going to take user's inputs then print the result out,
@@ -25,41 +27,34 @@ fn main() -> Result<(), io::Error> {
         io::stdin()
             .read_line(&mut command)
             .expect("Error reading from STDIN");
-        run(command);
-        //print!("{}", output);
+        match run(command) {
+            Ok(ok) => print!("{}", ok),
+            Err(err) => print!("{}", err),
+        }
     }
 }
 
 // run the command
-fn run(command: String) {
+fn run(command: String) -> Result<Value, Error> {
     // Lexing
     let mut lexer = Lexer::new(String::from("stdin"), command);
-    let (tokens, error) = lexer.make_tokens();
-    if error.is_some() {
-        print!(
-            "HackScript detected some error(s): \n{} \n",
-            error.unwrap().error_message()
-        );
+    let (tokens, error_lexer) = lexer.make_tokens();
+    if let Some(..) = error_lexer {
+        Err(error_lexer.unwrap())
     } else {
         // Parsing
         let mut parser = Parser::new(tokens.unwrap());
-        let (ast, err) = parser.parse();
-        if err.is_some() {
-            print!(
-                "HackScript detected some error(s): \n{} \n",
-                err.unwrap().error_message()
-            );
+        let (ast, error_parser) = parser.parse();
+        if let Some(..) = error_parser {
+            Err(error_parser.unwrap())
         } else {
             let interpreter = Interpreter::new(ast.unwrap().clone());
-            let (value, err_final) = interpreter.interpret();
+            let (value, error_interpreter) = interpreter.interpret();
 
-            if err_final.is_some() {
-                print!(
-                    "HackScript detected some error(s): \n{} \n",
-                    err_final.unwrap().error_message()
-                );
+            if let Some(..) = error_interpreter {
+                Err(error_interpreter.unwrap())
             } else {
-                println!("{:#?}", value);
+                Ok(value.unwrap())
             }
         }
     }

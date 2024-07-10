@@ -23,9 +23,11 @@ dependencies = [
 name = "hackscript"
 version = "2.0.0"
 dependencies = [
+ "error_handling",
  "interpreter",
  "lexer",
  "parser",
+ "value",
 ]
 
 [[package]]

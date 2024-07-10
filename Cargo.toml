@@ -9,3 +9,5 @@ edition = "2021"
 lexer = {path = "src/lexer"}
 parser = {path = "src/parser"}
 interpreter = {path = "./src/interpreter"}
+value = {path = "./src/value"}
+error_handling = {path = "./src/error_handling/"}

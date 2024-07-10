@@ -2,6 +2,7 @@
 use error_handling::Error;
 use hacktypes;
 use position::Position;
+use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 pub struct Number {
@@ -10,6 +11,25 @@ pub struct Number {
     pub value: String,
     pub pos_start: Position,
     pub pos_end: Position,
+}
+impl Display for Number {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.identifier == *"integer" {
+            let mut number: i32 = self.value.parse().unwrap();
+            if self.sign == *hacktypes::MINUS {
+                number *= -1;
+            }
+
+            writeln!(f, "{}", number)
+        } else {
+            let mut number: f32 = self.value.parse().unwrap();
+            if self.sign == *hacktypes::MINUS {
+                number *= -1.0;
+            }
+
+            writeln!(f, "{}", number)
+        }
+    }
 }
 
 impl Number {
@@ -73,7 +93,7 @@ impl Number {
 
             let final_number: Option<Number> = Some(Number::new(
                 sign,
-                self.identifier.clone(),
+                "float".to_string(),
                 format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
@@ -135,7 +155,7 @@ impl Number {
 
             let final_number: Option<Number> = Some(Number::new(
                 sign,
-                self.identifier.clone(),
+                "float".to_string(),
                 format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
@@ -197,7 +217,7 @@ impl Number {
 
             let final_number: Option<Number> = Some(Number::new(
                 sign,
-                self.identifier.clone(),
+                "float".to_string(),
                 format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
@@ -237,28 +257,44 @@ impl Number {
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
-        if self.identifier.as_str() == "float"
-            || number.identifier.as_str() == "float"
-            || (self.identifier.as_str() == "float" && number.identifier.as_str() == "float")
-        {
-            let mut number1: f32 = self.value.parse().unwrap();
-            let mut number2: f32 = number.value.parse().unwrap();
-            if number2 == 0.0 {
-                return self.generate_error(
-                    "DivisionByZero".to_string(),
-                    "Cannot divide a number to zero, based on basic math".to_string(),
-                    self.pos_start.clone(),
-                    number.pos_end.clone(),
-                );
-            }
+        let number_test: f32 = number.value.parse().unwrap();
+        if number_test == 0.0 {
+            return self.generate_error(
+                "DivisionByZero".to_string(),
+                "Cannot divide a number to zero, based on basic math".to_string(),
+                self.pos_start.clone(),
+                number.pos_end.clone(),
+            );
+        }
 
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 *= -1.0;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 *= -1.0;
-            };
-            let final_res = number1 / number2;
+        // check if the divison became a float
+        let mut number1: f32 = self.value.parse().unwrap();
+        let mut number2: f32 = number.value.parse().unwrap();
+        if self.sign.as_str() == hacktypes::MINUS {
+            number1 *= -1.0;
+        };
+        if number.sign.as_str() == hacktypes::MINUS {
+            number2 *= -1.0;
+        };
+
+        let final_res: f32 = number1 / number2;
+
+        if final_res == final_res.floor() {
+            let final_result = final_res.floor() as i32;
+            let mut sign: String = String::from(hacktypes::PLUS);
+            if final_result < 0 {
+                sign = String::from(hacktypes::MINUS);
+            }
+            let final_number: Option<Number> = Some(Number::new(
+                sign,
+                "integer".to_string(),
+                format!("{}", final_result.abs()),
+                self.pos_start.clone(),
+                self.pos_end.clone(),
+            ));
+            let err: Option<Error> = None;
+            (final_number, err)
+        } else {
             let mut sign: String = String::from(hacktypes::PLUS);
 
             if final_res < 0.0 {
@@ -267,68 +303,13 @@ impl Number {
 
             let final_number: Option<Number> = Some(Number::new(
                 sign,
-                self.identifier.clone(),
+                "float".to_string(),
                 format!("{}", final_res.abs()),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
             let err: Option<Error> = None;
             (final_number, err)
-        } else {
-            let number_test: i32 = number.value.parse().unwrap();
-            if number_test == 0 {
-                return self.generate_error(
-                    "DivisionByZero".to_string(),
-                    "Cannot divide a number to zero, based on basic math".to_string(),
-                    self.pos_start.clone(),
-                    number.pos_end.clone(),
-                );
-            }
-
-            // check if the divison became a float
-            let mut number1: f32 = self.value.parse().unwrap();
-            let mut number2: f32 = number.value.parse().unwrap();
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 *= -1.0;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 *= -1.0;
-            };
-
-            let final_res: f32 = number1 / number2;
-
-            if final_res == final_res.floor() {
-                let final_result = final_res.floor() as i32;
-                let mut sign: String = String::from(hacktypes::PLUS);
-                if final_result < 0 {
-                    sign = String::from(hacktypes::MINUS);
-                }
-                let final_number: Option<Number> = Some(Number::new(
-                    sign,
-                    "integer".to_string(),
-                    format!("{}", final_result.abs()),
-                    self.pos_start.clone(),
-                    self.pos_end.clone(),
-                ));
-                let err: Option<Error> = None;
-                (final_number, err)
-            } else {
-                let mut sign: String = String::from(hacktypes::PLUS);
-
-                if final_res < 0.0 {
-                    sign = String::from(hacktypes::MINUS);
-                }
-
-                let final_number: Option<Number> = Some(Number::new(
-                    sign,
-                    "float".to_string(),
-                    format!("{}", final_res.abs()),
-                    self.pos_start.clone(),
-                    self.pos_end.clone(),
-                ));
-                let err: Option<Error> = None;
-                (final_number, err)
-            }
         }
     }
 }
