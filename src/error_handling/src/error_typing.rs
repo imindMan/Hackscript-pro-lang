@@ -10,6 +10,7 @@ pub fn error_type_handling(_type: (String, String)) -> String {
         "Undefined character" => error_type = undefined_character(_type.0.clone(), _type.1.clone()),
         "Number error" => error_type = number_error(_type.0.clone(), _type.1.clone()),
         "Expect" => error_type = expect(_type.0.clone(), _type.1.clone()),
+        "DivisionByZero" => error_type = divisonbyzero(_type.0.clone(), _type.1.clone()),
         _ => panic!("Unspecified error type"),
     }
     error_type
@@ -35,5 +36,10 @@ fn number_error(_type: String, number_not_defined: String) -> String {
 
 fn expect(_type: String, string: String) -> String {
     let error_string: String = "Error: ".to_string() + &_type + " " + &string;
+    error_string
+}
+
+fn divisonbyzero(_type: String, string: String) -> String {
+    let error_string: String = "Error: ".to_string() + &_type + ". " + &string;
     error_string
 }

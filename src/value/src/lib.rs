@@ -35,9 +35,9 @@ impl Value {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
-        let ast: Option<Value> = Some(Value::Nil);
+        let val: Option<Value> = Some(Value::Nil);
         let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
-        (ast, err)
+        (val, err)
     }
 
     pub fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
@@ -52,6 +52,10 @@ impl Value {
 
         if std::mem::discriminant(self) == std::mem::discriminant(&value) {
             let (temp_res_value, err) = value_origin.add_to(value_other.clone());
+            if err.is_some() {
+                let val = Some(Value::Nil);
+                return (val, err);
+            }
             let res_value: Option<Value> = match temp_res_value.unwrap() {
                 number::Number {
                     sign,
@@ -86,6 +90,10 @@ impl Value {
 
         if std::mem::discriminant(self) == std::mem::discriminant(&value) {
             let (temp_res_value, err) = value_origin.subtract_to(value_other.clone());
+            if err.is_some() {
+                let val = Some(Value::Nil);
+                return (val, err);
+            }
             let res_value: Option<Value> = match temp_res_value.unwrap() {
                 number::Number {
                     sign,
@@ -120,6 +128,10 @@ impl Value {
 
         if std::mem::discriminant(self) == std::mem::discriminant(&value) {
             let (temp_res_value, err) = value_origin.multiply_by(value_other.clone());
+            if err.is_some() {
+                let val = Some(Value::Nil);
+                return (val, err);
+            }
             let res_value: Option<Value> = match temp_res_value.unwrap() {
                 number::Number {
                     sign,
@@ -153,7 +165,10 @@ impl Value {
 
         if std::mem::discriminant(self) == std::mem::discriminant(&value) {
             let (temp_res_value, err) = value_origin.divide_by(value_other.clone());
-
+            if err.is_some() {
+                let val = Some(Value::Nil);
+                return (val, err);
+            }
             let res_value: Option<Value> = match temp_res_value.unwrap() {
                 number::Number {
                     sign,

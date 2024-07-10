@@ -1,7 +1,6 @@
 // INFO: Number initialization
 use error_handling::Error;
 use hacktypes;
-use lexer::Token;
 use position::Position;
 
 #[derive(Debug, Clone)]
@@ -48,7 +47,7 @@ impl Number {
     }
 
     pub fn add_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        // since Hackscript doesn't differentiate integer or float, it just treats everything as
+        // since Hackscript doesn't differ integer or float, it just treats everything as
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
@@ -110,7 +109,7 @@ impl Number {
         }
     }
     pub fn subtract_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        // since Hackscript doesn't differentiate integer or float, it just treats everything as
+        // since Hackscript doesn't differ integer or float, it just treats everything as
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
@@ -172,7 +171,7 @@ impl Number {
         }
     }
     pub fn multiply_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        // since Hackscript doesn't differentiate integer or float, it just treats everything as
+        // since Hackscript doesn't differ integer or float, it just treats everything as
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
@@ -234,7 +233,7 @@ impl Number {
         }
     }
     pub fn divide_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        // since Hackscript doesn't differentiate integer or float, it just treats everything as
+        // since Hackscript doesn't differ integer or float, it just treats everything as
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
@@ -244,6 +243,14 @@ impl Number {
         {
             let mut number1: f32 = self.value.parse().unwrap();
             let mut number2: f32 = number.value.parse().unwrap();
+            if number2 == 0.0 {
+                return self.generate_error(
+                    "DivisionByZero".to_string(),
+                    "Cannot divide a number to zero, based on basic math".to_string(),
+                    self.pos_start.clone(),
+                    number.pos_end.clone(),
+                );
+            }
 
             if self.sign.as_str() == hacktypes::MINUS {
                 number1 *= -1.0;
@@ -268,31 +275,60 @@ impl Number {
             let err: Option<Error> = None;
             (final_number, err)
         } else {
-            let mut number1: i32 = self.value.parse().unwrap();
-            let mut number2: i32 = number.value.parse().unwrap();
-
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 = -number1;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 = -number2;
-            };
-            let final_res = number1 / number2;
-            let mut sign: String = String::from(hacktypes::PLUS);
-
-            if final_res < 0 {
-                sign = String::from(hacktypes::MINUS);
+            let number_test: i32 = number.value.parse().unwrap();
+            if number_test == 0 {
+                return self.generate_error(
+                    "DivisionByZero".to_string(),
+                    "Cannot divide a number to zero, based on basic math".to_string(),
+                    self.pos_start.clone(),
+                    number.pos_end.clone(),
+                );
             }
 
-            let final_number: Option<Number> = Some(Number::new(
-                sign,
-                self.identifier.clone(),
-                format!("{}", final_res.abs()),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
+            // check if the divison became a float
+            let mut number1: f32 = self.value.parse().unwrap();
+            let mut number2: f32 = number.value.parse().unwrap();
+            if self.sign.as_str() == hacktypes::MINUS {
+                number1 *= -1.0;
+            };
+            if number.sign.as_str() == hacktypes::MINUS {
+                number2 *= -1.0;
+            };
+
+            let final_res: f32 = number1 / number2;
+
+            if final_res == final_res.floor() {
+                let final_result = final_res.floor() as i32;
+                let mut sign: String = String::from(hacktypes::PLUS);
+                if final_result < 0 {
+                    sign = String::from(hacktypes::MINUS);
+                }
+                let final_number: Option<Number> = Some(Number::new(
+                    sign,
+                    "integer".to_string(),
+                    format!("{}", final_result.abs()),
+                    self.pos_start.clone(),
+                    self.pos_end.clone(),
+                ));
+                let err: Option<Error> = None;
+                (final_number, err)
+            } else {
+                let mut sign: String = String::from(hacktypes::PLUS);
+
+                if final_res < 0.0 {
+                    sign = String::from(hacktypes::MINUS);
+                }
+
+                let final_number: Option<Number> = Some(Number::new(
+                    sign,
+                    "float".to_string(),
+                    format!("{}", final_res.abs()),
+                    self.pos_start.clone(),
+                    self.pos_end.clone(),
+                ));
+                let err: Option<Error> = None;
+                (final_number, err)
+            }
         }
     }
 }

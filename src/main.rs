@@ -55,7 +55,7 @@ fn run(command: String) {
 
             if err_final.is_some() {
                 print!(
-                    "HackScript detected some error(s): \n {} \n",
+                    "HackScript detected some error(s): \n{} \n",
                     err_final.unwrap().error_message()
                 );
             } else {
