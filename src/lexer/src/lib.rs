@@ -14,12 +14,12 @@ pub struct Token {
 }
 
 impl Token {
-    pub fn new(_type: String, value: String, pos_start_: Position, pos_end_: Position) -> Token {
+    pub fn new(_type: String, value: String, pos_start: Position, pos_end: Position) -> Token {
         Token {
-            _type: _type,
-            value: value,
-            pos_start: pos_start_,
-            pos_end: pos_end_,
+            _type,
+            value,
+            pos_start,
+            pos_end,
         }
     }
 }
@@ -54,8 +54,7 @@ impl Lexer {
         pos_start: Position,
         pos_end: Position,
     ) -> Token {
-        let tok = Token::new(_type, value, pos_start, pos_end);
-        tok
+        Token::new(_type, value, pos_start, pos_end)
     }
     fn generate_error(
         &self,
@@ -112,12 +111,11 @@ impl Lexer {
     fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
         let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
-        value.push(self.curr_char.unwrap());
 
-        while hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
-            self.advance();
+        while self.curr_char.is_some() && hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
             if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
                 value.push(self.curr_char.unwrap());
+                self.advance();
             } else if self.curr_char.unwrap() == '.' {
                 value.push(self.curr_char.unwrap());
                 self.advance();

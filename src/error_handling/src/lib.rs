@@ -87,8 +87,12 @@ impl Error {
 
             let current_char = match text.as_str().chars().nth(current_index) {
                 Some(char) => char,
-                _ => panic!("No existed character detected"),
+                _ => {
+                    error_message.push('\n');
+                    '\n'
+                }
             };
+
             // ahh, we get the end of a row, let's add of highlighting!
             if current_char == '\n' {
                 // first push the '\n' in the error_message

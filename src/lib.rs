@@ -27,15 +27,15 @@ fn main() -> Result<(), io::Error> {
         io::stdin()
             .read_line(&mut command)
             .expect("Error reading from STDIN");
+
         match run(command) {
             Ok(ok) => print!("{}", ok),
             Err(err) => print!("{}", err),
         }
     }
 }
-
 // run the command
-fn run(command: String) -> Result<Value, Error> {
+pub fn run(command: String) -> Result<Value, Error> {
     // Lexing
     let mut lexer = Lexer::new(String::from("stdin"), command);
     let (tokens, error_lexer) = lexer.make_tokens();
@@ -48,7 +48,7 @@ fn run(command: String) -> Result<Value, Error> {
         if let Some(..) = error_parser {
             Err(error_parser.unwrap())
         } else {
-            let interpreter = Interpreter::new(ast.unwrap().clone());
+            let interpreter = Interpreter::new(ast.unwrap());
             let (value, error_interpreter) = interpreter.interpret();
 
             if let Some(..) = error_interpreter {
