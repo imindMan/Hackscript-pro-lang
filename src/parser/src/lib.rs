@@ -155,10 +155,10 @@ impl Parser {
     fn term(&mut self) -> (Option<AST>, Option<Error>) {
         // Parse the Factor
         let (node1, err1) = self.factor();
-        let mut term: Option<AST> = None;
         if err1.is_some() {
             return (node1, err1);
         }
+        let mut term: Option<AST> = node1;
         if self.curr_tok._type == hacktypes::NUMBER {
             return self.generate_error(
                 "Expect".to_string(),
@@ -168,27 +168,27 @@ impl Parser {
             );
         }
 
-        // Parse the ((MUL||DIV) Term)*
+        // Parse the ((MUL||DIV) Factor)*
 
         while [hacktypes::MULTIPLY, hacktypes::DIVIDE].contains(&self.curr_tok._type.as_str()) {
             let operator: Option<Token> = Some(self.curr_tok.clone());
             self.advance();
-            let (term2, err2) = self.term();
+            let (factor2, err2) = self.factor();
             if err2.is_some() {
-                return (term2, err2);
+                return (factor2, err2);
             } else {
                 term = Some(AST::new_formingcalc(
-                    Box::new(node1.clone().unwrap()),
+                    Box::new(term.clone().unwrap()),
                     operator,
-                    Box::new(term2.clone().unwrap()),
+                    Box::new(factor2.clone().unwrap()),
                 ));
-            }
+            };
         }
 
         let operator: Option<Token> = None;
         if term.is_none() {
             term = Some(AST::new_formingcalc(
-                Box::new(node1.unwrap()),
+                Box::new(term.unwrap()),
                 operator,
                 Box::new(AST::default()),
             ));
@@ -200,10 +200,11 @@ impl Parser {
     fn expr(&mut self) -> (Option<AST>, Option<Error>) {
         // parse the Term
         let (node1, err1) = self.term();
-        let mut expr: Option<AST> = None;
         if err1.is_some() {
             return (node1, err1);
-        }
+        };
+
+        let mut expr: Option<AST> = node1;
         if self.curr_tok._type == hacktypes::NUMBER {
             return self.generate_error(
                 "Expect".to_string(),
@@ -213,27 +214,28 @@ impl Parser {
             );
         }
 
-        // parse the ((PLUS||MINUS) Expr)*
+        // parse the ((PLUS||MINUS) Term)*
         while [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
             let operator: Option<Token> = Some(self.curr_tok.clone());
             self.advance();
-            let (expr2, err2) = self.expr();
+            let (term2, err2) = self.term();
             if err2.is_some() {
-                return (expr2, err2);
+                return (term2, err2);
             } else {
                 expr = Some(AST::new_formingcalc(
-                    Box::new(node1.clone().unwrap()),
+                    Box::new(expr.clone().unwrap()),
                     operator,
-                    Box::new(expr2.clone().unwrap()),
+                    Box::new(term2.clone().unwrap()),
                 ));
             }
+            println!("Expr: {:#?}", self.curr_tok);
         }
 
         let operator: Option<Token> = None;
 
         if expr.is_none() {
             expr = Some(AST::new_formingcalc(
-                Box::new(node1.unwrap()),
+                Box::new(expr.unwrap()),
                 operator,
                 Box::new(AST::default()),
             ));
