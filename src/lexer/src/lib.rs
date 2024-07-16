@@ -254,26 +254,35 @@ impl Lexer {
 
         if err.is_none() {
             // create an EOF token
-            let pos_start: Position = tokens
-                .as_ref()
-                .expect("No existing tokens")
-                .last()
-                .unwrap()
-                .pos_start
-                .clone();
-            let pos_end: Position = tokens
-                .as_ref()
-                .expect("No existiing tokens")
-                .last()
-                .unwrap()
-                .pos_end
-                .clone();
-            tokens.as_mut().unwrap().push(self.create_a_token(
-                String::from(hacktypes::EOF),
-                String::from(""),
-                pos_start,
-                pos_end,
-            ));
+            if tokens.as_ref().expect("No existing tokens").len() != 0 {
+                let pos_start: Position = tokens
+                    .as_ref()
+                    .expect("No existing tokens")
+                    .last()
+                    .unwrap()
+                    .pos_start
+                    .clone();
+                let pos_end: Position = tokens
+                    .as_ref()
+                    .expect("No existing tokens")
+                    .last()
+                    .unwrap()
+                    .pos_end
+                    .clone();
+                tokens.as_mut().unwrap().push(self.create_a_token(
+                    String::from(hacktypes::EOF),
+                    String::from(""),
+                    pos_start,
+                    pos_end,
+                ));
+            } else {
+                tokens.as_mut().unwrap().push(self.create_a_token(
+                    String::from(hacktypes::EOF),
+                    String::from(""),
+                    self.curr_pos.clone(),
+                    self.curr_pos.clone(),
+                ));
+            }
 
             // then return it
             (tokens, err)
