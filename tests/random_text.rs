@@ -33,6 +33,7 @@ fn failing_character() -> Result<(), String> {
     }
 }
 
+#[test]
 fn failing_character_with_backscape() -> Result<(), String> {
     match run(String::from("   a-    ")) {
         Ok(_ok) => Err("Shouldn't be passed".to_string()),
@@ -40,6 +41,7 @@ fn failing_character_with_backscape() -> Result<(), String> {
     }
 }
 
+#[test]
 fn failing_character_with_newline() -> Result<(), String> {
     match run(String::from("\n\n\n\n\nabc\n\n\n")) {
         Ok(_ok) => Err("Shouldn't be passed".to_string()),
@@ -47,6 +49,7 @@ fn failing_character_with_newline() -> Result<(), String> {
     }
 }
 
+#[test]
 fn failing_character_with_backscape_and_newline() -> Result<(), String> {
     match run(String::from("   \n \n \n a\n b - dd c  \n \n ")) {
         Ok(_ok) => Err("Shouldn't be passed".to_string()),
