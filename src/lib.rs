@@ -48,6 +48,7 @@ pub fn run(command: String) -> Result<Value, Error> {
         if let Some(..) = error_parser {
             Err(error_parser.unwrap())
         } else {
+            println!("{:#?}", ast);
             let interpreter = Interpreter::new(ast.unwrap());
             let (value, error_interpreter) = interpreter.interpret();
 

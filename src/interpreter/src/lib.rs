@@ -93,7 +93,7 @@ impl Interpreter {
         if err.is_some() {
             return (factor, err);
         }
-        match factor.clone().unwrap() {
+        match factor.unwrap() {
             Value::Number(number) => {
                 let mut final_sign: String = String::from(hacktypes::PLUS);
                 if sign.as_str() == number.sign.as_str() {
@@ -104,10 +104,10 @@ impl Interpreter {
 
                 let final_number: Option<Value> = Some(Value::new_number(
                     final_sign,
-                    number.identifier.clone(),
-                    number.value.clone(),
+                    number.identifier,
+                    number.value,
                     pos_start,
-                    number.pos_end.clone(),
+                    number.pos_end,
                 ));
                 let err: Option<Error> = None;
 
@@ -141,10 +141,10 @@ impl Interpreter {
         };
 
         let (res, err) = match real_operator.as_str() {
-            hacktypes::PLUS => value1.unwrap().add_to(value2.unwrap().clone()),
-            hacktypes::MINUS => value1.unwrap().subtract_to(value2.unwrap().clone()),
-            hacktypes::MULTIPLY => value1.unwrap().multiply_by(value2.unwrap().clone()),
-            hacktypes::DIVIDE => value1.unwrap().divide_by(value2.unwrap().clone()),
+            hacktypes::PLUS => value1.unwrap().add_to(value2.unwrap()),
+            hacktypes::MINUS => value1.unwrap().subtract_to(value2.unwrap()),
+            hacktypes::MULTIPLY => value1.unwrap().multiply_by(value2.unwrap()),
+            hacktypes::DIVIDE => value1.unwrap().divide_by(value2.unwrap()),
             &_ => panic!("No existing operator, failed unexpected"),
         };
 
