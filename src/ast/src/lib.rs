@@ -120,9 +120,9 @@ impl AST {
         };
 
         AST::UnaryFactor {
-            sign: sign._type.clone(),
+            sign: sign._type,
             value,
-            pos_start: sign.pos_start.clone(),
+            pos_start: sign.pos_start,
             pos_end: pos_end.clone(),
         }
     }

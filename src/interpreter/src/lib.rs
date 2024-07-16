@@ -58,7 +58,7 @@ impl Interpreter {
                 pos_end.clone(),
             ),
             AST::Nil => {
-                let factor: Option<Value> = Some(Value::Nil);
+                let factor: Option<Value> = Some(Value::new());
                 let err: Option<Error> = None;
                 (factor, err)
             }
@@ -114,7 +114,7 @@ impl Interpreter {
                 (final_number, err)
             }
             Value::Nil => {
-                let final_val: Option<Value> = Some(Value::Nil);
+                let final_val: Option<Value> = Some(Value::new());
                 let err: Option<Error> = None;
                 (final_val, err)
             }

@@ -56,6 +56,8 @@ impl Lexer {
     ) -> Token {
         Token::new(_type, value, pos_start, pos_end)
     }
+    // This function is for the whole Vec<Token>, since we are working with two main objects:
+    // Vec<Token> and Token (the real reason s to serve for the number_token() to work)
     fn generate_error(
         &self,
         r#type: String,
@@ -67,6 +69,8 @@ impl Lexer {
         let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
         (tok, err)
     }
+    // This function is for only Token item, since we are working with two main objects:
+    // Vec<Token> and Token (the real reason s to serve for the number_token() to work)
     fn generate_individual_error(
         &self,
         r#type: String,
@@ -78,7 +82,7 @@ impl Lexer {
         let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
         (tok, err)
     }
-
+    // 'advance' is actually to iterate to the next token
     fn advance(&mut self) {
         let temp_pos = self.curr_pos.literal_pos + 1;
 
@@ -122,6 +126,7 @@ impl Lexer {
                 if self.curr_char.is_none()
                     || !hacktypes::NUMBERLIST.contains(self.curr_char.unwrap())
                 {
+                    // disadvance the position to match the real position of the error-taking token
                     self.curr_pos.literal_pos -= 1;
                     if self.curr_char.unwrap() == '\n' {
                         self.curr_pos.col -= 1;
@@ -138,7 +143,6 @@ impl Lexer {
                     );
                 } else {
                     value.push(self.curr_char.unwrap());
-                    continue;
                 }
             }
         }
@@ -157,94 +161,121 @@ impl Lexer {
         let mut tokens: Option<Vec<Token>> = Some(Vec::new());
         let mut err: Option<Error> = None;
         while self.curr_char.is_some() {
-            if self.curr_char.unwrap() == ' ' || self.curr_char.unwrap() == '\n' {
-                self.advance();
-                continue;
-            } else if self.curr_char.unwrap() == '+' {
-                let token: Token = self.create_a_token(
-                    String::from(hacktypes::PLUS),
-                    String::from(""),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                );
-                tokens.as_mut().unwrap().push(token);
-                self.advance();
-                continue;
-            } else if self.curr_char.unwrap() == '-' {
-                let token: Token = self.create_a_token(
-                    String::from(hacktypes::MINUS),
-                    String::from(""),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                );
-                tokens.as_mut().unwrap().push(token);
-                self.advance();
-                continue;
-            } else if self.curr_char.unwrap() == '*' {
-                let token: Token = self.create_a_token(
-                    String::from(hacktypes::MULTIPLY),
-                    String::from(""),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                );
-                tokens.as_mut().unwrap().push(token);
-                self.advance();
-                continue;
-            } else if self.curr_char.unwrap() == '/' {
-                let token: Token = self.create_a_token(
-                    String::from(hacktypes::DIVIDE),
-                    String::from(""),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                );
-                tokens.as_mut().unwrap().push(token);
-                self.advance();
-                continue;
-            } else if self.curr_char.unwrap() == '(' {
-                let token: Token = self.create_a_token(
-                    String::from(hacktypes::PARENTHESE_OPEN),
-                    String::from(""),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                );
-                tokens.as_mut().unwrap().push(token);
-                self.advance();
-                continue;
-            } else if self.curr_char.unwrap() == ')' {
-                let token: Token = self.create_a_token(
-                    String::from(hacktypes::PARENTHESE_CLOSE),
-                    String::from(""),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                );
-                tokens.as_mut().unwrap().push(token);
-                self.advance();
-                continue;
-            } else if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
-                let (token, error) = self.number_token();
-                if error.is_some() {
-                    tokens = None;
-                    err = error;
-                    break;
-                } else {
-                    tokens.as_mut().unwrap().push(token.unwrap())
+            // basically a match pattern to check the current character in the lexer,
+            // then create a token based on that current token
+            match self.curr_char.unwrap() {
+                ' ' | '\n' => {
+                    self.advance();
                 }
-            } else {
-                return self.generate_error(
-                    "Undefined character".to_string(),
-                    self.curr_char.expect("No character").to_string(),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                );
-            }
+                '+' => {
+                    let token: Token = self.create_a_token(
+                        String::from(hacktypes::PLUS),
+                        String::from(""),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.as_mut().unwrap().push(token);
+                    self.advance();
+                }
+                '-' => {
+                    let token: Token = self.create_a_token(
+                        String::from(hacktypes::MINUS),
+                        String::from(""),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.as_mut().unwrap().push(token);
+                    self.advance();
+                }
+                '*' => {
+                    let token: Token = self.create_a_token(
+                        String::from(hacktypes::MULTIPLY),
+                        String::from(""),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.as_mut().unwrap().push(token);
+                    self.advance();
+                    continue;
+                }
+                '/' => {
+                    let token: Token = self.create_a_token(
+                        String::from(hacktypes::DIVIDE),
+                        String::from(""),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.as_mut().unwrap().push(token);
+                    self.advance();
+                }
+                '(' => {
+                    let token: Token = self.create_a_token(
+                        String::from(hacktypes::PARENTHESE_OPEN),
+                        String::from(""),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.as_mut().unwrap().push(token);
+                    self.advance();
+                    continue;
+                }
+                ')' => {
+                    let token: Token = self.create_a_token(
+                        String::from(hacktypes::PARENTHESE_CLOSE),
+                        String::from(""),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.as_mut().unwrap().push(token);
+                    self.advance();
+                    continue;
+                }
+                _ => {
+                    if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
+                        let (token, error) = self.number_token();
+                        if error.is_some() {
+                            tokens = None;
+                            err = error;
+                            break;
+                        } else {
+                            tokens.as_mut().unwrap().push(token.unwrap());
+                            continue;
+                        }
+                    };
+                    return self.generate_error(
+                        "Undefined character".to_string(),
+                        self.curr_char.expect("No character").to_string(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                }
+            };
         }
+
         if err.is_none() {
+            // create an EOF token
+            let pos_start: Position = tokens
+                .as_ref()
+                .expect("No existing tokens")
+                .last()
+                .unwrap()
+                .pos_start
+                .clone();
+            let pos_end: Position = tokens
+                .as_ref()
+                .expect("No existiing tokens")
+                .last()
+                .unwrap()
+                .pos_end
+                .clone();
             tokens.as_mut().unwrap().push(self.create_a_token(
                 String::from(hacktypes::EOF),
                 String::from(""),
-                self.curr_pos.clone(),
-                self.curr_pos.clone(),
+                pos_start,
+                pos_end,
             ));
+
+            // then return it
             (tokens, err)
         } else {
             (tokens, err)

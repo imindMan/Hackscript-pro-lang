@@ -90,17 +90,16 @@ impl Parser {
 
     fn unary_number_making(&mut self) -> (Option<AST>, Option<Error>) {
         let sign = self.curr_tok.clone();
-        let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
         let (factor, err) = self.factor();
         if err.is_some() {
-            return (factor, err);
+            (factor, err)
         } else {
             let unary: Option<AST> = Some(AST::new_unaryfactor(
                 sign,
                 Box::new(factor.unwrap().clone()),
             ));
-            return (unary, err);
+            (unary, err)
         }
     }
     fn in_parentheses_expr(&mut self) -> (Option<AST>, Option<Error>) {
@@ -108,18 +107,18 @@ impl Parser {
         self.advance();
         let (factor, err) = self.expr();
         if err.is_some() {
-            return (factor, err);
+            (factor, err)
         } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {
-            return self.generate_error(
+            self.generate_error(
                 "Expect".to_string(),
                 "the expression should be closed by a ')' (close parenthese), found EOF."
                     .to_string(),
                 pos_start,
                 self.curr_tok.pos_end.clone(),
-            );
+            )
         } else {
             self.advance();
-            return (factor, err);
+            (factor, err)
         }
     }
 
@@ -134,18 +133,10 @@ impl Parser {
             return self.unary_number_making();
         } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
             return self.in_parentheses_expr();
-        } else if self.curr_tok._type == hacktypes::EOF {
-            return self.generate_error(
-                "Expect".to_string(),
-                "a number type token, found EOF".to_string(),
-                self.curr_tok.pos_start.clone(),
-                self.curr_tok.pos_end.clone(),
-            );
         } else {
-            self.advance();
             return self.generate_error(
                 "Expect".to_string(),
-                "a number type token".to_string(),
+                "a number type token, '+', '-', and '('".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );

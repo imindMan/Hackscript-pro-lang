@@ -34,20 +34,22 @@ fn main() -> Result<(), io::Error> {
         }
     }
 }
-// run the command
+
+// INFO: Main entry point of the Hackscript programming language.
 pub fn run(command: String) -> Result<Value, Error> {
-    // Lexing
+    // Lexing part
     let mut lexer = Lexer::new(String::from("stdin"), command);
     let (tokens, error_lexer) = lexer.make_tokens();
     if let Some(..) = error_lexer {
         Err(error_lexer.unwrap())
     } else {
-        // Parsing
+        // Parsing part
         let mut parser = Parser::new(tokens.unwrap());
         let (ast, error_parser) = parser.parse();
         if let Some(..) = error_parser {
             Err(error_parser.unwrap())
         } else {
+            // Interpreting part
             let interpreter = Interpreter::new(ast.unwrap());
             let (value, error_interpreter) = interpreter.interpret();
 
