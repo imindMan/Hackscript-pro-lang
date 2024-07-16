@@ -19,4 +19,4 @@ pub const PARENTHESE_CLOSE: &str = "PAREN_CLOSE";
 // numbering shouldn't be so complicated
 
 pub const NUMBER: &str = "NUMBER";
-pub const NUMBERLIST: &str = "0123456789";
+pub const NUMBERLIST: &str = "0123456789.";
