@@ -228,7 +228,6 @@ impl Parser {
                     Box::new(term2.clone().unwrap()),
                 ));
             }
-            println!("Expr: {:#?}", self.curr_tok);
         }
 
         let operator: Option<Token> = None;
