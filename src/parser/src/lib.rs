@@ -42,8 +42,17 @@ impl Parser {
             let err: Option<Error> = None;
             return (expr, err);
         }
+
         // for now the FormingCalc AST (see the src/ast for more information) is the top node
         let (expr, err) = self.expr();
+        if err.is_none() && self.curr_tok._type != hacktypes::EOF {
+            return self.generate_error(
+                "Expect".to_string(),
+                "an operator like '+', '-', '*' or '/', found a different token".to_string(),
+                self.curr_tok.pos_start.clone(),
+                self.curr_tok.pos_end.clone(),
+            );
+        }
         (expr, err)
     }
 
@@ -154,21 +163,6 @@ impl Parser {
             return (node1, err1);
         }
         let mut term: Option<AST> = node1;
-        if ![
-            hacktypes::PLUS,
-            hacktypes::MINUS,
-            hacktypes::MULTIPLY,
-            hacktypes::DIVIDE,
-        ]
-        .contains(&self.curr_tok._type.as_str())
-        {
-            return self.generate_error(
-                "Expect".to_string(),
-                "an operator like '+', '-', '*' or '/', found a different token".to_string(),
-                self.curr_tok.pos_start.clone(),
-                self.curr_tok.pos_end.clone(),
-            );
-        }
 
         // Parse the ((MUL||DIV) Factor)*
 
@@ -207,22 +201,6 @@ impl Parser {
         };
 
         let mut expr: Option<AST> = node1;
-        if ![
-            hacktypes::PLUS,
-            hacktypes::MINUS,
-            hacktypes::MULTIPLY,
-            hacktypes::DIVIDE,
-        ]
-        .contains(&self.curr_tok._type.as_str())
-        {
-            return self.generate_error(
-                "Expect".to_string(),
-                "an operator like '+', '-', '*' or '/', found a different token".to_string(),
-                self.curr_tok.pos_start.clone(),
-                self.curr_tok.pos_end.clone(),
-            );
-        }
-
         // parse the ((PLUS||MINUS) Term)*
         while [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
             let operator: Option<Token> = Some(self.curr_tok.clone());
