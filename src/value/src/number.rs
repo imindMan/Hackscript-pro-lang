@@ -58,10 +58,9 @@ impl Number {
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
-        let number_test: f32 = number.value.parse().unwrap();
         // check if the divison became a float
-        let mut number1: f32 = self.value.parse().unwrap();
-        let mut number2: f32 = number.value.parse().unwrap();
+        let number1: f32 = self.value.parse().unwrap();
+        let number2: f32 = number.value.parse().unwrap();
 
         let final_res: f32 = match operation {
             hacktypes::PLUS => number1 + number2,
