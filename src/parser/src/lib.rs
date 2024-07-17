@@ -154,10 +154,17 @@ impl Parser {
             return (node1, err1);
         }
         let mut term: Option<AST> = node1;
-        if self.curr_tok._type == hacktypes::NUMBER {
+        if ![
+            hacktypes::PLUS,
+            hacktypes::MINUS,
+            hacktypes::MULTIPLY,
+            hacktypes::DIVIDE,
+        ]
+        .contains(&self.curr_tok._type.as_str())
+        {
             return self.generate_error(
                 "Expect".to_string(),
-                "an operator like '+', '-', '*' or '/', found a number type token".to_string(),
+                "an operator like '+', '-', '*' or '/', found a different token".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
@@ -200,10 +207,17 @@ impl Parser {
         };
 
         let mut expr: Option<AST> = node1;
-        if self.curr_tok._type == hacktypes::NUMBER {
+        if ![
+            hacktypes::PLUS,
+            hacktypes::MINUS,
+            hacktypes::MULTIPLY,
+            hacktypes::DIVIDE,
+        ]
+        .contains(&self.curr_tok._type.as_str())
+        {
             return self.generate_error(
                 "Expect".to_string(),
-                "an operator like '+', '-', '*' or '/', found a number type token".to_string(),
+                "an operator like '+', '-', '*' or '/', found a different token".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );
