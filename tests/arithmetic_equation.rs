@@ -33,6 +33,13 @@ fn parser_err_checking_number_factor() -> Result<(), String> {
         Err(_err) => Ok(()),
     }
 }
+#[test]
+fn parser_err_checking_operator() -> Result<(), String> {
+    match run(String::from("1 (2")) {
+        Ok(_ok) => Err("Shouldn't be passed".to_string()),
+        Err(_err) => Ok(()),
+    }
+}
 
 #[test]
 fn simple_adding_positive_equation() {
