@@ -48,26 +48,40 @@ impl Number {
         ));
         (number, error)
     }
-
-    pub fn add_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
+    fn arithmetic_function(
+        &self,
+        number: Number,
+        operation: &str,
+    ) -> (Option<Number>, Option<Error>) {
         // since Hackscript doesn't differ integer or float, it just treats everything as
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
-        if self.identifier.as_str() == "float"
-            || number.identifier.as_str() == "float"
-            || (self.identifier.as_str() == "float" && number.identifier.as_str() == "float")
-        {
-            let mut number1: f32 = self.value.parse().unwrap();
-            let mut number2: f32 = number.value.parse().unwrap();
+        let number_test: f32 = number.value.parse().unwrap();
+        // check if the divison became a float
+        let mut number1: f32 = self.value.parse().unwrap();
+        let mut number2: f32 = number.value.parse().unwrap();
 
-            let final_res = number1 + number2;
-            let mut sign: String = String::from(hacktypes::PLUS);
+        let final_res: f32 = match operation {
+            hacktypes::PLUS => number1 + number2,
+            hacktypes::MINUS => number1 - number2,
+            hacktypes::MULTIPLY => number1 * number2,
+            hacktypes::DIVIDE => number1 / number2,
+            &_ => panic!("No existing instruction"),
+        };
 
-            if final_res < 0.0 {
-                sign = String::from(hacktypes::MINUS);
-            }
+        if final_res == final_res.floor() {
+            let final_result = final_res.floor() as i32;
 
+            let final_number: Option<Number> = Some(Number::new(
+                "integer".to_string(),
+                format!("{}", final_result),
+                self.pos_start.clone(),
+                self.pos_end.clone(),
+            ));
+            let err: Option<Error> = None;
+            (final_number, err)
+        } else {
             let final_number: Option<Number> = Some(Number::new(
                 "float".to_string(),
                 format!("{}", final_res),
@@ -76,127 +90,18 @@ impl Number {
             ));
             let err: Option<Error> = None;
             (final_number, err)
-        } else {
-            let mut number1: i32 = self.value.parse().unwrap();
-            let mut number2: i32 = number.value.parse().unwrap();
-
-            let final_res = number1 + number2;
-            let mut sign: String = String::from(hacktypes::PLUS);
-
-            if final_res < 0 {
-                sign = String::from(hacktypes::MINUS);
-            }
-
-            let final_number: Option<Number> = Some(Number::new(
-                self.identifier.clone(),
-                format!("{}", final_res),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
         }
+    }
+    pub fn add_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
+        self.arithmetic_function(number, hacktypes::PLUS)
     }
     pub fn subtract_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        // since Hackscript doesn't differ integer or float, it just treats everything as
-        // "numbers", but Rust does treat them differently, so we'll have to build our simple
-        // "smart" detector to check the final number is int or float. Ofc there are more than
-        // this, but Hackscript is simple in its core but confusing anyway :))
-        if self.identifier.as_str() == "float"
-            || number.identifier.as_str() == "float"
-            || (self.identifier.as_str() == "float" && number.identifier.as_str() == "float")
-        {
-            let mut number1: f32 = self.value.parse().unwrap();
-            let mut number2: f32 = number.value.parse().unwrap();
-
-            let final_res = number1 - number2;
-            let mut sign: String = String::from(hacktypes::PLUS);
-
-            if final_res < 0.0 {
-                sign = String::from(hacktypes::MINUS);
-            }
-
-            let final_number: Option<Number> = Some(Number::new(
-                "float".to_string(),
-                format!("{}", final_res),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
-        } else {
-            let mut number1: i32 = self.value.parse().unwrap();
-            let mut number2: i32 = number.value.parse().unwrap();
-
-            let final_res = number1 - number2;
-            let mut sign: String = String::from(hacktypes::PLUS);
-
-            if final_res < 0 {
-                sign = String::from(hacktypes::MINUS);
-            }
-
-            let final_number: Option<Number> = Some(Number::new(
-                self.identifier.clone(),
-                format!("{}", final_res),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
-        }
+        self.arithmetic_function(number, hacktypes::MINUS)
     }
     pub fn multiply_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        // since Hackscript doesn't differ integer or float, it just treats everything as
-        // "numbers", but Rust does treat them differently, so we'll have to build our simple
-        // "smart" detector to check the final number is int or float. Ofc there are more than
-        // this, but Hackscript is simple in its core but confusing anyway :))
-        if self.identifier.as_str() == "float"
-            || number.identifier.as_str() == "float"
-            || (self.identifier.as_str() == "float" && number.identifier.as_str() == "float")
-        {
-            let mut number1: f32 = self.value.parse().unwrap();
-            let mut number2: f32 = number.value.parse().unwrap();
-
-            let final_res = number1 * number2;
-            let mut sign: String = String::from(hacktypes::PLUS);
-
-            if final_res < 0.0 {
-                sign = String::from(hacktypes::MINUS);
-            }
-
-            let final_number: Option<Number> = Some(Number::new(
-                "float".to_string(),
-                format!("{}", final_res),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
-        } else {
-            let mut number1: i32 = self.value.parse().unwrap();
-            let mut number2: i32 = number.value.parse().unwrap();
-            let final_res = number1 * number2;
-            let mut sign: String = String::from(hacktypes::PLUS);
-
-            if final_res < 0 {
-                sign = String::from(hacktypes::MINUS);
-            }
-
-            let final_number: Option<Number> = Some(Number::new(
-                self.identifier.clone(),
-                format!("{}", final_res),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
-        }
+        self.arithmetic_function(number, hacktypes::MULTIPLY)
     }
     pub fn divide_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        // since Hackscript doesn't differ integer or float, it just treats everything as
-        // "numbers", but Rust does treat them differently, so we'll have to build our simple
-        // "smart" detector to check the final number is int or float. Ofc there are more than
-        // this, but Hackscript is simple in its core but confusing anyway :))
         let number_test: f32 = number.value.parse().unwrap();
         if number_test == 0.0 {
             return self.generate_error(
@@ -205,43 +110,8 @@ impl Number {
                 self.pos_start.clone(),
                 number.pos_end.clone(),
             );
-        }
+        };
 
-        // check if the divison became a float
-        let mut number1: f32 = self.value.parse().unwrap();
-        let mut number2: f32 = number.value.parse().unwrap();
-
-        let final_res: f32 = number1 / number2;
-
-        if final_res == final_res.floor() {
-            let final_result = final_res.floor() as i32;
-            let mut sign: String = String::from(hacktypes::PLUS);
-            if final_result < 0 {
-                sign = String::from(hacktypes::MINUS);
-            }
-            let final_number: Option<Number> = Some(Number::new(
-                "integer".to_string(),
-                format!("{}", final_result.abs()),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
-        } else {
-            let mut sign: String = String::from(hacktypes::PLUS);
-
-            if final_res < 0.0 {
-                sign = String::from(hacktypes::MINUS);
-            }
-
-            let final_number: Option<Number> = Some(Number::new(
-                "float".to_string(),
-                format!("{}", final_res),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
-        }
+        self.arithmetic_function(number, hacktypes::DIVIDE)
     }
 }
