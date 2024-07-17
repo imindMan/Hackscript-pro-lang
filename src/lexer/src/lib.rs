@@ -158,7 +158,7 @@ impl Lexer {
     }
 
     // INFO: make some tokens
-    // After initialize the lexer with the proper fname and fcontent, now we can call this function
+    // After initializing the lexer with the proper fname and fcontent, now we can call this function
     // to create tokens from fcontent
     pub fn make_tokens(&mut self) -> (Option<Vec<Token>>, Option<Error>) {
         let mut tokens: Option<Vec<Token>> = Some(Vec::new());
