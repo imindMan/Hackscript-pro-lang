@@ -72,11 +72,7 @@ impl Interpreter {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
-        let sign: String = String::from(hacktypes::PLUS);
-
-        let factor: Option<Value> = Some(Value::new_number(
-            sign, identifier, value, pos_start, pos_end,
-        ));
+        let factor: Option<Value> = Some(Value::new_number(identifier, value, pos_start, pos_end));
         let err: Option<Error> = None;
 
         (factor, err)
@@ -95,17 +91,26 @@ impl Interpreter {
         }
         match factor.unwrap() {
             Value::Number(number) => {
-                let mut final_sign: String = String::from(hacktypes::PLUS);
-                if sign.as_str() == number.sign.as_str() {
-                    final_sign = String::from(hacktypes::PLUS);
-                } else if sign.as_str() != number.sign.as_str() {
-                    final_sign = String::from(hacktypes::MINUS);
+                let mut final_value: String = number.value.clone();
+                if sign.as_str() == hacktypes::MINUS {
+                    match number.identifier.as_str() {
+                        "integer" => {
+                            let mut number_value: i32 = number.value.parse().unwrap();
+                            number_value *= -1;
+                            final_value = number_value.to_string();
+                        }
+                        "float" => {
+                            let mut number_value: f32 = number.value.parse().unwrap();
+                            number_value *= -1.0;
+                            final_value = number_value.to_string();
+                        }
+                        &_ => panic!("No existing data types"),
+                    };
                 };
 
                 let final_number: Option<Value> = Some(Value::new_number(
-                    final_sign,
                     number.identifier,
-                    number.value,
+                    final_value,
                     pos_start,
                     number.pos_end,
                 ));

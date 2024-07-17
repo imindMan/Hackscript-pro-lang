@@ -6,7 +6,6 @@ use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 pub struct Number {
-    pub sign: String,
     pub identifier: String,
     pub value: String,
     pub pos_start: Position,
@@ -14,34 +13,18 @@ pub struct Number {
 }
 impl Display for Number {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.identifier == *"integer" {
-            let mut number: i32 = self.value.parse().unwrap();
-            if self.sign == *hacktypes::MINUS {
-                number *= -1;
-            }
-
-            writeln!(f, "{}", number)
-        } else {
-            let mut number: f32 = self.value.parse().unwrap();
-            if self.sign == *hacktypes::MINUS {
-                number *= -1.0;
-            }
-
-            writeln!(f, "{}", number)
-        }
+        writeln!(f, "{}", self.value)
     }
 }
 
 impl Number {
     pub fn new(
-        sign: String,
         identifier: String,
         value: String,
         pos_start: Position,
         pos_end: Position,
     ) -> Number {
         Number {
-            sign,
             identifier,
             value,
             pos_start,
@@ -78,12 +61,6 @@ impl Number {
             let mut number1: f32 = self.value.parse().unwrap();
             let mut number2: f32 = number.value.parse().unwrap();
 
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 *= -1.0;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 *= -1.0;
-            };
             let final_res = number1 + number2;
             let mut sign: String = String::from(hacktypes::PLUS);
 
@@ -92,9 +69,8 @@ impl Number {
             }
 
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 "float".to_string(),
-                format!("{}", final_res.abs()),
+                format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -104,12 +80,6 @@ impl Number {
             let mut number1: i32 = self.value.parse().unwrap();
             let mut number2: i32 = number.value.parse().unwrap();
 
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 = -number1;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 = -number2;
-            };
             let final_res = number1 + number2;
             let mut sign: String = String::from(hacktypes::PLUS);
 
@@ -118,9 +88,8 @@ impl Number {
             }
 
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 self.identifier.clone(),
-                format!("{}", final_res.abs()),
+                format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -140,12 +109,6 @@ impl Number {
             let mut number1: f32 = self.value.parse().unwrap();
             let mut number2: f32 = number.value.parse().unwrap();
 
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 *= -1.0;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 *= -1.0;
-            };
             let final_res = number1 - number2;
             let mut sign: String = String::from(hacktypes::PLUS);
 
@@ -154,9 +117,8 @@ impl Number {
             }
 
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 "float".to_string(),
-                format!("{}", final_res.abs()),
+                format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -166,12 +128,6 @@ impl Number {
             let mut number1: i32 = self.value.parse().unwrap();
             let mut number2: i32 = number.value.parse().unwrap();
 
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 = -number1;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 = -number2;
-            };
             let final_res = number1 - number2;
             let mut sign: String = String::from(hacktypes::PLUS);
 
@@ -180,9 +136,8 @@ impl Number {
             }
 
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 self.identifier.clone(),
-                format!("{}", final_res.abs()),
+                format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -202,12 +157,6 @@ impl Number {
             let mut number1: f32 = self.value.parse().unwrap();
             let mut number2: f32 = number.value.parse().unwrap();
 
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 *= -1.0;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 *= -1.0;
-            };
             let final_res = number1 * number2;
             let mut sign: String = String::from(hacktypes::PLUS);
 
@@ -216,9 +165,8 @@ impl Number {
             }
 
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 "float".to_string(),
-                format!("{}", final_res.abs()),
+                format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -227,13 +175,6 @@ impl Number {
         } else {
             let mut number1: i32 = self.value.parse().unwrap();
             let mut number2: i32 = number.value.parse().unwrap();
-
-            if self.sign.as_str() == hacktypes::MINUS {
-                number1 = -number1;
-            };
-            if number.sign.as_str() == hacktypes::MINUS {
-                number2 = -number2;
-            };
             let final_res = number1 * number2;
             let mut sign: String = String::from(hacktypes::PLUS);
 
@@ -242,9 +183,8 @@ impl Number {
             }
 
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 self.identifier.clone(),
-                format!("{}", final_res.abs()),
+                format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
@@ -270,12 +210,6 @@ impl Number {
         // check if the divison became a float
         let mut number1: f32 = self.value.parse().unwrap();
         let mut number2: f32 = number.value.parse().unwrap();
-        if self.sign.as_str() == hacktypes::MINUS {
-            number1 *= -1.0;
-        };
-        if number.sign.as_str() == hacktypes::MINUS {
-            number2 *= -1.0;
-        };
 
         let final_res: f32 = number1 / number2;
 
@@ -286,7 +220,6 @@ impl Number {
                 sign = String::from(hacktypes::MINUS);
             }
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 "integer".to_string(),
                 format!("{}", final_result.abs()),
                 self.pos_start.clone(),
@@ -302,9 +235,8 @@ impl Number {
             }
 
             let final_number: Option<Number> = Some(Number::new(
-                sign,
                 "float".to_string(),
-                format!("{}", final_res.abs()),
+                format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));

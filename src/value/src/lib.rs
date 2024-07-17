@@ -3,7 +3,6 @@
 
 pub mod number;
 use error_handling::Error;
-use lexer::Token;
 use position::Position;
 use std::fmt::Display;
 
@@ -28,15 +27,12 @@ impl Value {
         Value::Nil
     }
     pub fn new_number(
-        sign: String,
         identifier: String,
         value: String,
         pos_start: Position,
         pos_end: Position,
     ) -> Value {
-        Value::Number(number::Number::new(
-            sign, identifier, value, pos_start, pos_end,
-        ))
+        Value::Number(number::Number::new(identifier, value, pos_start, pos_end))
     }
 
     fn generate_error(
@@ -80,14 +76,11 @@ impl Value {
             };
             let res_value: Option<Value> = match temp_res_value.unwrap() {
                 number::Number {
-                    sign,
                     identifier,
                     value,
                     pos_start,
                     pos_end,
-                } => Some(Value::new_number(
-                    sign, identifier, value, pos_start, pos_end,
-                )),
+                } => Some(Value::new_number(identifier, value, pos_start, pos_end)),
             };
             (res_value, err)
         } else {
