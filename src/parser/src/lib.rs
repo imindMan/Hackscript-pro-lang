@@ -20,6 +20,7 @@ pub struct Parser {
 //
 
 impl Parser {
+    // INFO: This is the initialization method of the Parser
     pub fn new(tokens: Vec<Token>) -> Parser {
         let curr_index: usize = 0;
         let curr_tok = tokens[curr_index].clone();
@@ -32,6 +33,9 @@ impl Parser {
 
     // since the parser only has one function, that is to parse tokens into AST, this is the only
     // method beside the init method that is publicized
+
+    // INFO: After initializing the parser, this function will parse the tokens and return the AST
+    // for the interpreter
     pub fn parse(&mut self) -> (Option<AST>, Option<Error>) {
         if self.curr_tok._type == hacktypes::EOF {
             let expr: Option<AST> = Some(AST::Nil);
@@ -181,7 +185,7 @@ impl Parser {
             term = Some(AST::new_formingcalc(
                 Box::new(term.unwrap()),
                 operator,
-                Box::new(AST::default()),
+                Box::new(AST::new()),
             ));
         }
         let err: Option<Error> = None;
@@ -227,7 +231,7 @@ impl Parser {
             expr = Some(AST::new_formingcalc(
                 Box::new(expr.unwrap()),
                 operator,
-                Box::new(AST::default()),
+                Box::new(AST::new()),
             ));
         }
         let err: Option<Error> = None;

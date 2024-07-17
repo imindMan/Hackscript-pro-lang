@@ -32,6 +32,7 @@ pub struct Lexer {
 }
 
 impl Lexer {
+    // INFO: This is the Initialization method of Lexer
     pub fn new(fname: String, fcontent: String) -> Lexer {
         Lexer {
             curr_char: match fcontent.clone().as_str().chars().next() {
@@ -57,7 +58,7 @@ impl Lexer {
         Token::new(_type, value, pos_start, pos_end)
     }
     // This function is for the whole Vec<Token>, since we are working with two main objects:
-    // Vec<Token> and Token (the real reason s to serve for the number_token() to work)
+    // Vec<Token> and Token (the real reason is to serve for the number_token() to work)
     fn generate_error(
         &self,
         r#type: String,
@@ -70,7 +71,7 @@ impl Lexer {
         (tok, err)
     }
     // This function is for only Token item, since we are working with two main objects:
-    // Vec<Token> and Token (the real reason s to serve for the number_token() to work)
+    // Vec<Token> and Token (the real reason is to serve for the number_token() to work)
     fn generate_individual_error(
         &self,
         r#type: String,
@@ -156,7 +157,9 @@ impl Lexer {
         (tok, err)
     }
 
-    // make some tokens
+    // INFO: make some tokens
+    // After initialize the lexer with the proper fname and fcontent, now we can call this function
+    // to create tokens from fcontent
     pub fn make_tokens(&mut self) -> (Option<Vec<Token>>, Option<Error>) {
         let mut tokens: Option<Vec<Token>> = Some(Vec::new());
         let mut err: Option<Error> = None;
@@ -164,7 +167,7 @@ impl Lexer {
             // basically a match pattern to check the current character in the lexer,
             // then create a token based on that current token
             match self.curr_char.unwrap() {
-                ' ' | '\n' => {
+                ' ' | '\n' | '\t' => {
                     self.advance();
                 }
                 '+' => {
@@ -196,7 +199,6 @@ impl Lexer {
                     );
                     tokens.as_mut().unwrap().push(token);
                     self.advance();
-                    continue;
                 }
                 '/' => {
                     let token: Token = self.create_a_token(
@@ -217,7 +219,6 @@ impl Lexer {
                     );
                     tokens.as_mut().unwrap().push(token);
                     self.advance();
-                    continue;
                 }
                 ')' => {
                     let token: Token = self.create_a_token(
@@ -228,20 +229,18 @@ impl Lexer {
                     );
                     tokens.as_mut().unwrap().push(token);
                     self.advance();
-                    continue;
+                }
+                '0'..='9' | '.' => {
+                    let (token, error) = self.number_token();
+                    if error.is_some() {
+                        tokens = None;
+                        err = error;
+                        break;
+                    } else {
+                        tokens.as_mut().unwrap().push(token.unwrap());
+                    }
                 }
                 _ => {
-                    if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
-                        let (token, error) = self.number_token();
-                        if error.is_some() {
-                            tokens = None;
-                            err = error;
-                            break;
-                        } else {
-                            tokens.as_mut().unwrap().push(token.unwrap());
-                            continue;
-                        }
-                    };
                     return self.generate_error(
                         "Undefined character".to_string(),
                         self.curr_char.expect("No character").to_string(),
@@ -254,7 +253,7 @@ impl Lexer {
 
         if err.is_none() {
             // create an EOF token
-            if tokens.as_ref().expect("No existing tokens").len() != 0 {
+            if !tokens.as_ref().expect("No existing tokens").is_empty() {
                 let pos_start: Position = tokens
                     .as_ref()
                     .expect("No existing tokens")

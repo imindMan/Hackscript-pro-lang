@@ -2,6 +2,7 @@
  * Position implementation
  * Use mainly for error handling
  * **/
+use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 pub struct Position {
@@ -11,8 +12,17 @@ pub struct Position {
     pub fname: String,
     pub fcontent: String,
 }
+impl Display for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {})", self.row, self.col)
+    }
+}
 
 impl Position {
+    // INFO: This is the initialization method for the Position
+    // Although the syntax when reading the doc is (row, column)
+    // The initialization method will take col value first then row value
+    // after.
     pub fn new(col: i32, row: i32, literal_pos: i32, fname: String, fcontent: String) -> Position {
         Position {
             col,
@@ -21,10 +31,6 @@ impl Position {
             fname,
             fcontent,
         }
-    }
-
-    pub fn display(&self) {
-        print!("({}, {})", self.row, self.col);
     }
 }
 

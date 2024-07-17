@@ -18,6 +18,7 @@ impl Display for Number {
 }
 
 impl Number {
+    // INFO: This is the initialization function of the Number
     pub fn new(
         identifier: String,
         value: String,
@@ -92,15 +93,27 @@ impl Number {
             (final_number, err)
         }
     }
+
+    // NOTE: This is the plus operation of the Number
+    // Cannot use this for direct plus operation, we have to go through the Value enum
     pub fn add_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
         self.arithmetic_function(number, hacktypes::PLUS)
     }
+    // NOTE: This is the minus operation of the Number
+    // Cannot use this for direct minus operation, we have to go through the Value enum
+
     pub fn subtract_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
         self.arithmetic_function(number, hacktypes::MINUS)
     }
+    // NOTE: This is the multiply operation of the Number
+    // Cannot use this for direct multiply operation, we have to go through the Value enum
+
     pub fn multiply_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
         self.arithmetic_function(number, hacktypes::MULTIPLY)
     }
+    // NOTE: This is the divide operation of the Number
+    // Cannot use this for direct divide operation, we have to go through the Value enum
+
     pub fn divide_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
         let number_test: f32 = number.value.parse().unwrap();
         if number_test == 0.0 {

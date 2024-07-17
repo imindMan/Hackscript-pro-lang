@@ -32,11 +32,14 @@ pub enum AST {
 }
 
 impl AST {
-    // This is the initialization method by default
-    pub fn default() -> AST {
+    // INFO: This is the initialization method by default
+    // It will just return the Nil value
+    pub fn new() -> AST {
         AST::Nil
     }
 
+    // INFO: This is the initialization method for the Factor attribute
+    // To know what is a Factor, check the grammar rules in parser module
     pub fn new_factor(token: Token) -> AST {
         let mut identifier: String = String::new();
         if token.value.contains('.') {
@@ -52,7 +55,9 @@ impl AST {
             pos_end: token.pos_end.clone(),
         }
     }
-
+    // INFO: This is the initialization method for the FormingCalc attribute
+    // FormingCalc is the main representative of Term and Expr
+    // To know what are Term and Expr, check the grammar rules in parser module
     pub fn new_formingcalc(node1: Box<AST>, operator: Option<Token>, node2: Box<AST>) -> AST {
         let node1_temp = node1.clone();
         let node2_temp = node2.clone();
@@ -87,13 +92,16 @@ impl AST {
         };
 
         AST::FormingCalc {
-            node1: node1,
-            operator: operator,
-            node2: node2,
+            node1,
+            operator,
+            node2,
             pos_start: pos_start.clone(),
             pos_end: pos_end.clone(),
         }
     }
+
+    // INFO: This is the initialization method of Unary
+    // To know what is a Unary, check the grammar rules in parser module
     pub fn new_unaryfactor(sign: Token, value: Box<AST>) -> AST {
         let value_temp = value.clone();
         let pos_end = match &*value_temp {

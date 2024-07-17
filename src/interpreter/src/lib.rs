@@ -16,6 +16,8 @@ impl Interpreter {
         Interpreter { ast }
     }
 
+    // INFO: Main idea: the Interpreter will visit every single nodes in the AST and then
+    // execute the code based on that nodes
     pub fn interpret(&self) -> (Option<Value>, Option<Error>) {
         self.visit(self.ast.clone())
     }
@@ -26,15 +28,8 @@ impl Interpreter {
                 node1,
                 operator,
                 node2,
-                pos_start,
-                pos_end,
-            } => self.visit_forming_calc(
-                node1.clone(),
-                operator.clone(),
-                node2.clone(),
-                pos_start.clone(),
-                pos_end.clone(),
-            ),
+                ..
+            } => self.visit_forming_calc(node1.clone(), operator.clone(), node2.clone()),
             AST::Factor {
                 identifier,
                 value,
@@ -50,13 +45,8 @@ impl Interpreter {
                 sign,
                 value,
                 pos_start,
-                pos_end,
-            } => self.visit_unary(
-                sign.to_string(),
-                value.clone(),
-                pos_start.clone(),
-                pos_end.clone(),
-            ),
+                ..
+            } => self.visit_unary(sign.to_string(), value.clone(), pos_start.clone()),
             AST::Nil => {
                 let factor: Option<Value> = Some(Value::new());
                 let err: Option<Error> = None;
@@ -83,7 +73,6 @@ impl Interpreter {
         sign: String,
         value: Box<AST>,
         pos_start: Position,
-        pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
         let (factor, err) = self.visit(*value);
         if err.is_some() {
@@ -92,6 +81,7 @@ impl Interpreter {
         match factor.unwrap() {
             Value::Number(number) => {
                 let mut final_value: String = number.value.clone();
+                // check if the number should be in an opposite sign or not
                 if sign.as_str() == hacktypes::MINUS {
                     match number.identifier.as_str() {
                         "integer" => {
@@ -107,7 +97,7 @@ impl Interpreter {
                         &_ => panic!("No existing data types"),
                     };
                 };
-
+                // then return that number
                 let final_number: Option<Value> = Some(Value::new_number(
                     number.identifier,
                     final_value,
@@ -131,10 +121,11 @@ impl Interpreter {
         node1: Box<AST>,
         operator: Option<Token>,
         node2: Box<AST>,
-        pos_start: Position,
-        pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
         let (value1, err1) = self.visit(*node1);
+
+        // if an operator is none, it means that the next node2 must be none, too (according to the
+        // parser), that's why we don't need to check next and just return te result we got
         if err1.is_some() || operator.is_none() {
             return (value1, err1);
         }

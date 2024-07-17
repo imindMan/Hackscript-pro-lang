@@ -22,10 +22,12 @@ impl Display for Value {
 }
 
 impl Value {
-    // by default
+    // INFO: This is the default Value initialization, which will return the Nil value
     pub fn new() -> Value {
         Value::Nil
     }
+
+    // INFO: This is the initialization method for the Number
     pub fn new_number(
         identifier: String,
         value: String,
@@ -47,7 +49,7 @@ impl Value {
         (val, err)
     }
 
-    pub fn arithmetic_operating(
+    fn arithmetic_operating(
         &self,
         value: Value,
         which_command: &str,
@@ -95,17 +97,30 @@ impl Value {
 
     // INFO: All of the operation below are substances of the arithmetic_operating function
 
+    // INFO: This function performs plus operation
+    // Note that every single data type value (as soon they can support plus method) can
+    // universally use this function to perform the plus operation
     pub fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
         self.arithmetic_operating(value, hacktypes::PLUS)
     }
+    // INFO: This function performs minus operation
+    // Note that every single data type value (as soon they can support minus method) can
+    // universally use this function to perform the minus operation
 
     pub fn subtract_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
         self.arithmetic_operating(value, hacktypes::MINUS)
     }
+    // INFO: This function performs multiply operation
+    // Note that every single data type value (as soon they can support multiply method) can
+    // universally use this function to perform the multiply operation
 
     pub fn multiply_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
         self.arithmetic_operating(value, hacktypes::MULTIPLY)
     }
+    // INFO: This function performs divide operation
+    // Note that every single data type value (as soon they can support divide method) can
+    // universally use this function to perform the divide operation
+
     pub fn divide_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
         self.arithmetic_operating(value, hacktypes::DIVIDE)
     }

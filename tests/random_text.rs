@@ -1,6 +1,7 @@
 use hackscript::run;
 
-// MAINLY FOR THE LEXER
+// INFO: MAINLY FOR THE LEXER
+// These tests will check if the lexer is working or not
 
 #[test]
 fn backspace_too_much() {
@@ -25,7 +26,7 @@ fn newline_too_much() {
 
 #[test]
 
-// For now, we only accept arthmetic equation
+// For now, we only accept arithmetic equation
 fn failing_character() -> Result<(), String> {
     match run(String::from("a")) {
         Ok(_ok) => Err("Shouldn't be passed".to_string()),

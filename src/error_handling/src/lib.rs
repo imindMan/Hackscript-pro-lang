@@ -23,6 +23,7 @@ impl Display for Error {
 }
 
 impl Error {
+    // INFO: This is the Initialization method of the Error
     pub fn new(
         kind: String,
         extra_string: String,
@@ -123,11 +124,5 @@ impl Error {
             extra_string.clone(),
         )));
         Error { error_message }
-    }
-
-    // Return that error message from the Error. 'Cause obviously we don't return the whole Error
-    // struct to the output, we just need the message
-    pub fn error_message(&self) -> String {
-        self.error_message.clone()
     }
 }
