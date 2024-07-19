@@ -27,6 +27,11 @@ pub enum AST {
         pos_start: Position,
         pos_end: Position,
     },
+    String {
+        value: String,
+        pos_start: Position,
+        pos_end: Position,
+    },
 
     Nil,
 }
@@ -132,6 +137,13 @@ impl AST {
             value,
             pos_start: sign.pos_start,
             pos_end: pos_end.clone(),
+        }
+    }
+    pub fn new_string(token: Token) -> AST {
+        AST::String {
+            value: token.value,
+            pos_start: token.pos_start,
+            pos_end: token.pos_end,
         }
     }
 }

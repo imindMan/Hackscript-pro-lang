@@ -20,3 +20,10 @@ pub const PARENTHESE_CLOSE: &str = "PAREN_CLOSE";
 
 pub const NUMBER: &str = "NUMBER";
 pub const NUMBERLIST: &str = "0123456789.";
+
+// String type
+// Now the problem is, RUST IS VERY STRICT AT "STRING"
+// But, Hackscript doesn't really care about string that much
+// So we will implement string to be much more loose instead of just following rust blindly
+
+pub const STRING: &str = "STRING";

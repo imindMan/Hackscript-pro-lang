@@ -2,6 +2,7 @@
 // Because Hackscript is an interpreted language meaning there's no distinction between data types.
 
 pub mod number;
+pub mod string;
 use error_handling::Error;
 use position::Position;
 use std::fmt::Display;
@@ -9,6 +10,7 @@ use std::fmt::Display;
 #[derive(Debug, Clone)]
 pub enum Value {
     Number(number::Number),
+    String(string::HackString),
     Nil,
 }
 
@@ -16,6 +18,7 @@ impl Display for Value {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Value::Number(number) => write!(f, "{}", number),
+            Value::String(string) => write!(f, "{}", string),
             Value::Nil => write!(f, ""),
         }
     }
@@ -36,7 +39,9 @@ impl Value {
     ) -> Value {
         Value::Number(number::Number::new(identifier, value, pos_start, pos_end))
     }
-
+    pub fn new_string(value: String, pos_start: Position, pos_end: Position) -> Value {
+        Value::String(string::HackString::new(value, pos_start, pos_end))
+    }
     fn generate_error(
         &self,
         r#type: String,
@@ -55,11 +60,13 @@ impl Value {
         which_command: &str,
     ) -> (Option<Value>, Option<Error>) {
         let value_origin = match self {
-            Value::Number(val) => val,
+            Value::Number(num) => num,
+            Value::String(hackstr) => hackstr,
             Value::Nil => panic!("Cannot implement anything without a data type"),
         };
         let value_other = match &value {
-            Value::Number(val) => val,
+            Value::Number(num) => num,
+            Value::String(hackstr) => hackstr,
             Value::Nil => panic!("Cannot implement anything without a data type"),
         };
 

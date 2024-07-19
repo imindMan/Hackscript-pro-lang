@@ -100,6 +100,12 @@ impl Parser {
         self.advance();
         (factor, err)
     }
+    fn string_making(&mut self) -> (Option<AST>, Option<Error>) {
+        let factor: Option<AST> = Some(AST::new_string(self.curr_tok.clone()));
+        let err: Option<Error> = None;
+        self.advance();
+        (factor, err)
+    }
 
     fn unary_number_making(&mut self) -> (Option<AST>, Option<Error>) {
         let sign = self.curr_tok.clone();
@@ -142,6 +148,8 @@ impl Parser {
     fn factor(&mut self) -> (Option<AST>, Option<Error>) {
         if self.curr_tok._type == hacktypes::NUMBER {
             return self.number_making();
+        } else if self.curr_tok._type == hacktypes::STRING {
+            return self.string_making();
         } else if [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
             return self.unary_number_making();
         } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
@@ -149,7 +157,7 @@ impl Parser {
         } else {
             return self.generate_error(
                 "Expect".to_string(),
-                "a number type token, '+', '-', and '('".to_string(),
+                "a number type token, a string type token, '+', '-', and '('".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );

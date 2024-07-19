@@ -43,6 +43,7 @@ pub fn run(command: String) -> Result<Value, Error> {
     if let Some(..) = error_lexer {
         Err(error_lexer.unwrap())
     } else {
+        print!("{:#?}", tokens);
         // Parsing part
         let mut parser = Parser::new(tokens.unwrap());
         let (ast, error_parser) = parser.parse();

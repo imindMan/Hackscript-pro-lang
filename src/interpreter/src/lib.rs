@@ -41,6 +41,11 @@ impl Interpreter {
                 pos_start.clone(),
                 pos_end.clone(),
             ),
+            AST::String {
+                value,
+                pos_start,
+                pos_end,
+            } => self.visit_string(value.clone(), pos_start.clone(), pos_end.clone()),
             AST::UnaryFactor {
                 sign,
                 value,
@@ -67,7 +72,17 @@ impl Interpreter {
 
         (factor, err)
     }
+    fn visit_string(
+        &self,
+        value: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> (Option<Value>, Option<Error>) {
+        let string: Option<Value> = Some(Value::new_string(value, pos_start, pos_end));
+        let err: Option<Error> = None;
 
+        (string, err)
+    }
     fn visit_unary(
         &self,
         sign: String,
