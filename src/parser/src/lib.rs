@@ -183,14 +183,14 @@ impl Parser {
         func: fn(&mut Self) -> (Option<AST>, Option<Error>),
         list_to_use: [&str; 2],
     ) -> (Option<AST>, Option<Error>) {
-        // Parse the Factor
+        // Parse the first part
         let (node1, err1) = func(self);
         if err1.is_some() {
             return (node1, err1);
         }
         let mut high: Option<AST> = node1;
 
-        // Parse the ((MUL||DIV) Factor)*
+        // Parse the second part
 
         while list_to_use.contains(&self.curr_tok._type.as_str()) {
             let operator: Option<Token> = Some(self.curr_tok.clone());
