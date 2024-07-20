@@ -1,4 +1,5 @@
 // INFO: HackString initialization
+use crate::number::Number;
 use error_handling::Error;
 use hacktypes;
 use position::Position;
@@ -62,13 +63,39 @@ impl HackString {
             string.pos_end.clone(),
         );
     }
-    pub fn multiply_by(&self, string: HackString) -> (Option<HackString>, Option<Error>) {
-        return self.generate_error(
-            "OperationError".to_string(),
-            "Cannot multiply a string to another string".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        );
+    pub fn multiply_by(&self, number: Number) -> (Option<HackString>, Option<Error>) {
+        if number.identifier.as_str() == "float" {
+            return self.generate_error(
+                "OperatorError".to_string(),
+                "Cannot multiply a string with a float".to_string(),
+                self.pos_start.clone(),
+                number.pos_end.clone(),
+            );
+        } else {
+            let value_number: i32 = number.value.parse().unwrap();
+            if value_number < 0 {
+                return self.generate_error(
+                    "OperatorError".to_string(),
+                    "Cannot multiply a string with a negative number".to_string(),
+                    self.pos_start.clone(),
+                    number.pos_end.clone(),
+                );
+            } else if value_number == 0 {
+                return self.generate_error("ValueError".to_string(), "Cannot multiply a string with '0'. If you want to empty the string, use an already existed module for string implementation".to_string(), self.pos_start.clone(), number.pos_end.clone());
+            } else {
+                let mut value_string: String = String::new();
+                for i in 0..value_number {
+                    value_string += self.value.clone().as_str();
+                }
+                let new_string: Option<HackString> = Some(HackString::new(
+                    value_string,
+                    self.pos_start.clone(),
+                    number.pos_end.clone(),
+                ));
+                let err: Option<Error> = None;
+                (new_string, err)
+            }
+        }
     }
 
     pub fn divide_by(&self, string: HackString) -> (Option<HackString>, Option<Error>) {

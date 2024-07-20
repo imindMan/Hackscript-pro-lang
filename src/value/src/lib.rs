@@ -55,47 +55,6 @@ impl Value {
     }
 
     fn operation(&self, value: Value, which_command: &str) -> (Option<Value>, Option<Error>) {
-        // let value_origin = match self {
-        //     Value::Number(num) => num,
-        //     Value::String(hackstr) => hackstr,
-        //     Value::Nil => panic!("Cannot implement anything without a data type"),
-        // };
-        // let value_other = match &value {
-        //     Value::Number(num) => num,
-        //     Value::String(hackstr) => hackstr,
-        //     Value::Nil => panic!("Cannot implement anything without a data type"),
-        // };
-
-        // if std::mem::discriminant(self) == std::mem::discriminant(&value) {
-        //     let (temp_res_value, err) = match which_command {
-        //         hacktypes::PLUS => value_origin.add_to(value_other.clone()),
-        //         hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
-        //         hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
-        //         hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
-        //         _ => panic!("Instruction doesn't exist"),
-        //     };
-
-        //     if err.is_some() {
-        //         let val = Some(Value::new());
-        //         return (val, err);
-        //     };
-        //     let res_value: Option<Value> = match temp_res_value.unwrap() {
-        //         number::Number {
-        //             identifier,
-        //             value,
-        //             pos_start,
-        //             pos_end,
-        //         } => Some(Value::new_number(identifier, value, pos_start, pos_end)),
-        //     };
-        //     (res_value, err)
-        // } else {
-        //     self.generate_error(
-        //         "TypeError".to_string(),
-        //         "the types aren't the same".to_string(),
-        //         value_origin.pos_start.clone(),
-        //         value_origin.pos_end.clone(),
-        //     )
-        // }
         if matches!(self, Value::Number(_)) {
             let Value::Number(value_origin) = self else { panic!("Expected that type should pass") };
             if std::mem::discriminant(self) == std::mem::discriminant(&value) {
@@ -136,9 +95,42 @@ impl Value {
                 let (temp_res_value, err) = match which_command {
                     hacktypes::PLUS => value_origin.add_to(value_other.clone()),
                     hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
-                    hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
+                    hacktypes::MULTIPLY => {
+                        return self.generate_error(
+                            "TypeError".to_string(),
+                            "invalid types for such an operation".to_string(),
+                            value_origin.pos_start.clone(),
+                            value_origin.pos_end.clone(),
+                        );
+                    }
                     hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
                     _ => panic!("Instruction doesn't exist"),
+                };
+
+                if err.is_some() {
+                    let val = Some(Value::new());
+                    return (val, err);
+                };
+                let res_value: Option<Value> = match temp_res_value.unwrap() {
+                    string::HackString {
+                        value,
+                        pos_start,
+                        pos_end,
+                    } => Some(Value::new_string(value, pos_start, pos_end)),
+                };
+                (res_value, err)
+            } else if matches!(value, Value::Number(_)) {
+                let Value::Number(value_other) = value else { panic!("Expected that type should pass") };
+                let (temp_res_value, err) = match which_command {
+                    hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
+                    _ => {
+                        return self.generate_error(
+                            "TypeError".to_string(),
+                            "invalid types for such an operation".to_string(),
+                            value_origin.pos_start.clone(),
+                            value_origin.pos_end.clone(),
+                        );
+                    }
                 };
 
                 if err.is_some() {
@@ -156,7 +148,7 @@ impl Value {
             } else {
                 self.generate_error(
                     "TypeError".to_string(),
-                    "the types aren't the same".to_string(),
+                    "invalid types for such an operation".to_string(),
                     value_origin.pos_start.clone(),
                     value_origin.pos_end.clone(),
                 )

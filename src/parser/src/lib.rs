@@ -107,12 +107,27 @@ impl Parser {
         (factor, err)
     }
 
-    fn unary_number_making(&mut self) -> (Option<AST>, Option<Error>) {
+    fn unary_factor_making(&mut self) -> (Option<AST>, Option<Error>) {
         let sign = self.curr_tok.clone();
+        let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
         let (factor, err) = self.factor();
         if err.is_some() {
             (factor, err)
+        } else if matches!(
+            factor.clone().unwrap(),
+            AST::String {
+                value: _,
+                pos_start: _,
+                pos_end: _
+            }
+        ) {
+            self.generate_error(
+                "OperationError".to_string(),
+                "Bad operator for string".to_string(),
+                pos_start,
+                self.curr_tok.pos_end.clone(),
+            )
         } else {
             let unary: Option<AST> = Some(AST::new_unaryfactor(
                 sign,
@@ -151,7 +166,7 @@ impl Parser {
         } else if self.curr_tok._type == hacktypes::STRING {
             return self.string_making();
         } else if [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
-            return self.unary_number_making();
+            return self.unary_factor_making();
         } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
             return self.in_parentheses_expr();
         } else {
