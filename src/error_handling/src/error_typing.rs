@@ -12,6 +12,8 @@ pub fn error_type_handling(info: (String, String)) -> String {
         "DivisionByZero" => divisonbyzero(info.0.clone(), info.1.clone()),
         "TypeError" => typeerror(info.0.clone(), info.1.clone()),
         "OperationError" => operationerror(info.0.clone(), info.1.clone()),
+        "UnknownTrailingCharacter" => unknowntrailingcharacter(info.0.clone(), info.1.clone()),
+        "ValueError" => valueerror(info.0.clone(), info.1.clone()),
         _ => panic!("Unspecified error type"),
     }
 }
@@ -50,6 +52,16 @@ fn typeerror(_type: String, string: String) -> String {
 }
 
 fn operationerror(_type: String, string: String) -> String {
+    let error_string: String = "Error type: ".to_string() + &_type + ". " + &string;
+    error_string
+}
+
+fn unknowntrailingcharacter(_type: String, string: String) -> String {
+    let error_string: String = "Error type: ".to_string() + &_type + ". " + &string;
+    error_string
+}
+
+fn valueerror(_type: String, string: String) -> String {
     let error_string: String = "Error type: ".to_string() + &_type + ". " + &string;
     error_string
 }

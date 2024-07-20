@@ -58,7 +58,6 @@ impl Number {
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
-        // check if the divison became a float
         let number1: f32 = self.value.parse().unwrap();
         let number2: f32 = number.value.parse().unwrap();
 

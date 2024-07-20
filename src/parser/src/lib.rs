@@ -145,7 +145,7 @@ impl Parser {
         } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {
             self.generate_error(
                 "Expect".to_string(),
-                "the expression should be closed by a ')' (close parenthese), found EOF."
+                "the expression should be closed by a ')' (close parenthese) -> endless expression"
                     .to_string(),
                 pos_start,
                 self.curr_tok.pos_end.clone(),
@@ -178,78 +178,52 @@ impl Parser {
             );
         }
     }
-
-    fn term(&mut self) -> (Option<AST>, Option<Error>) {
+    fn bin_op(
+        &mut self,
+        func: fn(&mut Self) -> (Option<AST>, Option<Error>),
+        list_to_use: [&str; 2],
+    ) -> (Option<AST>, Option<Error>) {
         // Parse the Factor
-        let (node1, err1) = self.factor();
+        let (node1, err1) = func(self);
         if err1.is_some() {
             return (node1, err1);
         }
-        let mut term: Option<AST> = node1;
+        let mut high: Option<AST> = node1;
 
         // Parse the ((MUL||DIV) Factor)*
 
-        while [hacktypes::MULTIPLY, hacktypes::DIVIDE].contains(&self.curr_tok._type.as_str()) {
+        while list_to_use.contains(&self.curr_tok._type.as_str()) {
             let operator: Option<Token> = Some(self.curr_tok.clone());
             self.advance();
-            let (factor2, err2) = self.factor();
+            let (low, err2) = func(self);
             if err2.is_some() {
-                return (factor2, err2);
+                return (low, err2);
             } else {
-                term = Some(AST::new_formingcalc(
-                    Box::new(term.clone().unwrap()),
+                high = Some(AST::new_formingcalc(
+                    Box::new(high.clone().unwrap()),
                     operator,
-                    Box::new(factor2.clone().unwrap()),
+                    Box::new(low.clone().unwrap()),
                 ));
             };
         }
 
         let operator: Option<Token> = None;
-        if term.is_none() {
-            term = Some(AST::new_formingcalc(
-                Box::new(term.unwrap()),
+        if high.is_none() {
+            high = Some(AST::new_formingcalc(
+                Box::new(high.unwrap()),
                 operator,
                 Box::new(AST::new()),
             ));
         }
         let err: Option<Error> = None;
-        (term, err)
+        (high, err)
+    }
+
+    fn term(&mut self) -> (Option<AST>, Option<Error>) {
+        self.bin_op(Parser::factor, [hacktypes::MULTIPLY, hacktypes::DIVIDE])
     }
 
     fn expr(&mut self) -> (Option<AST>, Option<Error>) {
-        // parse the Term
-        let (node1, err1) = self.term();
-        if err1.is_some() {
-            return (node1, err1);
-        };
-
-        let mut expr: Option<AST> = node1;
-        // parse the ((PLUS||MINUS) Term)*
-        while [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
-            let operator: Option<Token> = Some(self.curr_tok.clone());
-            self.advance();
-            let (term2, err2) = self.term();
-            if err2.is_some() {
-                return (term2, err2);
-            } else {
-                expr = Some(AST::new_formingcalc(
-                    Box::new(expr.clone().unwrap()),
-                    operator,
-                    Box::new(term2.clone().unwrap()),
-                ));
-            }
-        }
-
-        let operator: Option<Token> = None;
-
-        if expr.is_none() {
-            expr = Some(AST::new_formingcalc(
-                Box::new(expr.unwrap()),
-                operator,
-                Box::new(AST::new()),
-            ));
-        }
-        let err: Option<Error> = None;
-        (expr, err)
+        self.bin_op(Parser::term, [hacktypes::PLUS, hacktypes::MINUS])
     }
 }
