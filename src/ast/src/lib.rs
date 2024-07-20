@@ -70,6 +70,7 @@ impl AST {
             AST::Factor { identifier: _, value: _, pos_start, pos_end: _ } => pos_start,
             AST::FormingCalc { node1: _, operator: _, node2:_ , pos_start, pos_end: _ } => pos_start,
             AST::UnaryFactor { sign: _, value: _, pos_start, pos_end: _ } => pos_start,
+            AST::String {value: _, pos_start, pos_end: _} => pos_start,
             _ => panic!("This is not a valid arithmetic expression, since there's no head of this expression"), 
         };
 
@@ -89,6 +90,11 @@ impl AST {
             } => pos_end,
             AST::UnaryFactor {
                 sign: _,
+                value: _,
+                pos_start: _,
+                pos_end,
+            } => pos_end,
+            AST::String {
                 value: _,
                 pos_start: _,
                 pos_end,

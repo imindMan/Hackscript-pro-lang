@@ -12,7 +12,7 @@ pub struct HackString {
 }
 impl Display for HackString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "\"{}\"", self.value)
+        writeln!(f, "{}", self.value)
     }
 }
 
@@ -57,7 +57,7 @@ impl HackString {
     pub fn subtract_to(&self, string: HackString) -> (Option<HackString>, Option<Error>) {
         return self.generate_error(
             "OperationError".to_string(),
-            "Cannot divide a string to another string".to_string(),
+            "Cannot subtract a string to another string".to_string(),
             self.pos_start.clone(),
             string.pos_end.clone(),
         );
@@ -65,7 +65,7 @@ impl HackString {
     pub fn multiply_by(&self, string: HackString) -> (Option<HackString>, Option<Error>) {
         return self.generate_error(
             "OperationError".to_string(),
-            "Cannot divide a string to another string".to_string(),
+            "Cannot multiply a string to another string".to_string(),
             self.pos_start.clone(),
             string.pos_end.clone(),
         );

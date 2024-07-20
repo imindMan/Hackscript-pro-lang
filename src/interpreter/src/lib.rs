@@ -123,6 +123,7 @@ impl Interpreter {
 
                 (final_number, err)
             }
+            Value::String(_) => panic!("How can string became unary?"),
             Value::Nil => {
                 let final_val: Option<Value> = Some(Value::new());
                 let err: Option<Error> = None;

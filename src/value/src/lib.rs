@@ -54,51 +54,115 @@ impl Value {
         (val, err)
     }
 
-    fn arithmetic_operating(
-        &self,
-        value: Value,
-        which_command: &str,
-    ) -> (Option<Value>, Option<Error>) {
-        let value_origin = match self {
-            Value::Number(num) => num,
-            Value::String(hackstr) => hackstr,
-            Value::Nil => panic!("Cannot implement anything without a data type"),
-        };
-        let value_other = match &value {
-            Value::Number(num) => num,
-            Value::String(hackstr) => hackstr,
-            Value::Nil => panic!("Cannot implement anything without a data type"),
-        };
+    fn operation(&self, value: Value, which_command: &str) -> (Option<Value>, Option<Error>) {
+        // let value_origin = match self {
+        //     Value::Number(num) => num,
+        //     Value::String(hackstr) => hackstr,
+        //     Value::Nil => panic!("Cannot implement anything without a data type"),
+        // };
+        // let value_other = match &value {
+        //     Value::Number(num) => num,
+        //     Value::String(hackstr) => hackstr,
+        //     Value::Nil => panic!("Cannot implement anything without a data type"),
+        // };
 
-        if std::mem::discriminant(self) == std::mem::discriminant(&value) {
-            let (temp_res_value, err) = match which_command {
-                hacktypes::PLUS => value_origin.add_to(value_other.clone()),
-                hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
-                hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
-                hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
-                _ => panic!("Instruction doesn't exist"),
-            };
+        // if std::mem::discriminant(self) == std::mem::discriminant(&value) {
+        //     let (temp_res_value, err) = match which_command {
+        //         hacktypes::PLUS => value_origin.add_to(value_other.clone()),
+        //         hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
+        //         hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
+        //         hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
+        //         _ => panic!("Instruction doesn't exist"),
+        //     };
 
-            if err.is_some() {
-                let val = Some(Value::new());
-                return (val, err);
-            };
-            let res_value: Option<Value> = match temp_res_value.unwrap() {
-                number::Number {
-                    identifier,
-                    value,
-                    pos_start,
-                    pos_end,
-                } => Some(Value::new_number(identifier, value, pos_start, pos_end)),
-            };
-            (res_value, err)
+        //     if err.is_some() {
+        //         let val = Some(Value::new());
+        //         return (val, err);
+        //     };
+        //     let res_value: Option<Value> = match temp_res_value.unwrap() {
+        //         number::Number {
+        //             identifier,
+        //             value,
+        //             pos_start,
+        //             pos_end,
+        //         } => Some(Value::new_number(identifier, value, pos_start, pos_end)),
+        //     };
+        //     (res_value, err)
+        // } else {
+        //     self.generate_error(
+        //         "TypeError".to_string(),
+        //         "the types aren't the same".to_string(),
+        //         value_origin.pos_start.clone(),
+        //         value_origin.pos_end.clone(),
+        //     )
+        // }
+        if matches!(self, Value::Number(_)) {
+            let Value::Number(value_origin) = self else { panic!("Expected that type should pass") };
+            if std::mem::discriminant(self) == std::mem::discriminant(&value) {
+                let Value::Number(value_other) = value else { panic!("Expected that type should pass") };
+                let (temp_res_value, err) = match which_command {
+                    hacktypes::PLUS => value_origin.add_to(value_other.clone()),
+                    hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
+                    hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
+                    hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
+                    _ => panic!("Instruction doesn't exist"),
+                };
+
+                if err.is_some() {
+                    let val = Some(Value::new());
+                    return (val, err);
+                };
+                let res_value: Option<Value> = match temp_res_value.unwrap() {
+                    number::Number {
+                        identifier,
+                        value,
+                        pos_start,
+                        pos_end,
+                    } => Some(Value::new_number(identifier, value, pos_start, pos_end)),
+                };
+                (res_value, err)
+            } else {
+                self.generate_error(
+                    "TypeError".to_string(),
+                    "the types aren't the same".to_string(),
+                    value_origin.pos_start.clone(),
+                    value_origin.pos_end.clone(),
+                )
+            }
+        } else if matches!(self, Value::String(_)) {
+            let Value::String(value_origin) = self else { panic!("Expected that type should pass") };
+            if std::mem::discriminant(self) == std::mem::discriminant(&value) {
+                let Value::String(value_other) = value else { panic!("Expected that type should pass") };
+                let (temp_res_value, err) = match which_command {
+                    hacktypes::PLUS => value_origin.add_to(value_other.clone()),
+                    hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
+                    hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
+                    hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
+                    _ => panic!("Instruction doesn't exist"),
+                };
+
+                if err.is_some() {
+                    let val = Some(Value::new());
+                    return (val, err);
+                };
+                let res_value: Option<Value> = match temp_res_value.unwrap() {
+                    string::HackString {
+                        value,
+                        pos_start,
+                        pos_end,
+                    } => Some(Value::new_string(value, pos_start, pos_end)),
+                };
+                (res_value, err)
+            } else {
+                self.generate_error(
+                    "TypeError".to_string(),
+                    "the types aren't the same".to_string(),
+                    value_origin.pos_start.clone(),
+                    value_origin.pos_end.clone(),
+                )
+            }
         } else {
-            self.generate_error(
-                "TypeError".to_string(),
-                "the types aren't the same".to_string(),
-                value_origin.pos_start.clone(),
-                value_origin.pos_end.clone(),
-            )
+            panic!("Doesn't work");
         }
     }
 
@@ -108,27 +172,27 @@ impl Value {
     // Note that every single data type value (as soon they can support plus method) can
     // universally use this function to perform the plus operation
     pub fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.arithmetic_operating(value, hacktypes::PLUS)
+        self.operation(value, hacktypes::PLUS)
     }
     // INFO: This function performs minus operation
     // Note that every single data type value (as soon they can support minus method) can
     // universally use this function to perform the minus operation
 
     pub fn subtract_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.arithmetic_operating(value, hacktypes::MINUS)
+        self.operation(value, hacktypes::MINUS)
     }
     // INFO: This function performs multiply operation
     // Note that every single data type value (as soon they can support multiply method) can
     // universally use this function to perform the multiply operation
 
     pub fn multiply_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.arithmetic_operating(value, hacktypes::MULTIPLY)
+        self.operation(value, hacktypes::MULTIPLY)
     }
     // INFO: This function performs divide operation
     // Note that every single data type value (as soon they can support divide method) can
     // universally use this function to perform the divide operation
 
     pub fn divide_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.arithmetic_operating(value, hacktypes::DIVIDE)
+        self.operation(value, hacktypes::DIVIDE)
     }
 }

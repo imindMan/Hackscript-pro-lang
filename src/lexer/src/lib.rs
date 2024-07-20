@@ -128,7 +128,7 @@ impl Lexer {
     fn string_token(&mut self) -> (Option<Token>, Option<Error>) {
         let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
-
+        self.advance();
         while self.curr_char.is_some() && self.curr_char.unwrap() != '\"' {
             if self.curr_char.unwrap() == '\\' {
                 self.advance();
@@ -289,7 +289,6 @@ impl Lexer {
                     }
                 }
                 '\"' => {
-                    self.advance();
                     let (token, error) = self.string_token();
                     if error.is_some() {
                         tokens = None;
