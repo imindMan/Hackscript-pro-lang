@@ -38,7 +38,6 @@ fn main() -> Result<(), io::Error> {
 // INFO: Main entry point of the Hackscript programming language.
 pub fn run(command: String) -> Result<Value, Error> {
     // Lexing part
-    // print!("{}", command);
     let mut lexer = Lexer::new(String::from("stdin"), command);
     let (tokens, error_lexer) = lexer.make_tokens();
     if let Some(..) = error_lexer {
