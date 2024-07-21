@@ -77,18 +77,17 @@ impl Lexer {
     // 'advance' is actually to iterate to the next token
     fn advance(&mut self) {
         let temp_pos = self.curr_pos.literal_pos + 1;
-
-        let curr_char = match self
+        let curr_char: Option<char> = match self
             .fcontent
             .clone()
             .as_str()
             .chars()
             .nth(temp_pos.try_into().unwrap())
         {
-            Some(char) => char,
-            _ => 'N',
+            Some(char) => Some(char),
+            _ => None,
         };
-        if curr_char != 'N' {
+        if curr_char.is_some() {
             // change the current position
             self.curr_pos.literal_pos += 1;
 
@@ -98,7 +97,7 @@ impl Lexer {
             } else {
                 self.curr_pos.col += 1;
             };
-            self.curr_char = Some(curr_char);
+            self.curr_char = Some(curr_char.unwrap());
         } else {
             self.curr_char = None;
         }
