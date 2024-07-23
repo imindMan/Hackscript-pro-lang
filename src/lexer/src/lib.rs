@@ -277,7 +277,7 @@ impl Lexer {
                     tokens.as_mut().unwrap().push(token);
                     self.advance();
                 }
-                '0'..='9' | '.' => {
+                '0'..='9' => {
                     let (token, error) = self.number_token();
                     if error.is_some() {
                         tokens = None;

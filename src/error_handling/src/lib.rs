@@ -4,6 +4,7 @@
  * */
 
 pub mod error_typing;
+use inline_colorization::*;
 use position::Position;
 use std::fmt::Display;
 
@@ -16,7 +17,7 @@ impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Hackscript detected some error(s): \n{} \n",
+            "{color_blue}{style_bold}Hackscript detected some error(s): {style_reset}{color_reset}\n{} \n",
             self.error_message
         )
     }
@@ -99,7 +100,8 @@ impl Error {
                 // first push the '\n' in the error_message
                 error_message.push(current_char);
                 current_index += 1;
-                // now this is the main part of the highlighting
+                error_message.push_str(format!("{}", color_red).as_str()); // adding some color code
+                                                                           // now this is the main part of the highlighting
                 while check_pos.col < buffer_col {
                     if !position::valid_pos(check_pos.clone(), pos_start.clone(), pos_end.clone()) {
                         error_message.push(' ');
@@ -113,6 +115,7 @@ impl Error {
                 // finally we add a '\n' and update the variables
                 // for the next loop
                 error_message.push('\n');
+                error_message.push_str(format!("{}", color_reset).as_str());
                 check_pos.row += 1;
                 buffer_col = 0;
                 check_pos.col = 0;

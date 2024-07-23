@@ -83,7 +83,7 @@ impl Value {
             } else {
                 self.generate_error(
                     "TypeError".to_string(),
-                    "the types aren't the same".to_string(),
+                    "The types aren't the same".to_string(),
                     value_origin.pos_start.clone(),
                     value_origin.pos_end.clone(),
                 )
@@ -98,7 +98,7 @@ impl Value {
                     hacktypes::MULTIPLY => {
                         return self.generate_error(
                             "TypeError".to_string(),
-                            "invalid types for such an operation".to_string(),
+                            "Invalid types for such an operation".to_string(),
                             value_origin.pos_start.clone(),
                             value_origin.pos_end.clone(),
                         );
@@ -126,7 +126,7 @@ impl Value {
                     _ => {
                         return self.generate_error(
                             "TypeError".to_string(),
-                            "invalid types for such an operation".to_string(),
+                            "Invalid types for such an operation".to_string(),
                             value_origin.pos_start.clone(),
                             value_origin.pos_end.clone(),
                         );
@@ -148,7 +148,7 @@ impl Value {
             } else {
                 self.generate_error(
                     "TypeError".to_string(),
-                    "invalid types for such an operation".to_string(),
+                    "Invalid types for such an operation".to_string(),
                     value_origin.pos_start.clone(),
                     value_origin.pos_end.clone(),
                 )

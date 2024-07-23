@@ -3,6 +3,8 @@
 // handle every single types of errors
 
 // INFO: universal function to handle the error types
+use inline_colorization::*;
+
 pub fn error_type_handling(info: (String, String)) -> String {
     // match checking the _type
     match info.0.as_str() {
@@ -23,45 +25,106 @@ pub fn error_type_handling(info: (String, String)) -> String {
 // -----------------------------------------------------------
 
 fn undefined_character(_type: String, character_not_defined: String) -> String {
-    let error_string: String =
-        "Error type: ".to_string() + &_type + " \"" + &character_not_defined + "\"";
+    let error_string: String = format!(
+        "{}{}Error type: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + style_bold
+        + color_yellow
+        + " \""
+        + &character_not_defined
+        + "\""
+        + style_reset
+        + color_reset;
     error_string
 }
 
 fn number_error(_type: String, number_not_defined: String) -> String {
-    let error_string: String = "Error type: ".to_string()
+    let error_string: String = format!(
+        "{}{}Error type: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
         + &_type
+        + style_reset
         + ". This number cannot be defined: "
-        + &number_not_defined;
+        + style_bold
+        + color_yellow
+        + &number_not_defined
+        + style_reset
+        + color_reset;
     error_string
 }
 
 fn expect(_type: String, string: String) -> String {
-    let error_string: String = "Error: ".to_string() + &_type + " " + &string;
+    let error_string: String = format!(
+        "{}{}Error: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + " "
+        + &string;
     error_string
 }
 
 fn divisonbyzero(_type: String, string: String) -> String {
-    let error_string: String = "Error: ".to_string() + &_type + ". " + &string;
+    let error_string: String = format!(
+        "{}{}Error: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + ". "
+        + &string;
     error_string
 }
 
 fn typeerror(_type: String, string: String) -> String {
-    let error_string: String = "Error type: ".to_string() + &_type + " " + &string;
+    let error_string: String = format!(
+        "{}{}Error type: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + ". "
+        + &string;
     error_string
 }
 
 fn operationerror(_type: String, string: String) -> String {
-    let error_string: String = "Error type: ".to_string() + &_type + ". " + &string;
+    let error_string: String = format!(
+        "{}{}Error type: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + ". "
+        + &string;
     error_string
 }
 
 fn unknowntrailingcharacter(_type: String, string: String) -> String {
-    let error_string: String = "Error type: ".to_string() + &_type + ". " + &string;
+    let error_string: String = format!(
+        "{}{}Error type: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + ". "
+        + &string;
     error_string
 }
 
 fn valueerror(_type: String, string: String) -> String {
-    let error_string: String = "Error type: ".to_string() + &_type + ". " + &string;
+    let error_string: String = format!(
+        "{}{}Error type: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + ". "
+        + &string;
     error_string
 }

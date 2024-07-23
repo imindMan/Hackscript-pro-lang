@@ -66,7 +66,7 @@ impl HackString {
     pub fn multiply_by(&self, number: Number) -> (Option<HackString>, Option<Error>) {
         if number.identifier.as_str() == "float" {
             return self.generate_error(
-                "OperatorError".to_string(),
+                "TypeError".to_string(),
                 "Cannot multiply a string with a float".to_string(),
                 self.pos_start.clone(),
                 number.pos_end.clone(),
@@ -75,7 +75,7 @@ impl HackString {
             let value_number: i32 = number.value.parse().unwrap();
             if value_number < 0 {
                 return self.generate_error(
-                    "OperatorError".to_string(),
+                    "TypeError".to_string(),
                     "Cannot multiply a string with a negative number".to_string(),
                     self.pos_start.clone(),
                     number.pos_end.clone(),

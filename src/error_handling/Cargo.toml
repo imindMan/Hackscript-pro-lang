@@ -7,3 +7,4 @@ edition = "2021"
 [dependencies]
 
 position = { path = "../position" }
+inline_colorization = "0.1.6"
