@@ -63,7 +63,7 @@ impl Error {
         error_message.push_str(
             format!(
                 "{}{}-> occur in file: {}{}{}\n\n",
-                color_yellow, style_underline, pos_start.fname, color_reset, style_reset
+                color_yellow, "\x1B[3m", pos_start.fname, color_reset, style_reset
             )
             .as_str(),
         );
