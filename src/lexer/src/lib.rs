@@ -27,7 +27,6 @@ impl Token {
 pub struct Lexer {
     curr_char: Option<char>,
     curr_pos: Position,
-    fname: String,
     fcontent: String,
 }
 
@@ -39,7 +38,6 @@ impl Lexer {
                 Some(char) => Some(char),
                 _ => panic!("No existed character detected"),
             },
-            fname: fname.clone(),
             fcontent: fcontent.clone(),
             curr_pos: Position::new(0, 0, 0, fname, fcontent),
         }

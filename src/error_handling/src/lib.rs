@@ -59,6 +59,14 @@ impl Error {
         let text = pos_start.fcontent.clone();
         let mut error_message = String::new();
         let mut buffer_col = 0;
+        // add the checking file
+        error_message.push_str(
+            format!(
+                "{}{}-> occur in file: {}{}{}\n\n",
+                color_yellow, style_underline, pos_start.fname, color_reset, style_reset
+            )
+            .as_str(),
+        );
 
         // start by counting the row
         while check_pos.row != pos_start.row {

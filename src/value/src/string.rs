@@ -1,7 +1,6 @@
 // INFO: HackString initialization
 use crate::number::Number;
 use error_handling::Error;
-use hacktypes;
 use position::Position;
 use std::fmt::Display;
 
