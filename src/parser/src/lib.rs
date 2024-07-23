@@ -48,7 +48,7 @@ impl Parser {
         if err.is_none() && self.curr_tok._type != hacktypes::EOF {
             return self.generate_error(
                 "Expect".to_string(),
-                "an operator like '+', '-', '*' or '/', found a different token".to_string(),
+                "an operator like '+', '-', '*' or '/'".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             );

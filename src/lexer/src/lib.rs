@@ -165,7 +165,9 @@ impl Lexer {
         let mut value: String = String::new();
 
         while self.curr_char.is_some() && hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
-            if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
+            if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap())
+                && self.curr_char.unwrap() != '.'
+            {
                 value.push(self.curr_char.unwrap());
                 self.advance();
             } else if self.curr_char.unwrap() == '.' {
@@ -173,10 +175,11 @@ impl Lexer {
                 self.advance();
                 if self.curr_char.is_none()
                     || !hacktypes::NUMBERLIST.contains(self.curr_char.unwrap())
+                    || self.curr_char.unwrap() == '.'
                 {
                     // disadvance the position to match the real position of the error-taking token
                     self.curr_pos.literal_pos -= 1;
-                    if self.curr_char.unwrap() == '\n' {
+                    if self.curr_char.is_some() && self.curr_char.unwrap() == '\n' {
                         self.curr_pos.col -= 1;
                         self.curr_pos.row = 0;
                     } else {
@@ -191,6 +194,7 @@ impl Lexer {
                     );
                 } else {
                     value.push(self.curr_char.unwrap());
+                    self.advance();
                 }
             }
         }

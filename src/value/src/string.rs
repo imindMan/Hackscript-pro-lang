@@ -84,7 +84,7 @@ impl HackString {
                 return self.generate_error("ValueError".to_string(), "Cannot multiply a string with '0'. If you want to empty the string, use an already existed module for string implementation".to_string(), self.pos_start.clone(), number.pos_end.clone());
             } else {
                 let mut value_string: String = String::new();
-                for i in 0..value_number {
+                for _i in 0..value_number {
                     value_string += self.value.clone().as_str();
                 }
                 let new_string: Option<HackString> = Some(HackString::new(

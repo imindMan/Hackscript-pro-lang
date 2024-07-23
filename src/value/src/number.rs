@@ -58,37 +58,101 @@ impl Number {
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
-        let number1: f32 = self.value.parse().unwrap();
-        let number2: f32 = number.value.parse().unwrap();
 
-        let final_res: f32 = match operation {
-            hacktypes::PLUS => number1 + number2,
-            hacktypes::MINUS => number1 - number2,
-            hacktypes::MULTIPLY => number1 * number2,
-            hacktypes::DIVIDE => number1 / number2,
-            &_ => panic!("No existing instruction"),
-        };
+        let err: Option<Error> = None;
 
-        if final_res == final_res.floor() {
-            let final_result = final_res.floor() as i32;
+        // first thing to do is to define the data type of the final number value.
+        // In such operations like addition, subtraction and multiplication, it's ideal
+        // to assume that if all (two) numbers have the same data type, the final
+        // result will also have that data type. If they have different data type, the result will
+        // immediately have the float data type. We need to specify the same data type
+        // case with two cases "float" and "int", since if we combine it together it's basically
+        // impossible because Rust cannot really adapt the data type dynamically using a simple
+        // match check.
+        //
+        // Note that this logic only works with addition, subtraction, and multiplication.
+        // Division will need a whole new logic, since it doesn't care about data types
+        // of the factors, but rather the result
+        if (self.identifier.as_str() == "float" || number.identifier.as_str() == "float")
+            && operation != hacktypes::DIVIDE
+        {
+            let number1: f32 = self.value.parse().unwrap();
+            let number2: f32 = number.value.parse().unwrap();
 
-            let final_number: Option<Number> = Some(Number::new(
-                "integer".to_string(),
-                format!("{}", final_result),
-                self.pos_start.clone(),
-                self.pos_end.clone(),
-            ));
-            let err: Option<Error> = None;
-            (final_number, err)
-        } else {
-            let final_number: Option<Number> = Some(Number::new(
+            let final_res: f32 = match operation {
+                hacktypes::PLUS => number1 + number2,
+                hacktypes::MINUS => number1 - number2,
+                hacktypes::MULTIPLY => number1 * number2,
+                &_ => panic!("Invalid instruction"),
+            };
+
+            let final_num: Option<Number> = Some(Number::new(
                 "float".to_string(),
                 format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
             ));
-            let err: Option<Error> = None;
-            (final_number, err)
+            (final_num, err)
+        } else if self.identifier.as_str() == "integer"
+            && number.identifier.as_str() == "integer"
+            && operation != hacktypes::DIVIDE
+        {
+            let number1: i32 = self.value.parse().unwrap();
+            let number2: i32 = number.value.parse().unwrap();
+
+            let final_res: i32 = match operation {
+                hacktypes::PLUS => number1 + number2,
+                hacktypes::MINUS => number1 - number2,
+                hacktypes::MULTIPLY => number1 * number2,
+                &_ => panic!("Invalid instruction"),
+            };
+
+            let final_num: Option<Number> = Some(Number::new(
+                "integer".to_string(),
+                format!("{}", final_res),
+                self.pos_start.clone(),
+                self.pos_end.clone(),
+            ));
+            (final_num, err)
+        }
+        // After checking for every single possible cases, we end up in the final case: division.
+        // In this case we just need to convert every number to f32 then divide it like normal.
+        // then we'll have a simple logic to convert the f32 to i32 if necessary.
+        else {
+            let number1: f32 = self.value.parse().unwrap();
+            let number2: f32 = number.value.parse().unwrap();
+
+            let final_res: f32 = match operation {
+                hacktypes::PLUS => number1 + number2,
+                hacktypes::MINUS => number1 - number2,
+                hacktypes::MULTIPLY => number1 * number2,
+                hacktypes::DIVIDE => number1 / number2,
+                &_ => panic!("No existing instruction"),
+            };
+
+            // this simple logic here can be used for verifying if the number can
+            // be converted to i32, because f32 is scary.
+            if final_res == final_res.floor() {
+                let final_result = final_res.floor() as i32;
+
+                let final_number: Option<Number> = Some(Number::new(
+                    "integer".to_string(),
+                    format!("{}", final_result),
+                    self.pos_start.clone(),
+                    self.pos_end.clone(),
+                ));
+                let err: Option<Error> = None;
+                (final_number, err)
+            } else {
+                let final_number: Option<Number> = Some(Number::new(
+                    "float".to_string(),
+                    format!("{}", final_res),
+                    self.pos_start.clone(),
+                    self.pos_end.clone(),
+                ));
+                let err: Option<Error> = None;
+                (final_number, err)
+            }
         }
     }
 
