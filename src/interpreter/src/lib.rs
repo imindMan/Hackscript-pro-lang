@@ -31,16 +31,11 @@ impl Interpreter {
                 ..
             } => self.visit_forming_calc(node1.clone(), operator.clone(), node2.clone()),
             AST::Factor {
-                identifier,
+                identifier: _,
                 value,
                 pos_start,
                 pos_end,
-            } => self.visit_factor(
-                identifier.to_string(),
-                value.clone(),
-                pos_start.clone(),
-                pos_end.clone(),
-            ),
+            } => self.visit_factor(value.clone(), pos_start.clone(), pos_end.clone()),
             AST::String {
                 value,
                 pos_start,
@@ -62,14 +57,13 @@ impl Interpreter {
 
     fn visit_factor(
         &self,
-        identifier: String,
         value: String,
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
         // quick initialization for the number value
         let final_value: f32 = value.parse().unwrap();
-        let mut new_identifier: String;
+        let new_identifier: String;
         if final_value == final_value.floor() {
             new_identifier = String::from("integer");
         } else {

@@ -2,9 +2,6 @@
 
 // END-OF-FILE token
 pub const EOF: &str = "EOF";
-// Empty string
-pub const EMPTY: &str = " \n\t";
-
 // Operators
 
 pub const PLUS: &str = "PLUS";
