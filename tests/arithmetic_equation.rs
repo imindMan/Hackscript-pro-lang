@@ -2,8 +2,8 @@
 // (For now, it's just Numbers, but in the future, there will be more)
 // arithmetic here is just **exclusively** for plus, minus, multiply, and divide
 // operation
-
 use hackscript::run;
+
 #[test]
 fn lexer_err_checking_unknown_character() -> Result<(), String> {
     match run(String::from("1 + 2a\n")) {
@@ -53,6 +53,15 @@ fn float_checking_duplicate() -> Result<(), String> {
         Ok(_ok) => Err("Shouldn't be passed".to_string()),
         Err(_err) => Ok(()),
     }
+}
+// special implementation for float
+#[test]
+fn empty_before_dot_float() {
+    let run_res: String = match run(String::from(".2")) {
+        Ok(ok) => format!("{}", ok),
+        Err(err) => format!("{}", err),
+    };
+    assert_eq!("0.2\n".to_string(), run_res);
 }
 
 #[test]

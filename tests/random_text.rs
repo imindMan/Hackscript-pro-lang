@@ -1,7 +1,6 @@
-use hackscript::run;
-
 // INFO: MAINLY FOR THE LEXER
 // These tests will check if the lexer is working or not
+use hackscript::run;
 
 #[test]
 fn backspace_too_much() {

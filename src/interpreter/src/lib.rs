@@ -67,7 +67,20 @@ impl Interpreter {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
-        let factor: Option<Value> = Some(Value::new_number(identifier, value, pos_start, pos_end));
+        // quick initialization for the number value
+        let final_value: f32 = value.parse().unwrap();
+        let mut new_identifier: String;
+        if final_value == final_value.floor() {
+            new_identifier = String::from("integer");
+        } else {
+            new_identifier = String::from("float");
+        };
+        let factor: Option<Value> = Some(Value::new_number(
+            new_identifier,
+            final_value.to_string(),
+            pos_start,
+            pos_end,
+        ));
         let err: Option<Error> = None;
 
         (factor, err)

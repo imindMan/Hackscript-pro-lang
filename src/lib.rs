@@ -6,6 +6,9 @@
 // https://github.com/imindMan/Hackscript-pro-lang
 // Rebuild in Rust
 
+// INFO: Main function
+// For now, this function is going to take user's inputs then print the result out,
+// just like Python.
 use error_handling::Error;
 use interpreter::Interpreter;
 use lexer::Lexer;
@@ -13,9 +16,6 @@ use parser::Parser;
 use std::io::{self, Write};
 use value::Value;
 
-// INFO: Main function
-// For now, this function is going to take user's inputs then print the result out,
-// just like Python.
 fn main() -> Result<(), io::Error> {
     loop {
         let mut command: String = String::new();
