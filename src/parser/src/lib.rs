@@ -14,6 +14,7 @@ pub struct Parser {
 // Factor (the smallest unit of Hackscript until now): Number
 //         Unary: (PLUS||MINUS)((PLUS|MINUS) Number)*
 //         LEFT_PAREN expr RIGHT_PAREN
+//         String
 // Term (or new name: FormingCalc lvl1): Factor ((MUL||DIV) Factor)*
 // Expr (or new name: Forming Calc lvl2): Term ((PLUS||MINUS) Term)*
 //
