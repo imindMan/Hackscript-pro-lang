@@ -1,7 +1,11 @@
 // INFO: All the general Hackscript types are defined here
+//
 
 // END-OF-FILE token
 pub const EOF: &str = "EOF";
+// Available characters
+pub const AVAILABLE_CHARACTERS: &str = "abcdefghjklmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ";
+
 // Operators
 
 pub const PLUS: &str = "PLUS";
@@ -27,3 +31,19 @@ pub const NUMBERLIST: &str = "0123456789.";
 // So we will implement string to be much more loose instead of just following rust blindly
 
 pub const STRING: &str = "STRING";
+
+// Comparison operator
+pub const EQUAL: &str = "EQUAL";
+pub const GREATER: &str = "GREATER";
+pub const LESS: &str = "LESS";
+pub const GREATER_OR_EQUAL: &str = "GREATER_OR_EQUAL";
+pub const LESS_OR_EQUAL: &str = "LESS_OR_EQUAL";
+pub const NOT_EQUAL: &str = "NOT_EQUAL";
+
+// Booleans
+pub const TRUE: &str = "TRUE";
+pub const FALSE: &str = "FALSE";
+pub const NULL: &str = "NULL";
+
+// all the available keyword for the programming language right now
+pub const AVAILABLE_KEYWORDS: &[(&str, &str)] = &[("true", TRUE), ("false", FALSE), ("null", NULL)];

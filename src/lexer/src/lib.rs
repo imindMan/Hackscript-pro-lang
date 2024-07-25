@@ -4,6 +4,7 @@
 
 use error_handling::Error;
 use position::Position;
+use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct Token {
@@ -206,12 +207,26 @@ impl Lexer {
         (tok, err)
     }
 
+    fn make_word(&mut self) -> (String, Position) {
+        let pos_start: Position = self.curr_pos.clone();
+        let mut word: String = String::new();
+        while self.curr_char.is_some()
+            && hacktypes::AVAILABLE_CHARACTERS.contains(self.curr_char.unwrap())
+        {
+            word.push(self.curr_char.unwrap());
+            self.advance();
+        }
+
+        (word, pos_start)
+    }
+
     // INFO: make some tokens
     // After initializing the lexer with the proper fname and fcontent, now we can call this function
     // to create tokens from fcontent
     pub fn make_tokens(&mut self) -> (Option<Vec<Token>>, Option<Error>) {
         let mut tokens: Option<Vec<Token>> = Some(Vec::new());
         let mut err: Option<Error> = None;
+        let keywords: HashMap<&str, &str> = hacktypes::AVAILABLE_KEYWORDS.iter().cloned().collect();
         while self.curr_char.is_some() {
             // basically a match pattern to check the current character in the lexer,
             // then create a token based on that current token
@@ -259,6 +274,7 @@ impl Lexer {
                     tokens.as_mut().unwrap().push(token);
                     self.advance();
                 }
+
                 '(' => {
                     let token: Token = Token::new(
                         String::from(hacktypes::PARENTHESE_OPEN),
@@ -300,13 +316,116 @@ impl Lexer {
                         self.advance();
                     }
                 }
+                '=' => {
+                    let pos_start: Position = self.curr_pos.clone();
+                    self.advance();
+                    if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
+                        return self.generate_error(
+                            "UnidentifiedIdentifier".to_string(),
+                            String::from("="),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                    } else {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::EQUAL),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance();
+                    }
+                }
+                '!' => {
+                    let pos_start: Position = self.curr_pos.clone();
+                    self.advance();
+                    if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
+                        return self.generate_error(
+                            "UnidentifiedIdentifier".to_string(),
+                            String::from("!"),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                    } else {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::NOT_EQUAL),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance();
+                    }
+                }
+                '<' => {
+                    let pos_start: Position = self.curr_pos.clone();
+                    self.advance();
+                    if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::LESS),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance();
+                    } else {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::LESS_OR_EQUAL),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance();
+                    }
+                }
+                '>' => {
+                    let pos_start: Position = self.curr_pos.clone();
+                    self.advance();
+                    if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::GREATER),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance();
+                    } else {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::GREATER_OR_EQUAL),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance();
+                    }
+                }
+
                 _ => {
-                    return self.generate_error(
-                        "Undefined character".to_string(),
-                        self.curr_char.expect("No character").to_string(),
-                        self.curr_pos.clone(),
-                        self.curr_pos.clone(),
-                    );
+                    let (keyword, pos_start) = self.make_word();
+                    match keywords.get(keyword.as_str()) {
+                        Some(val) => {
+                            let token: Token = Token::new(
+                                val.to_string(),
+                                String::new(),
+                                pos_start,
+                                self.curr_pos.clone(),
+                            );
+                            tokens.as_mut().unwrap().push(token);
+                        }
+                        None => {
+                            return self.generate_error(
+                                "UnidentifiedIdentifier".to_string(),
+                                keyword,
+                                pos_start,
+                                self.curr_pos.clone(),
+                            );
+                        }
+                    }
                 }
             };
         }
