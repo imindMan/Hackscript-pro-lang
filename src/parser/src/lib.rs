@@ -152,7 +152,7 @@ impl Parser {
     fn in_parentheses_expr(&mut self) -> (Option<AST>, Option<Error>) {
         let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
-        let (factor, err) = self.arithmetic_expr();
+        let (factor, err) = self.expr();
         if err.is_some() {
             (factor, err)
         } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {

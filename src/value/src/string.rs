@@ -192,4 +192,20 @@ impl HackString {
     pub fn not_equal(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
         self.comparison_operation(string, hacktypes::NOT_EQUAL)
     }
+    pub fn and(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
+        self.generate_boolean_error(
+            "TypeError".to_string(),
+            "String is not a Boolean".to_string(),
+            self.pos_start.clone(),
+            string.pos_end.clone(),
+        )
+    }
+    pub fn or(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
+        self.generate_boolean_error(
+            "TypeError".to_string(),
+            "String is not a Boolean".to_string(),
+            self.pos_start.clone(),
+            string.pos_end.clone(),
+        )
+    }
 }

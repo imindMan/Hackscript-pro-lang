@@ -7,9 +7,9 @@ use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 pub struct Boolean {
-    boolean: String,
-    pos_start: Position,
-    pos_end: Position,
+    pub boolean: String,
+    pub pos_start: Position,
+    pub pos_end: Position,
 }
 impl Display for Boolean {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -49,7 +49,61 @@ impl Boolean {
     ) -> (Option<Boolean>, Option<Error>) {
         let check: bool = match instruction {
             hacktypes::EQUAL => self.boolean == bool.boolean,
-            hacktypes::NOT_EQUAL => self.boolean != bool.boolean,
+            hacktypes::NOT_EQUAL => self.boolean == bool.boolean,
+            hacktypes::AND => {
+                let value_origin: bool = match self.boolean.as_str() {
+                    hacktypes::TRUE => true,
+                    hacktypes::FALSE => false,
+                    _ => {
+                        return self.generate_error(
+                            "OperatorError".to_string(),
+                            "Null is not boolean".to_string(),
+                            self.pos_start.clone(),
+                            bool.pos_end.clone(),
+                        )
+                    }
+                };
+                let value_other: bool = match bool.boolean.as_str() {
+                    hacktypes::TRUE => true,
+                    hacktypes::FALSE => false,
+                    _ => {
+                        return self.generate_error(
+                            "OperatorError".to_string(),
+                            "Null is not boolean".to_string(),
+                            self.pos_start.clone(),
+                            bool.pos_end.clone(),
+                        )
+                    }
+                };
+                value_origin && value_other
+            }
+            hacktypes::OR => {
+                let value_origin: bool = match self.boolean.as_str() {
+                    hacktypes::TRUE => true,
+                    hacktypes::FALSE => false,
+                    _ => {
+                        return self.generate_error(
+                            "OperatorError".to_string(),
+                            "Null is not boolean".to_string(),
+                            self.pos_start.clone(),
+                            bool.pos_end.clone(),
+                        )
+                    }
+                };
+                let value_other: bool = match bool.boolean.as_str() {
+                    hacktypes::TRUE => true,
+                    hacktypes::FALSE => false,
+                    _ => {
+                        return self.generate_error(
+                            "OperatorError".to_string(),
+                            "Null is not boolean".to_string(),
+                            self.pos_start.clone(),
+                            bool.pos_end.clone(),
+                        )
+                    }
+                };
+                value_origin || value_other
+            }
             _ => {
                 return self.generate_error(
                     "OperatorError".to_string(),
@@ -142,5 +196,11 @@ impl Boolean {
     }
     pub fn not_equal(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
         self.comparison_operation(bool, hacktypes::NOT_EQUAL)
+    }
+    pub fn and(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(bool, hacktypes::AND)
+    }
+    pub fn or(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(bool, hacktypes::OR)
     }
 }

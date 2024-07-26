@@ -308,4 +308,21 @@ impl Number {
     pub fn not_equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
         self.comparison_operation(number, hacktypes::NOT_EQUAL)
     }
+
+    pub fn and(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.generate_boolean_error(
+            "TypeError".to_string(),
+            "Number is not a Boolean".to_string(),
+            self.pos_start.clone(),
+            number.pos_end.clone(),
+        )
+    }
+    pub fn or(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.generate_boolean_error(
+            "TypeError".to_string(),
+            "Number is not a Boolean".to_string(),
+            self.pos_start.clone(),
+            number.pos_end.clone(),
+        )
+    }
 }

@@ -169,6 +169,14 @@ impl Interpreter {
             hacktypes::MINUS => value1.unwrap().subtract_to(value2.unwrap()),
             hacktypes::MULTIPLY => value1.unwrap().multiply_by(value2.unwrap()),
             hacktypes::DIVIDE => value1.unwrap().divide_by(value2.unwrap()),
+            hacktypes::GREATER => value1.unwrap().greater(value2.unwrap()),
+            hacktypes::GREATER_OR_EQUAL => value1.unwrap().greater_or_equal(value2.unwrap()),
+            hacktypes::LESS => value1.unwrap().less(value2.unwrap()),
+            hacktypes::LESS_OR_EQUAL => value1.unwrap().less_or_equal(value2.unwrap()),
+            hacktypes::EQUAL => value1.unwrap().equal(value2.unwrap()),
+            hacktypes::NOT_EQUAL => value1.unwrap().not_equal(value2.unwrap()),
+            hacktypes::AND => value1.unwrap().and(value2.unwrap()),
+            hacktypes::OR => value1.unwrap().or(value2.unwrap()),
             &_ => panic!("No existing operator, failed unexpected"),
         };
 

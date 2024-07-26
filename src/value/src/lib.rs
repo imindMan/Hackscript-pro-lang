@@ -60,6 +60,42 @@ impl Value {
         let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
         (val, err)
     }
+    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        let pos_start: Position = match self {
+            Value::BooleanOrNull(boolean_and_null::Boolean {
+                boolean: _,
+                pos_start,
+                pos_end: _,
+            }) => pos_start.clone(),
+            _ => panic!("Expect to pass"),
+        };
+        let pos_end: Position = match value {
+            Value::Number(number::Number {
+                value: _,
+                identifier: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
+            Value::String(string::HackString {
+                value: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
+            Value::BooleanOrNull(boolean_and_null::Boolean {
+                boolean: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
+            _ => panic!("Invalid operation"),
+        };
+
+        self.generate_error(
+            "TypeError".to_string(),
+            "Invalid types for such an operation".to_string(),
+            pos_start,
+            pos_end,
+        )
+    }
 
     fn arithmetic_operation(
         &self,
@@ -179,10 +215,137 @@ impl Value {
                 )
             }
         } else {
-            panic!("Doesn't work");
+            self.type_generate_error(value)
         }
     }
+    fn comparison_operation(
+        &self,
+        value: Value,
+        instruction: &str,
+    ) -> (Option<Value>, Option<Error>) {
+        if std::mem::discriminant(self) == std::mem::discriminant(&value) {
+            match self {
+                Value::Number(_) => {
+                    let Value::Number(value_origin) = self else { panic!("Expected that type should pass") };
+                    let Value::Number(value_other) = value else { panic!("Expected that type should pass") };
+                    let (temp_res_value, err) = match instruction {
+                        hacktypes::GREATER => value_origin.greater(value_other.clone()),
+                        hacktypes::GREATER_OR_EQUAL => {
+                            value_origin.greater_or_equal(value_other.clone())
+                        }
 
+                        hacktypes::LESS => value_origin.less(value_other.clone()),
+                        hacktypes::LESS_OR_EQUAL => value_origin.less_or_equal(value_other.clone()),
+                        hacktypes::EQUAL => value_origin.equal(value_other.clone()),
+                        hacktypes::NOT_EQUAL => value_origin.not_equal(value_other.clone()),
+                        hacktypes::AND => value_origin.and(value_other.clone()),
+                        hacktypes::OR => value_origin.or(value_other.clone()),
+                        _ => {
+                            return self.generate_error(
+                                "TypeError".to_string(),
+                                "Invalid types for such an operation".to_string(),
+                                value_origin.pos_start.clone(),
+                                value_other.pos_end.clone(),
+                            )
+                        }
+                    };
+
+                    if err.is_some() {
+                        let val = Some(Value::new());
+                        return (val, err);
+                    };
+                    let res_value: Option<Value> = match temp_res_value.unwrap() {
+                        boolean_and_null::Boolean {
+                            boolean,
+                            pos_start,
+                            pos_end,
+                        } => Some(Value::new_boolean_or_null(boolean, pos_start, pos_end)),
+                    };
+                    (res_value, err)
+                }
+                Value::String(_) => {
+                    let Value::String(value_origin) = self else { panic!("Expected that type should pass") };
+                    let Value::String(value_other) = value else { panic!("Expected that type should pass") };
+                    let (temp_res_value, err) = match instruction {
+                        hacktypes::GREATER => value_origin.greater(value_other.clone()),
+                        hacktypes::GREATER_OR_EQUAL => {
+                            value_origin.greater_or_equal(value_other.clone())
+                        }
+
+                        hacktypes::LESS => value_origin.less(value_other.clone()),
+                        hacktypes::LESS_OR_EQUAL => value_origin.less_or_equal(value_other.clone()),
+                        hacktypes::EQUAL => value_origin.equal(value_other.clone()),
+                        hacktypes::NOT_EQUAL => value_origin.not_equal(value_other.clone()),
+                        hacktypes::AND => value_origin.and(value_other.clone()),
+                        hacktypes::OR => value_origin.or(value_other.clone()),
+                        _ => {
+                            return self.generate_error(
+                                "TypeError".to_string(),
+                                "Invalid types for such an operation".to_string(),
+                                value_origin.pos_start.clone(),
+                                value_other.pos_end.clone(),
+                            )
+                        }
+                    };
+
+                    if err.is_some() {
+                        let val = Some(Value::new());
+                        return (val, err);
+                    };
+                    let res_value: Option<Value> = match temp_res_value.unwrap() {
+                        boolean_and_null::Boolean {
+                            boolean,
+                            pos_start,
+                            pos_end,
+                        } => Some(Value::new_boolean_or_null(boolean, pos_start, pos_end)),
+                    };
+                    (res_value, err)
+                }
+                Value::BooleanOrNull(_) => {
+                    let Value::BooleanOrNull(value_origin) = self else { panic!("Expected that type should pass") };
+                    let Value::BooleanOrNull(value_other) = value else { panic!("Expected that type should pass") };
+
+                    let (temp_res_value, err) = match instruction {
+                        hacktypes::GREATER => value_origin.greater(value_other.clone()),
+                        hacktypes::GREATER_OR_EQUAL => {
+                            value_origin.greater_or_equal(value_other.clone())
+                        }
+
+                        hacktypes::LESS => value_origin.less(value_other.clone()),
+                        hacktypes::LESS_OR_EQUAL => value_origin.less_or_equal(value_other.clone()),
+                        hacktypes::EQUAL => value_origin.equal(value_other.clone()),
+                        hacktypes::NOT_EQUAL => value_origin.not_equal(value_other.clone()),
+                        hacktypes::AND => value_origin.and(value_other.clone()),
+                        hacktypes::OR => value_origin.or(value_other.clone()),
+                        _ => {
+                            return self.generate_error(
+                                "TypeError".to_string(),
+                                "Invalid types for such an operation".to_string(),
+                                value_origin.pos_start.clone(),
+                                value_other.pos_end.clone(),
+                            )
+                        }
+                    };
+
+                    if err.is_some() {
+                        let val = Some(Value::new());
+                        return (val, err);
+                    };
+                    let res_value: Option<Value> = match temp_res_value.unwrap() {
+                        boolean_and_null::Boolean {
+                            boolean,
+                            pos_start,
+                            pos_end,
+                        } => Some(Value::new_boolean_or_null(boolean, pos_start, pos_end)),
+                    };
+                    (res_value, err)
+                }
+                _ => return self.type_generate_error(value),
+            }
+        } else {
+            self.type_generate_error(value)
+        }
+    }
     // INFO: All of the operation below are substances of the arithmetic_operating function
 
     // INFO: This function performs plus operation
@@ -211,5 +374,30 @@ impl Value {
 
     pub fn divide_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
         self.arithmetic_operation(value, hacktypes::DIVIDE)
+    }
+
+    pub fn greater(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::GREATER)
+    }
+    pub fn greater_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::GREATER_OR_EQUAL)
+    }
+    pub fn less(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::LESS)
+    }
+    pub fn less_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::LESS_OR_EQUAL)
+    }
+    pub fn equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::EQUAL)
+    }
+    pub fn not_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::NOT_EQUAL)
+    }
+    pub fn and(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::AND)
+    }
+    pub fn or(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(value, hacktypes::OR)
     }
 }
