@@ -11,14 +11,16 @@ pub struct Parser {
 
 // INFO: General grammar rules with improvisation, this is the roles of all the AST nodes in
 // Hackscript
-// Factor (the smallest unit of Hackscript until now): Number
+// Factor (the smallest unit of Hackscript): Number
 //         Unary: (PLUS||MINUS)((PLUS|MINUS) Number)*
 //         LEFT_PAREN expr RIGHT_PAREN
 //         String
-// Term (or new name: FormingCalc lvl1): Factor ((MUL||DIV) Factor)*
-// Expr (or new name: Forming Calc lvl2): Term ((PLUS||MINUS) Term)*
-//
-//
+//         booleans (true, false)
+// Term: Factor ((MUL||DIV) Factor)*
+// Arithmetic_expr: Term ((PLUS||MINUS) Term)*
+// Comp_expr: Arithmetic_expr ((GREATER|LESS|GREATER_OR_EQUAL|LESS_OR_EQUAL|EQUAL|NOT_EQUAL) Arithmetic_expr)*
+// *Expr: Comp_expr ((AND|OR) Comp_expr)*
+// Parse checkpoint: Expr
 
 impl Parser {
     // INFO: This is the initialization method of the Parser
@@ -114,33 +116,43 @@ impl Parser {
         self.advance();
         let (factor, err) = self.factor();
         if err.is_some() {
-            (factor, err)
-        } else if matches!(
-            factor.clone().unwrap(),
-            AST::String {
+            return (factor, err);
+        }
+        match factor.clone().unwrap() {
+            AST::Number {
+                identifier: _,
                 value: _,
                 pos_start: _,
-                pos_end: _
+                pos_end: _,
             }
-        ) {
-            self.generate_error(
-                "OperationError".to_string(),
-                "Bad operator for string".to_string(),
-                pos_start,
-                self.curr_tok.pos_end.clone(),
-            )
-        } else {
-            let unary: Option<AST> = Some(AST::new_unaryfactor(
-                sign,
-                Box::new(factor.unwrap().clone()),
-            ));
-            (unary, err)
+            | AST::UnaryNumber {
+                sign: _,
+                value: _,
+                pos_start: _,
+                pos_end: _,
+            }
+            | AST::FormingCalc {
+                node1: _,
+                operator: _,
+                node2: _,
+                pos_start: _,
+                pos_end: _,
+            } => {
+                let unary: Option<AST> = Some(AST::new_unaryfactor(
+                    sign,
+                    Box::new(factor.unwrap().clone()),
+                ));
+                return (unary, err);
+            }
+            _ => {
+                return self.generate_error("OperatorError".to_string(), "Bad operator for the operation (because this operator doesn't technically work for the non-algebraic expression)".to_string(), pos_start, self.curr_tok.pos_end.clone());
+            }
         }
     }
     fn in_parentheses_expr(&mut self) -> (Option<AST>, Option<Error>) {
         let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
-        let (factor, err) = self.expr();
+        let (factor, err) = self.arithmetic_expr();
         if err.is_some() {
             (factor, err)
         } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {
@@ -156,6 +168,12 @@ impl Parser {
             (factor, err)
         }
     }
+    fn make_booleans_or_null(&mut self) -> (Option<AST>, Option<Error>) {
+        let factor: Option<AST> = Some(AST::new_boolean_and_null(self.curr_tok.clone()));
+        let err: Option<Error> = None;
+        self.advance();
+        (factor, err)
+    }
 
     // ------------------------------------------------------
     // INFO: THIS IS THE MAIN PART OF THE PARSER
@@ -170,6 +188,10 @@ impl Parser {
             return self.unary_factor_making();
         } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
             return self.in_parentheses_expr();
+        } else if [hacktypes::TRUE, hacktypes::FALSE, hacktypes::NULL]
+            .contains(&self.curr_tok._type.as_str())
+        {
+            return self.make_booleans_or_null();
         } else {
             return self.generate_error(
                 "Expect".to_string(),
@@ -182,7 +204,7 @@ impl Parser {
     fn bin_op(
         &mut self,
         func: fn(&mut Self) -> (Option<AST>, Option<Error>),
-        list_to_use: [&str; 2],
+        list_to_use: Vec<&str>,
     ) -> (Option<AST>, Option<Error>) {
         // Parse the first part
         let (node1, err1) = func(self);
@@ -221,10 +243,26 @@ impl Parser {
     }
 
     fn term(&mut self) -> (Option<AST>, Option<Error>) {
-        self.bin_op(Parser::factor, [hacktypes::MULTIPLY, hacktypes::DIVIDE])
+        self.bin_op(Parser::factor, vec![hacktypes::MULTIPLY, hacktypes::DIVIDE])
     }
 
+    fn arithmetic_expr(&mut self) -> (Option<AST>, Option<Error>) {
+        self.bin_op(Parser::term, vec![hacktypes::PLUS, hacktypes::MINUS])
+    }
+    fn comp_expr(&mut self) -> (Option<AST>, Option<Error>) {
+        self.bin_op(
+            Parser::arithmetic_expr,
+            vec![
+                hacktypes::GREATER,
+                hacktypes::LESS,
+                hacktypes::GREATER_OR_EQUAL,
+                hacktypes::LESS_OR_EQUAL,
+                hacktypes::EQUAL,
+                hacktypes::NOT_EQUAL,
+            ],
+        )
+    }
     fn expr(&mut self) -> (Option<AST>, Option<Error>) {
-        self.bin_op(Parser::term, [hacktypes::PLUS, hacktypes::MINUS])
+        self.bin_op(Parser::comp_expr, vec![hacktypes::AND, hacktypes::OR])
     }
 }

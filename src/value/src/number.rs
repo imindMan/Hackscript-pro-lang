@@ -1,4 +1,5 @@
 // INFO: Number initialization
+use crate::boolean_and_null::Boolean;
 use error_handling::Error;
 use hacktypes;
 use position::Position;
@@ -49,6 +50,23 @@ impl Number {
         ));
         (number, error)
     }
+    fn generate_boolean_error(
+        &self,
+        kind: String,
+        extra_string: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> (Option<Boolean>, Option<Error>) {
+        let number: Option<Boolean> = None;
+        let error: Option<Error> = Some(Error::new(
+            kind,
+            extra_string,
+            pos_start.clone(),
+            pos_end.clone(),
+        ));
+        (number, error)
+    }
+
     fn arithmetic_function(
         &self,
         number: Number,
@@ -155,6 +173,87 @@ impl Number {
             }
         }
     }
+    fn comparison_operation(
+        &self,
+        number: Number,
+        instruction: &str,
+    ) -> (Option<Boolean>, Option<Error>) {
+        // Idea: since we have to deal with two cases: the same types or not the same types of
+        // number, in this case, int or float, we gonna need two different checks for it.
+        // For the same case: convert all the numbers to that data types (int or float), and then
+        // compare it like normal.
+        // For different case: convert all of them to f32 then work like normal ?
+        if self.identifier.as_str() != number.identifier.as_str()
+            || (self.identifier.as_str() == number.identifier.as_str()
+                && number.identifier.as_str() == "float")
+        {
+            let value_origin: f32 = self.value.parse().unwrap();
+            let value_other: f32 = number.value.parse().unwrap();
+
+            let check: bool = match instruction {
+                hacktypes::GREATER => value_origin > value_other,
+                hacktypes::GREATER_OR_EQUAL => value_origin >= value_other,
+                hacktypes::LESS => value_origin < value_other,
+                hacktypes::LESS_OR_EQUAL => value_origin <= value_other,
+                hacktypes::EQUAL => value_origin == value_other,
+                hacktypes::NOT_EQUAL => value_origin != value_other,
+                _ => {
+                    return self.generate_boolean_error(
+                        "TypeError".to_string(),
+                        "Invalid types for such an operation".to_string(),
+                        self.pos_start.clone(),
+                        number.pos_end.clone(),
+                    )
+                }
+            };
+
+            let check_value: String = match check {
+                true => String::from(hacktypes::TRUE),
+                false => String::from(hacktypes::FALSE),
+            };
+
+            let final_bool: Option<Boolean> = Some(Boolean::new(
+                check_value,
+                self.pos_start.clone(),
+                number.pos_end.clone(),
+            ));
+            let err: Option<Error> = None;
+            (final_bool, err)
+        } else {
+            let value_origin: i32 = self.value.parse().unwrap();
+            let value_other: i32 = number.value.parse().unwrap();
+
+            let check: bool = match instruction {
+                hacktypes::GREATER => value_origin > value_other,
+                hacktypes::GREATER_OR_EQUAL => value_origin >= value_other,
+                hacktypes::LESS => value_origin < value_other,
+                hacktypes::LESS_OR_EQUAL => value_origin <= value_other,
+                hacktypes::EQUAL => value_origin == value_other,
+                hacktypes::NOT_EQUAL => value_origin != value_other,
+                _ => {
+                    return self.generate_boolean_error(
+                        "TypeError".to_string(),
+                        "Invalid types for such an operation".to_string(),
+                        self.pos_start.clone(),
+                        number.pos_end.clone(),
+                    )
+                }
+            };
+
+            let check_value: String = match check {
+                true => String::from(hacktypes::TRUE),
+                false => String::from(hacktypes::FALSE),
+            };
+
+            let final_bool: Option<Boolean> = Some(Boolean::new(
+                check_value,
+                self.pos_start.clone(),
+                number.pos_end.clone(),
+            ));
+            let err: Option<Error> = None;
+            (final_bool, err)
+        }
+    }
 
     // NOTE: This is the plus operation of the Number
     // Cannot use this for direct plus operation, we have to go through the Value enum
@@ -188,5 +287,25 @@ impl Number {
         };
 
         self.arithmetic_function(number, hacktypes::DIVIDE)
+    }
+    // NOTE: This is the greater operation of the Number
+    pub fn greater(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::GREATER)
+    }
+    // NOTE: This is the greater or equal operation of the Number
+    pub fn greater_or_equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::GREATER_OR_EQUAL)
+    } // NOTE: This is the less operation of the Number
+    pub fn less(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::LESS)
+    } // NOTE: This is the less or equal operation of the Number
+    pub fn less_or_equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::LESS_OR_EQUAL)
+    } // NOTE: This is the equal operation of the Number
+    pub fn equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::EQUAL)
+    } // NOTE: This is the not equal operation of the Number
+    pub fn not_equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::NOT_EQUAL)
     }
 }

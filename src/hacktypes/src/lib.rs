@@ -45,5 +45,8 @@ pub const TRUE: &str = "TRUE";
 pub const FALSE: &str = "FALSE";
 pub const NULL: &str = "NULL";
 
+// Logic operator
+pub const AND: &str = "AND";
+pub const OR: &str = "OR";
 // all the available keyword for the programming language right now
 pub const AVAILABLE_KEYWORDS: &[(&str, &str)] = &[("true", TRUE), ("false", FALSE), ("null", NULL)];

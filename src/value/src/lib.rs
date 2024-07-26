@@ -1,6 +1,7 @@
 // INFO: This is the Value enum, which represents the values in Hackscript language.
 // Because Hackscript is an interpreted language meaning there's no distinction between data types.
 
+pub mod boolean_and_null;
 pub mod number;
 pub mod string;
 use error_handling::Error;
@@ -11,6 +12,7 @@ use std::fmt::Display;
 pub enum Value {
     Number(number::Number),
     String(string::HackString),
+    BooleanOrNull(boolean_and_null::Boolean),
     Nil,
 }
 
@@ -19,6 +21,7 @@ impl Display for Value {
         match self {
             Value::Number(number) => write!(f, "{}", number),
             Value::String(string) => write!(f, "{}", string),
+            Value::BooleanOrNull(bool) => write!(f, "{}", bool),
             Value::Nil => write!(f, ""),
         }
     }
@@ -42,6 +45,10 @@ impl Value {
     pub fn new_string(value: String, pos_start: Position, pos_end: Position) -> Value {
         Value::String(string::HackString::new(value, pos_start, pos_end))
     }
+
+    pub fn new_boolean_or_null(value: String, pos_start: Position, pos_end: Position) -> Value {
+        Value::BooleanOrNull(boolean_and_null::Boolean::new(value, pos_start, pos_end))
+    }
     fn generate_error(
         &self,
         r#type: String,
@@ -54,17 +61,28 @@ impl Value {
         (val, err)
     }
 
-    fn operation(&self, value: Value, which_command: &str) -> (Option<Value>, Option<Error>) {
+    fn arithmetic_operation(
+        &self,
+        value: Value,
+        instruction: &str,
+    ) -> (Option<Value>, Option<Error>) {
         if matches!(self, Value::Number(_)) {
             let Value::Number(value_origin) = self else { panic!("Expected that type should pass") };
             if std::mem::discriminant(self) == std::mem::discriminant(&value) {
                 let Value::Number(value_other) = value else { panic!("Expected that type should pass") };
-                let (temp_res_value, err) = match which_command {
+                let (temp_res_value, err) = match instruction {
                     hacktypes::PLUS => value_origin.add_to(value_other.clone()),
                     hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
                     hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
                     hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
-                    _ => panic!("Instruction doesn't exist"),
+                    _ => {
+                        return self.generate_error(
+                            "TypeError".to_string(),
+                            "Invalid types for such an operation".to_string(),
+                            value_origin.pos_start.clone(),
+                            value_other.pos_end.clone(),
+                        )
+                    }
                 };
 
                 if err.is_some() {
@@ -83,7 +101,7 @@ impl Value {
             } else {
                 self.generate_error(
                     "TypeError".to_string(),
-                    "The types aren't the same".to_string(),
+                    "Invalid types for such an operation".to_string(),
                     value_origin.pos_start.clone(),
                     value_origin.pos_end.clone(),
                 )
@@ -92,7 +110,7 @@ impl Value {
             let Value::String(value_origin) = self else { panic!("Expected that type should pass") };
             if std::mem::discriminant(self) == std::mem::discriminant(&value) {
                 let Value::String(value_other) = value else { panic!("Expected that type should pass") };
-                let (temp_res_value, err) = match which_command {
+                let (temp_res_value, err) = match instruction {
                     hacktypes::PLUS => value_origin.add_to(value_other.clone()),
                     hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
                     hacktypes::MULTIPLY => {
@@ -104,7 +122,14 @@ impl Value {
                         );
                     }
                     hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
-                    _ => panic!("Instruction doesn't exist"),
+                    _ => {
+                        return self.generate_error(
+                            "OperatorError".to_string(),
+                            "Cannot use this operator for dealing with string".to_string(),
+                            value_origin.pos_start.clone(),
+                            value_other.pos_end.clone(),
+                        )
+                    }
                 };
 
                 if err.is_some() {
@@ -121,7 +146,7 @@ impl Value {
                 (res_value, err)
             } else if matches!(value, Value::Number(_)) {
                 let Value::Number(value_other) = value else { panic!("Expected that type should pass") };
-                let (temp_res_value, err) = match which_command {
+                let (temp_res_value, err) = match instruction {
                     hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
                     _ => {
                         return self.generate_error(
@@ -164,27 +189,27 @@ impl Value {
     // Note that every single data type value (as soon they can support plus method) can
     // universally use this function to perform the plus operation
     pub fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::PLUS)
+        self.arithmetic_operation(value, hacktypes::PLUS)
     }
     // INFO: This function performs minus operation
     // Note that every single data type value (as soon they can support minus method) can
     // universally use this function to perform the minus operation
 
     pub fn subtract_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::MINUS)
+        self.arithmetic_operation(value, hacktypes::MINUS)
     }
     // INFO: This function performs multiply operation
     // Note that every single data type value (as soon they can support multiply method) can
     // universally use this function to perform the multiply operation
 
     pub fn multiply_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::MULTIPLY)
+        self.arithmetic_operation(value, hacktypes::MULTIPLY)
     }
     // INFO: This function performs divide operation
     // Note that every single data type value (as soon they can support divide method) can
     // universally use this function to perform the divide operation
 
     pub fn divide_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::DIVIDE)
+        self.arithmetic_operation(value, hacktypes::DIVIDE)
     }
 }

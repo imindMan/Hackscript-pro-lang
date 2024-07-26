@@ -11,12 +11,12 @@ pub fn error_type_handling(info: (String, String)) -> String {
         "Undefined character" => undefined_character(info.0.clone(), info.1.clone()),
         "Number error" => number_error(info.0.clone(), info.1.clone()),
         "Expect" => expect(info.0.clone(), info.1.clone()),
-        "DivisionByZero" => divisonbyzero(info.0.clone(), info.1.clone()),
+        "DivisionByZero" => divisionbyzero(info.0.clone(), info.1.clone()),
         "TypeError" => typeerror(info.0.clone(), info.1.clone()),
-        "OperationError" => operationerror(info.0.clone(), info.1.clone()),
         "UnknownTrailingCharacter" => unknowntrailingcharacter(info.0.clone(), info.1.clone()),
         "ValueError" => valueerror(info.0.clone(), info.1.clone()),
         "UnidentifiedIdentifier" => unidentifiedidentifier(info.0.clone(), info.1.clone()),
+        "OperatorError" => operatorerror(info.0.clone(), info.1.clone()),
         _ => panic!("Unspecified error type"),
     }
 }
@@ -70,7 +70,7 @@ fn expect(_type: String, string: String) -> String {
     error_string
 }
 
-fn divisonbyzero(_type: String, string: String) -> String {
+fn divisionbyzero(_type: String, string: String) -> String {
     let error_string: String = format!(
         "{}{}Error: {}{}",
         style_bold, color_red, style_reset, color_reset
@@ -81,10 +81,9 @@ fn divisonbyzero(_type: String, string: String) -> String {
         + &string;
     error_string
 }
-
-fn typeerror(_type: String, string: String) -> String {
+fn operatorerror(_type: String, string: String) -> String {
     let error_string: String = format!(
-        "{}{}Error type: {}{}",
+        "{}{}Error: {}{}",
         style_bold, color_red, style_reset, color_reset
     ) + style_underline
         + &_type
@@ -93,8 +92,7 @@ fn typeerror(_type: String, string: String) -> String {
         + &string;
     error_string
 }
-
-fn operationerror(_type: String, string: String) -> String {
+fn typeerror(_type: String, string: String) -> String {
     let error_string: String = format!(
         "{}{}Error type: {}{}",
         style_bold, color_red, style_reset, color_reset

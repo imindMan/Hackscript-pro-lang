@@ -305,6 +305,48 @@ impl Lexer {
                         tokens.as_mut().unwrap().push(token.unwrap());
                     }
                 }
+                '&' => {
+                    let pos_start: Position = self.curr_pos.clone();
+                    self.advance();
+                    if self.curr_char.is_none() || self.curr_char.unwrap() != '&' {
+                        return self.generate_error(
+                            "UnidentifiedIdentifier".to_string(),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                    } else {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::AND),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance()
+                    }
+                }
+                '|' => {
+                    let pos_start: Position = self.curr_pos.clone();
+                    self.advance();
+                    if self.curr_char.is_none() || self.curr_char.unwrap() != '|' {
+                        return self.generate_error(
+                            "UnidentifiedIdentifier".to_string(),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                    } else {
+                        let token: Token = Token::new(
+                            String::from(hacktypes::OR),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.as_mut().unwrap().push(token);
+                        self.advance()
+                    }
+                }
                 '\"' => {
                     let (token, error) = self.string_token();
                     if error.is_some() {

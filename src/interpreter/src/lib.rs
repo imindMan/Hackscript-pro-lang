@@ -30,7 +30,7 @@ impl Interpreter {
                 node2,
                 ..
             } => self.visit_forming_calc(node1.clone(), operator.clone(), node2.clone()),
-            AST::Factor {
+            AST::Number {
                 identifier: _,
                 value,
                 pos_start,
@@ -41,12 +41,17 @@ impl Interpreter {
                 pos_start,
                 pos_end,
             } => self.visit_string(value.clone(), pos_start.clone(), pos_end.clone()),
-            AST::UnaryFactor {
+            AST::UnaryNumber {
                 sign,
                 value,
                 pos_start,
                 ..
             } => self.visit_unary(sign.to_string(), value.clone(), pos_start.clone()),
+            AST::BooleansOrNull {
+                value,
+                pos_start,
+                pos_end,
+            } => self.visit_boolean(value.clone(), pos_start.clone(), pos_end.clone()),
             AST::Nil => {
                 let factor: Option<Value> = Some(Value::new());
                 let err: Option<Error> = None;
@@ -130,12 +135,12 @@ impl Interpreter {
 
                 (final_number, err)
             }
-            Value::String(_) => panic!("How can string became unary?"),
             Value::Nil => {
                 let final_val: Option<Value> = Some(Value::new());
                 let err: Option<Error> = None;
                 (final_val, err)
             }
+            _ => panic!("Expect passing the parser"),
         }
     }
 
@@ -168,5 +173,16 @@ impl Interpreter {
         };
 
         (res, err)
+    }
+    fn visit_boolean(
+        &self,
+        value: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> (Option<Value>, Option<Error>) {
+        let bool: Option<Value> = Some(Value::new_boolean_or_null(value, pos_start, pos_end));
+        let err: Option<Error> = None;
+
+        (bool, err)
     }
 }

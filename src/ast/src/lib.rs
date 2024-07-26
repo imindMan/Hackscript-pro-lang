@@ -6,14 +6,14 @@ use position::Position;
 
 #[derive(Debug, Clone)]
 pub enum AST {
-    Factor {
+    Number {
         identifier: String,
         value: String,
         pos_start: Position,
         pos_end: Position,
     },
 
-    UnaryFactor {
+    UnaryNumber {
         sign: String,
         value: Box<AST>,
         pos_start: Position,
@@ -32,7 +32,11 @@ pub enum AST {
         pos_start: Position,
         pos_end: Position,
     },
-
+    BooleansOrNull {
+        value: String,
+        pos_start: Position,
+        pos_end: Position,
+    },
     Nil,
 }
 
@@ -53,7 +57,7 @@ impl AST {
             identifier.push_str("integer");
         }
 
-        AST::Factor {
+        AST::Number {
             identifier,
             value: token.value.clone(),
             pos_start: token.pos_start.clone(),
@@ -67,15 +71,16 @@ impl AST {
         let node1_temp = node1.clone();
         let node2_temp = node2.clone();
         let pos_start = match &*node1_temp {
-            AST::Factor { identifier: _, value: _, pos_start, pos_end: _ } => pos_start,
+            AST::Number { identifier: _, value: _, pos_start, pos_end: _ } => pos_start,
             AST::FormingCalc { node1: _, operator: _, node2:_ , pos_start, pos_end: _ } => pos_start,
-            AST::UnaryFactor { sign: _, value: _, pos_start, pos_end: _ } => pos_start,
+            AST::UnaryNumber { sign: _, value: _, pos_start, pos_end: _ } => pos_start,
             AST::String {value: _, pos_start, pos_end: _} => pos_start,
+            AST::BooleansOrNull { value: _, pos_start, pos_end: _ } => pos_start,
             _ => panic!("This is not a valid arithmetic expression, since there's no head of this expression"), 
         };
 
         let pos_end = match &*node2_temp {
-            AST::Factor {
+            AST::Number {
                 identifier: _,
                 value: _,
                 pos_start: _,
@@ -88,13 +93,18 @@ impl AST {
                 pos_start: _,
                 pos_end,
             } => pos_end,
-            AST::UnaryFactor {
+            AST::UnaryNumber {
                 sign: _,
                 value: _,
                 pos_start: _,
                 pos_end,
             } => pos_end,
             AST::String {
+                value: _,
+                pos_start: _,
+                pos_end,
+            } => pos_end,
+            AST::BooleansOrNull {
                 value: _,
                 pos_start: _,
                 pos_end,
@@ -116,7 +126,7 @@ impl AST {
     pub fn new_unaryfactor(sign: Token, value: Box<AST>) -> AST {
         let value_temp = value.clone();
         let pos_end = match &*value_temp {
-            AST::Factor {
+            AST::Number {
                 identifier: _,
                 value: _,
                 pos_start: _,
@@ -129,8 +139,13 @@ impl AST {
                 pos_start: _,
                 pos_end,
             } => pos_end,
-            AST::UnaryFactor {
+            AST::UnaryNumber {
                 sign: _,
+                value: _,
+                pos_start: _,
+                pos_end,
+            } => pos_end,
+            AST::BooleansOrNull {
                 value: _,
                 pos_start: _,
                 pos_end,
@@ -138,7 +153,7 @@ impl AST {
             _ => panic!("No unary factor doesn't have a single value"),
         };
 
-        AST::UnaryFactor {
+        AST::UnaryNumber {
             sign: sign._type,
             value,
             pos_start: sign.pos_start,
@@ -148,6 +163,14 @@ impl AST {
     pub fn new_string(token: Token) -> AST {
         AST::String {
             value: token.value,
+            pos_start: token.pos_start,
+            pos_end: token.pos_end,
+        }
+    }
+
+    pub fn new_boolean_and_null(token: Token) -> AST {
+        AST::BooleansOrNull {
+            value: token._type,
             pos_start: token.pos_start,
             pos_end: token.pos_end,
         }
