@@ -5,6 +5,7 @@ use ast::AST;
 use error_handling::Error;
 use lexer::Token;
 use position::Position;
+use value::value_trait::ValueTrait;
 use value::Value;
 
 pub struct Interpreter {

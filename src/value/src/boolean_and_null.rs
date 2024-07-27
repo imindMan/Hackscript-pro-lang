@@ -1,5 +1,7 @@
 // INFO: First start of the boolean
 // and contain the Null attribute, too
+use crate::Value;
+use crate::ValueTrait;
 use error_handling::Error;
 use position::Position;
 use std::fmt::Display;
@@ -13,7 +15,34 @@ pub struct Boolean {
 }
 impl Display for Boolean {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{}", self.boolean)
+        write!(f, "{}", self.boolean)
+    }
+}
+impl ValueTrait for Boolean {
+    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        let pos_start: Position = self.pos_start.clone();
+        let pos_end: Position = self.get_pos_end(value);
+        self.generate_error(
+            "TypeError".to_string(),
+            "Invalid types for such an operation".to_string(),
+            pos_start,
+            pos_end,
+        )
+    }
+    fn get_pos_start(&self) -> Position {
+        self.pos_start.clone()
+    }
+    fn equal(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(bool, hacktypes::EQUAL)
+    }
+    fn not_equal(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(bool, hacktypes::NOT_EQUAL)
+    }
+    fn and(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(bool, hacktypes::AND)
+    }
+    fn or(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(bool, hacktypes::OR)
     }
 }
 
@@ -25,28 +54,12 @@ impl Boolean {
             pos_end,
         }
     }
-    fn generate_error(
-        &self,
-        kind: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> (Option<Boolean>, Option<Error>) {
-        let boolean: Option<Boolean> = None;
-        let error: Option<Error> = Some(Error::new(
-            kind,
-            extra_string,
-            pos_start.clone(),
-            pos_end.clone(),
-        ));
-        (boolean, error)
-    }
-
     fn comparison_operation(
         &self,
-        bool: Boolean,
+        bool_value: Value,
         instruction: &str,
-    ) -> (Option<Boolean>, Option<Error>) {
+    ) -> (Option<Value>, Option<Error>) {
+        let Value::BooleanOrNull(bool) = bool_value.clone() else {return self.type_generate_error(bool_value)};
         let check: bool = match instruction {
             hacktypes::EQUAL => self.boolean == bool.boolean,
             hacktypes::NOT_EQUAL => self.boolean == bool.boolean,
@@ -119,88 +132,12 @@ impl Boolean {
             false => String::from(hacktypes::FALSE),
         };
 
-        let final_boolean: Option<Boolean> = Some(Boolean::new(
+        let final_boolean: Option<Value> = Some(Value::new_boolean_or_null(
             check_value,
             self.pos_start.clone(),
-            self.pos_end.clone(),
+            bool.pos_end.clone(),
         ));
         let err: Option<Error> = None;
         (final_boolean, err)
-    }
-    pub fn add_to(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot add a boolean to another boolean".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn subtract_to(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot subtract a boolean to another boolean".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn multiply_by(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot multiply a boolean by another boolean".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn divide_by(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot divide a boolean to another boolean".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn greater(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"greater than\" another string".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn greater_or_equal(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"greater than or equal\" another string".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn less(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"less than\" another string".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn less_or_equal(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"less than or equal\" another string".to_string(),
-            self.pos_start.clone(),
-            bool.pos_end.clone(),
-        );
-    }
-    pub fn equal(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::EQUAL)
-    }
-    pub fn not_equal(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::NOT_EQUAL)
-    }
-    pub fn and(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::AND)
-    }
-    pub fn or(&self, bool: Boolean) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::OR)
     }
 }

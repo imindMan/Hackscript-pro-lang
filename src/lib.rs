@@ -29,8 +29,8 @@ fn main() -> Result<(), io::Error> {
             .expect("Error reading from STDIN");
 
         match run(command) {
-            Ok(ok) => print!("{}", ok),
-            Err(err) => print!("{}", err),
+            Ok(ok) => print!("{}\n", ok),
+            Err(err) => print!("{}\n", err),
         }
     }
 }

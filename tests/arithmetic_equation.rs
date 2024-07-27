@@ -61,7 +61,7 @@ fn empty_before_dot_float() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("0.2\n".to_string(), run_res);
+    assert_eq!("0.2".to_string(), run_res);
 }
 
 #[test]
@@ -71,7 +71,7 @@ fn simple_adding_positive_equation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("5\n".to_string(), run_res);
+    assert_eq!("5".to_string(), run_res);
 }
 
 #[test]
@@ -81,7 +81,7 @@ fn simple_subtract_positive_equation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("1\n".to_string(), run_res);
+    assert_eq!("1".to_string(), run_res);
 }
 
 #[test]
@@ -91,7 +91,7 @@ fn simple_multiply_positive_equation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("6\n".to_string(), run_res);
+    assert_eq!("6".to_string(), run_res);
 }
 
 #[test]
@@ -101,7 +101,7 @@ fn simple_divide_positive_equation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("2\n".to_string(), run_res);
+    assert_eq!("2".to_string(), run_res);
 }
 
 #[test]
@@ -111,7 +111,7 @@ fn equation_with_two_factors_plus() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("3.5\n".to_string(), run_res);
+    assert_eq!("3.5".to_string(), run_res);
 }
 
 #[test]
@@ -121,7 +121,7 @@ fn equation_with_two_factors_plus_parentheses() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("6\n".to_string(), run_res);
+    assert_eq!("6".to_string(), run_res);
 }
 #[test]
 fn equation_with_two_factors_minus() {
@@ -130,7 +130,7 @@ fn equation_with_two_factors_minus() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("0.5\n".to_string(), run_res);
+    assert_eq!("0.5".to_string(), run_res);
 }
 
 #[test]
@@ -140,7 +140,7 @@ fn equation_with_two_factors_minus_parentheses() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("1.5\n".to_string(), run_res);
+    assert_eq!("1.5".to_string(), run_res);
 }
 #[test]
 fn equation_with_two_factors_multiply() {
@@ -149,7 +149,7 @@ fn equation_with_two_factors_multiply() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("50\n".to_string(), run_res);
+    assert_eq!("50".to_string(), run_res);
 }
 
 #[test]
@@ -159,7 +159,7 @@ fn equation_with_two_factors_divide() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("1\n".to_string(), run_res);
+    assert_eq!("1".to_string(), run_res);
 }
 
 #[test]
@@ -177,7 +177,7 @@ fn more_complicated_standalone_plus_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("9\n".to_string(), run_res);
+    assert_eq!("9".to_string(), run_res);
 }
 
 #[test]
@@ -187,7 +187,7 @@ fn more_complicated_compound_plus_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("32\n".to_string(), run_res);
+    assert_eq!("32".to_string(), run_res);
 }
 
 #[test]
@@ -197,7 +197,7 @@ fn more_complicated_standalone_minus_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("0\n".to_string(), run_res);
+    assert_eq!("0".to_string(), run_res);
 }
 
 #[test]
@@ -207,7 +207,7 @@ fn more_complicated_compound_minus_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("8\n".to_string(), run_res);
+    assert_eq!("8".to_string(), run_res);
 }
 
 #[test]
@@ -217,7 +217,7 @@ fn more_complicated_standalone_multiply_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("24\n".to_string(), run_res);
+    assert_eq!("24".to_string(), run_res);
 }
 
 #[test]
@@ -227,7 +227,7 @@ fn more_complicated_compound_multiply_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("-10\n".to_string(), run_res);
+    assert_eq!("-10".to_string(), run_res);
 }
 
 #[test]
@@ -237,7 +237,7 @@ fn more_complicated_standalone_divide_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("1\n".to_string(), run_res);
+    assert_eq!("1".to_string(), run_res);
 }
 
 #[test]
@@ -247,5 +247,5 @@ fn more_complicated_compound_divide_equation() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("1.625\n".to_string(), run_res);
+    assert_eq!("1.625".to_string(), run_res);
 }

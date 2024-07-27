@@ -50,7 +50,7 @@ fn plus_operation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("stringstring\n".to_string(), run_res);
+    assert_eq!("stringstring".to_string(), run_res);
 }
 #[test]
 fn multiply_operation() {
@@ -59,7 +59,7 @@ fn multiply_operation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("stringstringstring\n".to_string(), run_res);
+    assert_eq!("stringstringstring".to_string(), run_res);
 }
 
 #[test]
@@ -69,7 +69,7 @@ fn plus_complicated_operation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("stringhithere\n".to_string(), run_res);
+    assert_eq!("stringhithere".to_string(), run_res);
 }
 
 #[test]
@@ -79,10 +79,7 @@ fn multiply_complicated_operation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!(
-        "stringstringstringstringstringstring\n".to_string(),
-        run_res
-    );
+    assert_eq!("stringstringstringstringstringstring".to_string(), run_res);
 }
 #[test]
 fn plus_multiply_complicated_operation() {
@@ -92,7 +89,7 @@ fn plus_multiply_complicated_operation() {
     };
 
     assert_eq!(
-        "stringstringstringstringstringstringhi\n".to_string(),
+        "stringstringstringstringstringstringhi".to_string(),
         run_res
     );
 }
@@ -104,7 +101,7 @@ fn plus_parentheses_operation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("stringhitherehey\n".to_string(), run_res);
+    assert_eq!("stringhitherehey".to_string(), run_res);
 }
 
 #[test]
@@ -117,7 +114,7 @@ fn plus_parentheses_operation_combined_multiply() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("stringhitheretheretherehey\n".to_string(), run_res);
+    assert_eq!("stringhitheretheretherehey".to_string(), run_res);
 }
 
 #[test]
@@ -128,7 +125,7 @@ fn multiply_parentheses_operation() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("string\n".to_string(), run_res);
+    assert_eq!("string".to_string(), run_res);
 }
 
 #[test]
@@ -138,5 +135,5 @@ fn real_case_possible() {
         Err(err) => format!("{}", err),
     };
 
-    assert_eq!("\t\t\tSTRING IMPLEMENTATION\n\nAfter hard work, it's finally here\n\nNow, let's \"get into it\"\n", run_res);
+    assert_eq!("\t\t\tSTRING IMPLEMENTATION\n\nAfter hard work, it's finally here\n\nNow, let's \"get into it\"", run_res);
 }

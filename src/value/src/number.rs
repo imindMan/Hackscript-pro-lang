@@ -1,5 +1,6 @@
 // INFO: Number initialization
-use crate::boolean_and_null::Boolean;
+use crate::value_trait::ValueTrait;
+use crate::Value;
 use error_handling::Error;
 use hacktypes;
 use position::Position;
@@ -14,10 +15,83 @@ pub struct Number {
 }
 impl Display for Number {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{}", self.value)
+        write!(f, "{}", self.value)
     }
 }
 
+impl ValueTrait for Number {
+    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        let pos_start: Position = self.pos_start.clone();
+        let pos_end: Position = self.get_pos_end(value);
+        self.generate_error(
+            "TypeError".to_string(),
+            "Invalid type for such an operation".to_string(),
+            pos_start,
+            pos_end,
+        )
+    }
+    fn get_pos_start(&self) -> Position {
+        self.pos_start.clone()
+    }
+    // NOTE: This is the plus operation of the Number
+    // Cannot use this for direct plus operation, we have to go through the Value enum
+    fn add_to(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.arithmetic_function(number, hacktypes::PLUS)
+    }
+    // NOTE: This is the minus operation of the Number
+    // Cannot use this for direct minus operation, we have to go through the Value enum
+
+    fn subtract_to(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.arithmetic_function(number, hacktypes::MINUS)
+    }
+    // NOTE: This is the multiply operation of the Number
+    // Cannot use this for direct multiply operation, we have to go through the Value enum
+
+    fn multiply_by(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.arithmetic_function(number, hacktypes::MULTIPLY)
+    }
+    // NOTE: This is the divide operation of the Number
+    // Cannot use this for direct divide operation, we have to go through the Value enum
+
+    fn divide_by(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        if !matches!(number, Value::Number(_)) {
+            self.type_generate_error(number)
+        } else {
+            let Value::Number(number_to_test) = number.clone() else { panic!("Should work!")};
+            let number_test: f32 = number_to_test.value.parse().unwrap();
+            if number_test == 0.0 {
+                return self.generate_error(
+                    "DivisionByZero".to_string(),
+                    "Cannot divide a number to zero, based on basic math".to_string(),
+                    self.pos_start.clone(),
+                    self.get_pos_end(number),
+                );
+            };
+
+            self.arithmetic_function(number, hacktypes::DIVIDE)
+        }
+    }
+    // NOTE: This is the greater operation of the Number
+    fn greater(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::GREATER)
+    }
+    // NOTE: This is the greater or equal operation of the Number
+    fn greater_or_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::GREATER_OR_EQUAL)
+    } // NOTE: This is the less operation of the Number
+    fn less(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::LESS)
+    } // NOTE: This is the less or equal operation of the Number
+    fn less_or_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::LESS_OR_EQUAL)
+    } // NOTE: This is the equal operation of the Number
+    fn equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::EQUAL)
+    } // NOTE: This is the not equal operation of the Number
+    fn not_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+        self.comparison_operation(number, hacktypes::NOT_EQUAL)
+    }
+}
 impl Number {
     // INFO: This is the initialization function of the Number
     pub fn new(
@@ -34,44 +108,11 @@ impl Number {
         }
     }
 
-    fn generate_error(
-        &self,
-        kind: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> (Option<Number>, Option<Error>) {
-        let number: Option<Number> = None;
-        let error: Option<Error> = Some(Error::new(
-            kind,
-            extra_string,
-            pos_start.clone(),
-            pos_end.clone(),
-        ));
-        (number, error)
-    }
-    fn generate_boolean_error(
-        &self,
-        kind: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> (Option<Boolean>, Option<Error>) {
-        let number: Option<Boolean> = None;
-        let error: Option<Error> = Some(Error::new(
-            kind,
-            extra_string,
-            pos_start.clone(),
-            pos_end.clone(),
-        ));
-        (number, error)
-    }
-
     fn arithmetic_function(
         &self,
-        number: Number,
+        number: Value,
         operation: &str,
-    ) -> (Option<Number>, Option<Error>) {
+    ) -> (Option<Value>, Option<Error>) {
         // since Hackscript doesn't differ integer or float, it just treats everything as
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
@@ -91,11 +132,12 @@ impl Number {
         // Note that this logic only works with addition, subtraction, and multiplication.
         // Division will need a whole new logic, since it doesn't care about data types
         // of the factors, but rather the result
-        if (self.identifier.as_str() == "float" || number.identifier.as_str() == "float")
+        let Value::Number(value_other) = number.clone() else { return self.type_generate_error(number)};
+        if (self.identifier.as_str() == "float" || value_other.identifier.as_str() == "float")
             && operation != hacktypes::DIVIDE
         {
             let number1: f32 = self.value.parse().unwrap();
-            let number2: f32 = number.value.parse().unwrap();
+            let number2: f32 = value_other.value.parse().unwrap();
 
             let final_res: f32 = match operation {
                 hacktypes::PLUS => number1 + number2,
@@ -104,7 +146,7 @@ impl Number {
                 &_ => panic!("Invalid instruction"),
             };
 
-            let final_num: Option<Number> = Some(Number::new(
+            let final_num: Option<Value> = Some(Value::new_number(
                 "float".to_string(),
                 format!("{}", final_res),
                 self.pos_start.clone(),
@@ -112,11 +154,11 @@ impl Number {
             ));
             (final_num, err)
         } else if self.identifier.as_str() == "integer"
-            && number.identifier.as_str() == "integer"
+            && value_other.identifier.as_str() == "integer"
             && operation != hacktypes::DIVIDE
         {
             let number1: i32 = self.value.parse().unwrap();
-            let number2: i32 = number.value.parse().unwrap();
+            let number2: i32 = value_other.value.parse().unwrap();
 
             let final_res: i32 = match operation {
                 hacktypes::PLUS => number1 + number2,
@@ -125,7 +167,7 @@ impl Number {
                 &_ => panic!("Invalid instruction"),
             };
 
-            let final_num: Option<Number> = Some(Number::new(
+            let final_num: Option<Value> = Some(Value::new_number(
                 "integer".to_string(),
                 format!("{}", final_res),
                 self.pos_start.clone(),
@@ -138,7 +180,7 @@ impl Number {
         // then we'll have a simple logic to convert the f32 to i32 if necessary.
         else {
             let number1: f32 = self.value.parse().unwrap();
-            let number2: f32 = number.value.parse().unwrap();
+            let number2: f32 = value_other.value.parse().unwrap();
 
             let final_res: f32 = match operation {
                 hacktypes::PLUS => number1 + number2,
@@ -153,7 +195,7 @@ impl Number {
             if final_res == final_res.floor() {
                 let final_result = final_res.floor() as i32;
 
-                let final_number: Option<Number> = Some(Number::new(
+                let final_number: Option<Value> = Some(Value::new_number(
                     "integer".to_string(),
                     format!("{}", final_result),
                     self.pos_start.clone(),
@@ -162,7 +204,7 @@ impl Number {
                 let err: Option<Error> = None;
                 (final_number, err)
             } else {
-                let final_number: Option<Number> = Some(Number::new(
+                let final_number: Option<Value> = Some(Value::new_number(
                     "float".to_string(),
                     format!("{}", final_res),
                     self.pos_start.clone(),
@@ -175,20 +217,21 @@ impl Number {
     }
     fn comparison_operation(
         &self,
-        number: Number,
+        number: Value,
         instruction: &str,
-    ) -> (Option<Boolean>, Option<Error>) {
+    ) -> (Option<Value>, Option<Error>) {
         // Idea: since we have to deal with two cases: the same types or not the same types of
         // number, in this case, int or float, we gonna need two different checks for it.
         // For the same case: convert all the numbers to that data types (int or float), and then
         // compare it like normal.
-        // For different case: convert all of them to f32 then work like normal ?
-        if self.identifier.as_str() != number.identifier.as_str()
-            || (self.identifier.as_str() == number.identifier.as_str()
-                && number.identifier.as_str() == "float")
+        // For different case: convert all of them to f32 then work like normal
+        let Value::Number(value_other) = number.clone() else { return self.type_generate_error(number);};
+        if self.identifier.as_str() != value_other.identifier.as_str()
+            || (self.identifier.as_str() == value_other.identifier.as_str()
+                && value_other.identifier.as_str() == "float")
         {
             let value_origin: f32 = self.value.parse().unwrap();
-            let value_other: f32 = number.value.parse().unwrap();
+            let value_other: f32 = value_other.value.parse().unwrap();
 
             let check: bool = match instruction {
                 hacktypes::GREATER => value_origin > value_other,
@@ -198,11 +241,11 @@ impl Number {
                 hacktypes::EQUAL => value_origin == value_other,
                 hacktypes::NOT_EQUAL => value_origin != value_other,
                 _ => {
-                    return self.generate_boolean_error(
+                    return self.generate_error(
                         "TypeError".to_string(),
                         "Invalid types for such an operation".to_string(),
                         self.pos_start.clone(),
-                        number.pos_end.clone(),
+                        self.get_pos_end(number),
                     )
                 }
             };
@@ -212,16 +255,16 @@ impl Number {
                 false => String::from(hacktypes::FALSE),
             };
 
-            let final_bool: Option<Boolean> = Some(Boolean::new(
+            let final_bool: Option<Value> = Some(Value::new_boolean_or_null(
                 check_value,
                 self.pos_start.clone(),
-                number.pos_end.clone(),
+                self.get_pos_end(number),
             ));
             let err: Option<Error> = None;
             (final_bool, err)
         } else {
             let value_origin: i32 = self.value.parse().unwrap();
-            let value_other: i32 = number.value.parse().unwrap();
+            let value_other: i32 = value_other.value.parse().unwrap();
 
             let check: bool = match instruction {
                 hacktypes::GREATER => value_origin > value_other,
@@ -231,11 +274,11 @@ impl Number {
                 hacktypes::EQUAL => value_origin == value_other,
                 hacktypes::NOT_EQUAL => value_origin != value_other,
                 _ => {
-                    return self.generate_boolean_error(
+                    return self.generate_error(
                         "TypeError".to_string(),
                         "Invalid types for such an operation".to_string(),
                         self.pos_start.clone(),
-                        number.pos_end.clone(),
+                        self.get_pos_end(number),
                     )
                 }
             };
@@ -245,84 +288,13 @@ impl Number {
                 false => String::from(hacktypes::FALSE),
             };
 
-            let final_bool: Option<Boolean> = Some(Boolean::new(
+            let final_bool: Option<Value> = Some(Value::new_boolean_or_null(
                 check_value,
                 self.pos_start.clone(),
-                number.pos_end.clone(),
+                self.get_pos_end(number),
             ));
             let err: Option<Error> = None;
             (final_bool, err)
         }
-    }
-
-    // NOTE: This is the plus operation of the Number
-    // Cannot use this for direct plus operation, we have to go through the Value enum
-    pub fn add_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        self.arithmetic_function(number, hacktypes::PLUS)
-    }
-    // NOTE: This is the minus operation of the Number
-    // Cannot use this for direct minus operation, we have to go through the Value enum
-
-    pub fn subtract_to(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        self.arithmetic_function(number, hacktypes::MINUS)
-    }
-    // NOTE: This is the multiply operation of the Number
-    // Cannot use this for direct multiply operation, we have to go through the Value enum
-
-    pub fn multiply_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        self.arithmetic_function(number, hacktypes::MULTIPLY)
-    }
-    // NOTE: This is the divide operation of the Number
-    // Cannot use this for direct divide operation, we have to go through the Value enum
-
-    pub fn divide_by(&self, number: Number) -> (Option<Number>, Option<Error>) {
-        let number_test: f32 = number.value.parse().unwrap();
-        if number_test == 0.0 {
-            return self.generate_error(
-                "DivisionByZero".to_string(),
-                "Cannot divide a number to zero, based on basic math".to_string(),
-                self.pos_start.clone(),
-                number.pos_end.clone(),
-            );
-        };
-
-        self.arithmetic_function(number, hacktypes::DIVIDE)
-    }
-    // NOTE: This is the greater operation of the Number
-    pub fn greater(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::GREATER)
-    }
-    // NOTE: This is the greater or equal operation of the Number
-    pub fn greater_or_equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::GREATER_OR_EQUAL)
-    } // NOTE: This is the less operation of the Number
-    pub fn less(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::LESS)
-    } // NOTE: This is the less or equal operation of the Number
-    pub fn less_or_equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::LESS_OR_EQUAL)
-    } // NOTE: This is the equal operation of the Number
-    pub fn equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::EQUAL)
-    } // NOTE: This is the not equal operation of the Number
-    pub fn not_equal(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::NOT_EQUAL)
-    }
-
-    pub fn and(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.generate_boolean_error(
-            "TypeError".to_string(),
-            "Number is not a Boolean".to_string(),
-            self.pos_start.clone(),
-            number.pos_end.clone(),
-        )
-    }
-    pub fn or(&self, number: Number) -> (Option<Boolean>, Option<Error>) {
-        self.generate_boolean_error(
-            "TypeError".to_string(),
-            "Number is not a Boolean".to_string(),
-            self.pos_start.clone(),
-            number.pos_end.clone(),
-        )
     }
 }

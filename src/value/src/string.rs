@@ -1,6 +1,6 @@
 // INFO: HackString initialization
-use crate::boolean_and_null::Boolean;
-use crate::number::Number;
+use crate::Value;
+use crate::ValueTrait;
 use error_handling::Error;
 use position::Position;
 use std::fmt::Display;
@@ -13,105 +13,37 @@ pub struct HackString {
 }
 impl Display for HackString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{}", self.value)
+        write!(f, "{}", self.value)
     }
 }
-
-impl HackString {
-    // INFO: This is the initialization function of the HackString
-    pub fn new(value: String, pos_start: Position, pos_end: Position) -> HackString {
-        HackString {
-            value,
+impl ValueTrait for HackString {
+    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        let pos_start: Position = self.pos_start.clone();
+        let pos_end: Position = self.get_pos_end(value);
+        self.generate_error(
+            "TypeError".to_string(),
+            "Invalid types for such an operation".to_string(),
             pos_start,
             pos_end,
-        }
+        )
     }
-
-    fn generate_error(
-        &self,
-        kind: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> (Option<HackString>, Option<Error>) {
-        let string: Option<HackString> = None;
-        let error: Option<Error> = Some(Error::new(
-            kind,
-            extra_string,
-            pos_start.clone(),
-            pos_end.clone(),
-        ));
-        (string, error)
+    fn get_pos_start(&self) -> Position {
+        self.pos_start.clone()
     }
-
-    fn generate_boolean_error(
-        &self,
-        kind: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> (Option<Boolean>, Option<Error>) {
-        let string: Option<Boolean> = None;
-        let error: Option<Error> = Some(Error::new(
-            kind,
-            extra_string,
-            pos_start.clone(),
-            pos_end.clone(),
-        ));
-        (string, error)
-    }
-    fn comparison_operation(
-        &self,
-        string: HackString,
-        instruction: &str,
-    ) -> (Option<Boolean>, Option<Error>) {
-        let check: bool = match instruction {
-            hacktypes::EQUAL => self.value == string.value,
-            hacktypes::NOT_EQUAL => self.value != string.value,
-            _ => {
-                return self.generate_boolean_error(
-                    "TypeError".to_string(),
-                    "Invalid types for such an operation".to_string(),
-                    self.pos_start.clone(),
-                    string.pos_end.clone(),
-                )
-            }
-        };
-
-        let check_value: String = match check {
-            true => String::from(hacktypes::TRUE),
-            false => String::from(hacktypes::FALSE),
-        };
-
-        let final_bool: Option<Boolean> = Some(Boolean::new(
-            check_value,
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        ));
-        let err: Option<Error> = None;
-        (final_bool, err)
-    }
-
     // NOTE: This is the plus operation of the HackString
     // Cannot use this for direct plus operation, we have to go through the Value enum
-    pub fn add_to(&self, string: HackString) -> (Option<HackString>, Option<Error>) {
-        let new_string: Option<HackString> = Some(HackString::new(
-            self.value.clone() + string.value.as_str(),
+    fn add_to(&self, string: Value) -> (Option<Value>, Option<Error>) {
+        let Value::String(string_value) = string.clone() else {return self.type_generate_error(string)};
+        let new_string: Option<Value> = Some(Value::new_string(
+            self.value.clone() + string_value.value.as_str(),
             self.pos_start.clone(),
-            string.pos_end.clone(),
+            self.get_pos_end(string),
         ));
         let err: Option<Error> = None;
         (new_string, err)
     }
-    pub fn subtract_to(&self, string: HackString) -> (Option<HackString>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot subtract a string to another string".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        );
-    }
-    pub fn multiply_by(&self, number: Number) -> (Option<HackString>, Option<Error>) {
+    fn multiply_by(&self, number_value: Value) -> (Option<Value>, Option<Error>) {
+        let Value::Number(number) = number_value.clone() else {return self.type_generate_error(number_value)};
         if number.identifier.as_str() == "float" {
             return self.generate_error(
                 "TypeError".to_string(),
@@ -135,7 +67,7 @@ impl HackString {
                 for _i in 0..value_number {
                     value_string += self.value.clone().as_str();
                 }
-                let new_string: Option<HackString> = Some(HackString::new(
+                let new_string: Option<Value> = Some(Value::new_string(
                     value_string,
                     self.pos_start.clone(),
                     number.pos_end.clone(),
@@ -145,67 +77,54 @@ impl HackString {
             }
         }
     }
-
-    pub fn divide_by(&self, string: HackString) -> (Option<HackString>, Option<Error>) {
-        return self.generate_error(
-            "TypeError".to_string(),
-            "Cannot divide a string to another string".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        );
-    }
-    pub fn greater(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_boolean_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"greater than\" another string".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        );
-    }
-    pub fn greater_or_equal(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_boolean_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"greater than or equal\" another string".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        );
-    }
-    pub fn less(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_boolean_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"less than\" another string".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        );
-    }
-    pub fn less_or_equal(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
-        return self.generate_boolean_error(
-            "TypeError".to_string(),
-            "Cannot compare a string \"less than or equal\" another string".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        );
-    }
-    pub fn equal(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
+    fn equal(&self, string: Value) -> (Option<Value>, Option<Error>) {
         self.comparison_operation(string, hacktypes::EQUAL)
     }
-    pub fn not_equal(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
+    fn not_equal(&self, string: Value) -> (Option<Value>, Option<Error>) {
         self.comparison_operation(string, hacktypes::NOT_EQUAL)
     }
-    pub fn and(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
-        self.generate_boolean_error(
-            "TypeError".to_string(),
-            "String is not a Boolean".to_string(),
-            self.pos_start.clone(),
-            string.pos_end.clone(),
-        )
+}
+
+impl HackString {
+    // INFO: This is the initialization function of the HackString
+    pub fn new(value: String, pos_start: Position, pos_end: Position) -> HackString {
+        HackString {
+            value,
+            pos_start,
+            pos_end,
+        }
     }
-    pub fn or(&self, string: HackString) -> (Option<Boolean>, Option<Error>) {
-        self.generate_boolean_error(
-            "TypeError".to_string(),
-            "String is not a Boolean".to_string(),
+
+    fn comparison_operation(
+        &self,
+        string: Value,
+        instruction: &str,
+    ) -> (Option<Value>, Option<Error>) {
+        let Value::String(string_value) = string.clone() else {return self.type_generate_error(string)};
+        let check: bool = match instruction {
+            hacktypes::EQUAL => self.value == string_value.value,
+            hacktypes::NOT_EQUAL => self.value != string_value.value,
+            _ => {
+                return self.generate_error(
+                    "TypeError".to_string(),
+                    "Invalid types for such an operation".to_string(),
+                    self.pos_start.clone(),
+                    self.get_pos_end(string),
+                )
+            }
+        };
+
+        let check_value: String = match check {
+            true => String::from(hacktypes::TRUE),
+            false => String::from(hacktypes::FALSE),
+        };
+
+        let final_bool: Option<Value> = Some(Value::new_boolean_or_null(
+            check_value,
             self.pos_start.clone(),
-            string.pos_end.clone(),
-        )
+            self.get_pos_end(string),
+        ));
+        let err: Option<Error> = None;
+        (final_bool, err)
     }
 }
