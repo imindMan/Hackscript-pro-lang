@@ -62,7 +62,7 @@ impl Boolean {
         let Value::BooleanOrNull(bool) = bool_value.clone() else {return self.type_generate_error(bool_value)};
         let check: bool = match instruction {
             hacktypes::EQUAL => self.boolean == bool.boolean,
-            hacktypes::NOT_EQUAL => self.boolean == bool.boolean,
+            hacktypes::NOT_EQUAL => self.boolean != bool.boolean,
             hacktypes::AND => {
                 let value_origin: bool = match self.boolean.as_str() {
                     hacktypes::TRUE => true,
