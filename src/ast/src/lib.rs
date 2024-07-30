@@ -32,7 +32,12 @@ pub enum AST {
         pos_start: Position,
         pos_end: Position,
     },
-    BooleansOrNull {
+    Boolean {
+        value: String,
+        pos_start: Position,
+        pos_end: Position,
+    },
+    Null {
         value: String,
         pos_start: Position,
         pos_end: Position,
@@ -49,7 +54,7 @@ impl AST {
 
     // INFO: This is the initialization method for the Factor attribute
     // To know what is a Factor, check the grammar rules in parser module
-    pub fn new_factor(token: Token) -> AST {
+    pub fn new_number(token: Token) -> AST {
         let mut identifier: String = String::new();
         if token.value.contains('.') {
             identifier.push_str("float");
@@ -75,7 +80,8 @@ impl AST {
             AST::FormingCalc { node1: _, operator: _, node2:_ , pos_start, pos_end: _ } => pos_start,
             AST::UnaryNumber { sign: _, value: _, pos_start, pos_end: _ } => pos_start,
             AST::String {value: _, pos_start, pos_end: _} => pos_start,
-            AST::BooleansOrNull { value: _, pos_start, pos_end: _ } => pos_start,
+            AST::Boolean { value: _, pos_start, pos_end: _ } => pos_start,
+            AST::Null { value: _, pos_start, pos_end: _ } => pos_start,
             _ => panic!("This is not a valid arithmetic expression, since there's no head of this expression"), 
         };
 
@@ -104,7 +110,12 @@ impl AST {
                 pos_start: _,
                 pos_end,
             } => pos_end,
-            AST::BooleansOrNull {
+            AST::Boolean {
+                value: _,
+                pos_start: _,
+                pos_end,
+            } => pos_end,
+            AST::Null {
                 value: _,
                 pos_start: _,
                 pos_end,
@@ -145,7 +156,12 @@ impl AST {
                 pos_start: _,
                 pos_end,
             } => pos_end,
-            AST::BooleansOrNull {
+            AST::Boolean {
+                value: _,
+                pos_start: _,
+                pos_end,
+            } => pos_end,
+            AST::Null {
                 value: _,
                 pos_start: _,
                 pos_end,
@@ -168,8 +184,15 @@ impl AST {
         }
     }
 
-    pub fn new_boolean_and_null(token: Token) -> AST {
-        AST::BooleansOrNull {
+    pub fn new_boolean(token: Token) -> AST {
+        AST::Boolean {
+            value: token._type,
+            pos_start: token.pos_start,
+            pos_end: token.pos_end,
+        }
+    }
+    pub fn new_null(token: Token) -> AST {
+        AST::Null {
             value: token._type,
             pos_start: token.pos_start,
             pos_end: token.pos_end,

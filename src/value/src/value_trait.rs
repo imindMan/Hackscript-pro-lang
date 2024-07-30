@@ -1,4 +1,5 @@
-use crate::boolean_and_null::Boolean;
+use crate::boolean::Boolean;
+use crate::null::Null;
 use crate::number::Number;
 use crate::string::HackString;
 use crate::Value;
@@ -35,8 +36,13 @@ pub trait ValueTrait {
                 pos_start: _,
                 pos_end,
             }) => pos_end.clone(),
-            Value::BooleanOrNull(Boolean {
+            Value::Boolean(Boolean {
                 boolean: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
+            Value::Null(Null {
+                value: _,
                 pos_start: _,
                 pos_end,
             }) => pos_end.clone(),
@@ -44,8 +50,16 @@ pub trait ValueTrait {
         }
     }
     fn get_pos_start(&self) -> Position;
-    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>);
-
+    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
+        let pos_start: Position = self.get_pos_start();
+        let pos_end: Position = self.get_pos_end(value);
+        self.generate_error(
+            "TypeError".to_string(),
+            "Invalid types for such an operation".to_string(),
+            pos_start,
+            pos_end,
+        )
+    }
     fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
         self.type_generate_error(value)
     }

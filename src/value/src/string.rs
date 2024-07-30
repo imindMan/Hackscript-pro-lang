@@ -17,16 +17,6 @@ impl Display for HackString {
     }
 }
 impl ValueTrait for HackString {
-    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        let pos_start: Position = self.pos_start.clone();
-        let pos_end: Position = self.get_pos_end(value);
-        self.generate_error(
-            "TypeError".to_string(),
-            "Invalid types for such an operation".to_string(),
-            pos_start,
-            pos_end,
-        )
-    }
     fn get_pos_start(&self) -> Position {
         self.pos_start.clone()
     }
@@ -114,13 +104,8 @@ impl HackString {
             }
         };
 
-        let check_value: String = match check {
-            true => String::from(hacktypes::TRUE),
-            false => String::from(hacktypes::FALSE),
-        };
-
-        let final_bool: Option<Value> = Some(Value::new_boolean_or_null(
-            check_value,
+        let final_bool: Option<Value> = Some(Value::new_boolean(
+            check,
             self.pos_start.clone(),
             self.get_pos_end(string),
         ));

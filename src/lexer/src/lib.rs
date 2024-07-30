@@ -37,7 +37,7 @@ impl Lexer {
         Lexer {
             curr_char: match fcontent.clone().as_str().chars().next() {
                 Some(char) => Some(char),
-                _ => panic!("No existed character detected"),
+                _ => None,
             },
             fcontent: fcontent.clone(),
             curr_pos: Position::new(0, 0, 0, fname, fcontent),
@@ -76,16 +76,13 @@ impl Lexer {
     // 'advance' is actually to iterate to the next token
     fn advance(&mut self) {
         let temp_pos = self.curr_pos.literal_pos + 1;
-        let curr_char: Option<char> = match self
+        let curr_char: Option<char> = self
             .fcontent
             .clone()
             .as_str()
             .chars()
-            .nth(temp_pos.try_into().unwrap())
-        {
-            Some(char) => Some(char),
-            _ => None,
-        };
+            .nth(temp_pos.try_into().unwrap());
+
         if curr_char.is_some() {
             // change the current position
             self.curr_pos.literal_pos += 1;
@@ -237,7 +234,7 @@ impl Lexer {
                 '+' => {
                     let token: Token = Token::new(
                         String::from(hacktypes::PLUS),
-                        String::from(""),
+                        String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
@@ -247,7 +244,7 @@ impl Lexer {
                 '-' => {
                     let token: Token = Token::new(
                         String::from(hacktypes::MINUS),
-                        String::from(""),
+                        String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
@@ -257,7 +254,7 @@ impl Lexer {
                 '*' => {
                     let token: Token = Token::new(
                         String::from(hacktypes::MULTIPLY),
-                        String::from(""),
+                        String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
@@ -267,7 +264,7 @@ impl Lexer {
                 '/' => {
                     let token: Token = Token::new(
                         String::from(hacktypes::DIVIDE),
-                        String::from(""),
+                        String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
@@ -278,7 +275,7 @@ impl Lexer {
                 '(' => {
                     let token: Token = Token::new(
                         String::from(hacktypes::PARENTHESE_OPEN),
-                        String::from(""),
+                        String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
@@ -288,7 +285,7 @@ impl Lexer {
                 ')' => {
                     let token: Token = Token::new(
                         String::from(hacktypes::PARENTHESE_CLOSE),
-                        String::from(""),
+                        String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
@@ -474,31 +471,35 @@ impl Lexer {
 
         if err.is_none() {
             // create an EOF token
-            if !tokens.as_ref().expect("No existing tokens").is_empty() {
+            if !tokens
+                .as_ref()
+                .expect("Something went wrong with the tokens")
+                .is_empty()
+            {
                 let pos_start: Position = tokens
-                    .as_ref()
-                    .expect("No existing tokens")
+                    .as_mut()
+                    .expect("Something went wrong with the pos_start")
                     .last()
                     .unwrap()
                     .pos_start
                     .clone();
                 let pos_end: Position = tokens
-                    .as_ref()
-                    .expect("No existing tokens")
+                    .as_mut()
+                    .expect("Something went wrong with the pos_end")
                     .last()
                     .unwrap()
                     .pos_end
                     .clone();
                 tokens.as_mut().unwrap().push(Token::new(
                     String::from(hacktypes::EOF),
-                    String::from(""),
-                    pos_start,
-                    pos_end,
+                    String::new(),
+                    pos_start.clone(),
+                    pos_end.clone(),
                 ));
             } else {
                 tokens.as_mut().unwrap().push(Token::new(
                     String::from(hacktypes::EOF),
-                    String::from(""),
+                    String::new(),
                     self.curr_pos.clone(),
                     self.curr_pos.clone(),
                 ));

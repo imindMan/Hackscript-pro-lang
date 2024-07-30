@@ -1,7 +1,8 @@
 // INFO: This is the Value enum, which represents the values in Hackscript language.
 // Because Hackscript is an interpreted language meaning there's no distinction between data types.
 
-pub mod boolean_and_null;
+pub mod boolean;
+pub mod null;
 pub mod number;
 pub mod string;
 pub mod value_trait;
@@ -14,7 +15,8 @@ use std::fmt::Display;
 pub enum Value {
     Number(number::Number),
     String(string::HackString),
-    BooleanOrNull(boolean_and_null::Boolean),
+    Boolean(boolean::Boolean),
+    Null(null::Null),
     Nil,
 }
 
@@ -23,7 +25,8 @@ impl Display for Value {
         match self {
             Value::Number(number) => write!(f, "{}", number),
             Value::String(string) => write!(f, "{}", string),
-            Value::BooleanOrNull(bool) => write!(f, "{}", bool),
+            Value::Boolean(bool) => write!(f, "{}", bool),
+            Value::Null(_null) => write!(f, "null"),
             Value::Nil => write!(f, ""),
         }
     }
@@ -42,8 +45,13 @@ impl ValueTrait for Value {
                 pos_start,
                 pos_end: _,
             }) => pos_start.clone(),
-            Value::BooleanOrNull(boolean_and_null::Boolean {
+            Value::Boolean(boolean::Boolean {
                 boolean: _,
+                pos_start,
+                pos_end: _,
+            }) => pos_start.clone(),
+            Value::Null(null::Null {
+                value: _,
                 pos_start,
                 pos_end: _,
             }) => pos_start.clone(),
@@ -63,8 +71,13 @@ impl ValueTrait for Value {
                 pos_start,
                 pos_end: _,
             }) => pos_start.clone(),
-            Value::BooleanOrNull(boolean_and_null::Boolean {
+            Value::Boolean(boolean::Boolean {
                 boolean: _,
+                pos_start,
+                pos_end: _,
+            }) => pos_start.clone(),
+            Value::Null(null::Null {
+                value: _,
                 pos_start,
                 pos_end: _,
             }) => pos_start.clone(),
@@ -82,8 +95,13 @@ impl ValueTrait for Value {
                 pos_start: _,
                 pos_end,
             }) => pos_end.clone(),
-            Value::BooleanOrNull(boolean_and_null::Boolean {
+            Value::Boolean(boolean::Boolean {
                 boolean: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
+            Value::Null(null::Null {
+                value: _,
                 pos_start: _,
                 pos_end,
             }) => pos_end.clone(),
@@ -172,10 +190,12 @@ impl Value {
         Value::String(string::HackString::new(value, pos_start, pos_end))
     }
 
-    pub fn new_boolean_or_null(value: String, pos_start: Position, pos_end: Position) -> Value {
-        Value::BooleanOrNull(boolean_and_null::Boolean::new(value, pos_start, pos_end))
+    pub fn new_boolean(value: bool, pos_start: Position, pos_end: Position) -> Value {
+        Value::Boolean(boolean::Boolean::new(value, pos_start, pos_end))
     }
-
+    pub fn new_null(value: String, pos_start: Position, pos_end: Position) -> Value {
+        Value::Null(null::Null::new(value, pos_start, pos_end))
+    }
     fn handling_operation<T: ValueTrait>(
         &self,
         value_origin: T,
@@ -215,10 +235,12 @@ impl Value {
             Value::String(value_origin) => {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
-            Value::BooleanOrNull(value_origin) => {
+            Value::Boolean(value_origin) => {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
-
+            Value::Null(value_origin) => {
+                self.handling_operation(value_origin.clone(), value, instruction)
+            }
             _ => return self.type_generate_error(value),
         }
     }

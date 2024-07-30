@@ -24,35 +24,40 @@ impl Interpreter {
     }
 
     fn visit(&self, ast: AST) -> (Option<Value>, Option<Error>) {
-        match &ast {
+        match ast {
             AST::FormingCalc {
                 node1,
                 operator,
                 node2,
                 ..
-            } => self.visit_forming_calc(node1.clone(), operator.clone(), node2.clone()),
+            } => self.visit_forming_calc(node1, operator, node2),
             AST::Number {
                 identifier: _,
                 value,
                 pos_start,
                 pos_end,
-            } => self.visit_factor(value.clone(), pos_start.clone(), pos_end.clone()),
+            } => self.visit_number(value, pos_start, pos_end),
             AST::String {
                 value,
                 pos_start,
                 pos_end,
-            } => self.visit_string(value.clone(), pos_start.clone(), pos_end.clone()),
+            } => self.visit_string(value, pos_start, pos_end),
             AST::UnaryNumber {
                 sign,
                 value,
                 pos_start,
                 ..
-            } => self.visit_unary(sign.to_string(), value.clone(), pos_start.clone()),
-            AST::BooleansOrNull {
+            } => self.visit_unary(sign, value, pos_start),
+            AST::Boolean {
                 value,
                 pos_start,
                 pos_end,
-            } => self.visit_boolean(value.clone(), pos_start.clone(), pos_end.clone()),
+            } => self.visit_boolean(value, pos_start, pos_end),
+            AST::Null {
+                value,
+                pos_start,
+                pos_end,
+            } => self.visit_null(value, pos_start, pos_end),
             AST::Nil => {
                 let factor: Option<Value> = Some(Value::new());
                 let err: Option<Error> = None;
@@ -61,7 +66,7 @@ impl Interpreter {
         }
     }
 
-    fn visit_factor(
+    fn visit_number(
         &self,
         value: String,
         pos_start: Position,
@@ -189,9 +194,27 @@ impl Interpreter {
         pos_start: Position,
         pos_end: Position,
     ) -> (Option<Value>, Option<Error>) {
-        let bool: Option<Value> = Some(Value::new_boolean_or_null(value, pos_start, pos_end));
+        let bool: Option<Value> = Some(Value::new_boolean(
+            match value.as_str() {
+                hacktypes::TRUE => true,
+                hacktypes::FALSE => false,
+                _ => panic!("Pass in TRUE or FALSE value, dev"),
+            },
+            pos_start,
+            pos_end,
+        ));
         let err: Option<Error> = None;
 
         (bool, err)
+    }
+    fn visit_null(
+        &self,
+        value: String,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> (Option<Value>, Option<Error>) {
+        let null_val: Option<Value> = Some(Value::new_null(value, pos_start, pos_end));
+        let err: Option<Error> = None;
+        (null_val, err)
     }
 }

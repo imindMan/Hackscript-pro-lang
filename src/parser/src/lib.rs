@@ -98,7 +98,7 @@ impl Parser {
     // ----------------------------------------------------
     //
     fn number_making(&mut self) -> (Option<AST>, Option<Error>) {
-        let factor: Option<AST> = Some(AST::new_factor(self.curr_tok.clone()));
+        let factor: Option<AST> = Some(AST::new_number(self.curr_tok.clone()));
         let err: Option<Error> = None;
         self.advance();
         (factor, err)
@@ -118,26 +118,26 @@ impl Parser {
         if err.is_some() {
             return (factor, err);
         }
-        match factor.clone().unwrap() {
-            AST::Number {
+        match factor {
+            Some(AST::Number {
                 identifier: _,
                 value: _,
                 pos_start: _,
                 pos_end: _,
-            }
-            | AST::UnaryNumber {
+            })
+            | Some(AST::UnaryNumber {
                 sign: _,
                 value: _,
                 pos_start: _,
                 pos_end: _,
-            }
-            | AST::FormingCalc {
+            })
+            | Some(AST::FormingCalc {
                 node1: _,
                 operator: _,
                 node2: _,
                 pos_start: _,
                 pos_end: _,
-            } => {
+            }) => {
                 let unary: Option<AST> = Some(AST::new_unaryfactor(
                     sign,
                     Box::new(factor.unwrap().clone()),
@@ -168,8 +168,14 @@ impl Parser {
             (factor, err)
         }
     }
-    fn make_booleans_or_null(&mut self) -> (Option<AST>, Option<Error>) {
-        let factor: Option<AST> = Some(AST::new_boolean_and_null(self.curr_tok.clone()));
+    fn make_booleans(&mut self) -> (Option<AST>, Option<Error>) {
+        let factor: Option<AST> = Some(AST::new_boolean(self.curr_tok.clone()));
+        let err: Option<Error> = None;
+        self.advance();
+        (factor, err)
+    }
+    fn make_null(&mut self) -> (Option<AST>, Option<Error>) {
+        let factor: Option<AST> = Some(AST::new_null(self.curr_tok.clone()));
         let err: Option<Error> = None;
         self.advance();
         (factor, err)
@@ -188,10 +194,10 @@ impl Parser {
             return self.unary_factor_making();
         } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
             return self.in_parentheses_expr();
-        } else if [hacktypes::TRUE, hacktypes::FALSE, hacktypes::NULL]
-            .contains(&self.curr_tok._type.as_str())
-        {
-            return self.make_booleans_or_null();
+        } else if [hacktypes::TRUE, hacktypes::FALSE].contains(&self.curr_tok._type.as_str()) {
+            return self.make_booleans();
+        } else if self.curr_tok._type.as_str() == hacktypes::NULL {
+            return self.make_null();
         } else {
             return self.generate_error(
                 "Expect".to_string(),
@@ -223,9 +229,9 @@ impl Parser {
                 return (low, err2);
             } else {
                 high = Some(AST::new_formingcalc(
-                    Box::new(high.clone().unwrap()),
+                    Box::new(high.unwrap()),
                     operator,
-                    Box::new(low.clone().unwrap()),
+                    Box::new(low.unwrap()),
                 ));
             };
         }

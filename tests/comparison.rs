@@ -52,7 +52,7 @@ fn equal_operator_check_for_number() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("TRUE".to_string(), run_res)
+    assert_eq!("true".to_string(), run_res)
 }
 #[test]
 fn equal_operator_check_for_string() {
@@ -60,7 +60,7 @@ fn equal_operator_check_for_string() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("FALSE".to_string(), run_res)
+    assert_eq!("false".to_string(), run_res)
 }
 #[test]
 fn equal_operator_check_for_null() {
@@ -68,7 +68,7 @@ fn equal_operator_check_for_null() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("TRUE".to_string(), run_res)
+    assert_eq!("true".to_string(), run_res)
 }
 #[test]
 fn equal_operator_check_for_boolean() {
@@ -76,7 +76,7 @@ fn equal_operator_check_for_boolean() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("TRUE".to_string(), run_res)
+    assert_eq!("true".to_string(), run_res)
 }
 #[test]
 fn not_equal_operator_check_for_number() {
@@ -84,7 +84,7 @@ fn not_equal_operator_check_for_number() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("FALSE".to_string(), run_res)
+    assert_eq!("false".to_string(), run_res)
 }
 #[test]
 fn not_equal_operator_check_for_string() {
@@ -92,7 +92,7 @@ fn not_equal_operator_check_for_string() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("TRUE".to_string(), run_res)
+    assert_eq!("true".to_string(), run_res)
 }
 #[test]
 fn not_equal_operator_check_for_boolean() {
@@ -100,7 +100,7 @@ fn not_equal_operator_check_for_boolean() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("TRUE".to_string(), run_res)
+    assert_eq!("true".to_string(), run_res)
 }
 #[test]
 fn not_equal_operator_check_for_null() {
@@ -108,7 +108,7 @@ fn not_equal_operator_check_for_null() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("FALSE".to_string(), run_res)
+    assert_eq!("false".to_string(), run_res)
 }
 #[test]
 fn greater_operator_check_for_number() {
@@ -116,7 +116,7 @@ fn greater_operator_check_for_number() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("FALSE".to_string(), run_res)
+    assert_eq!("false".to_string(), run_res)
 }
 #[test]
 fn greater_operator_check_for_string() -> Result<(), String> {
@@ -146,7 +146,7 @@ fn less_operator_check_for_number() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("TRUE".to_string(), run_res)
+    assert_eq!("true".to_string(), run_res)
 }
 #[test]
 fn less_operator_check_for_string() -> Result<(), String> {
@@ -176,7 +176,7 @@ fn less_or_equal_operator_check_for_number() {
         Ok(ok) => format!("{}", ok),
         Err(err) => format!("{}", err),
     };
-    assert_eq!("TRUE".to_string(), run_res)
+    assert_eq!("true".to_string(), run_res)
 }
 #[test]
 fn less_or_equal_operator_check_for_string() -> Result<(), String> {

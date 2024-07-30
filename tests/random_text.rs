@@ -1,7 +1,17 @@
+use std::fmt::format;
+
 // INFO: MAINLY FOR THE LEXER
 // These tests will check if the lexer is working or not
 use hackscript::run;
 
+#[test]
+fn empty_string() {
+    let run_res: String = match run(String::from("")) {
+        Ok(ok) => format!("{}", ok),
+        Err(err) => format!("{}", err),
+    };
+    assert_eq!("".to_string(), run_res);
+}
 #[test]
 fn backspace_too_much() {
     let run_res: String = match run(String::from("                      ")) {
