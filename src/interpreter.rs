@@ -1,10 +1,10 @@
 // INFO: First start of an interpreter, the main part of the whole project
 // It just basically scans (or visits) all the AST nodes and then return the result
 
-use crate::ast::AST;
 use crate::error_handling::Error;
 use crate::hacktypes::*;
-use crate::lexer::Token;
+use crate::parser::Token;
+use crate::parser::AST;
 use crate::position::Position;
 use crate::value::value_trait::ValueTrait;
 use crate::value::Value;
@@ -75,11 +75,10 @@ impl Interpreter {
     ) -> (Option<Value>, Option<Error>) {
         // quick initialization for the number value
         let final_value: f32 = value.parse().unwrap();
-        let new_identifier: String;
-        if final_value == final_value.floor() {
-            new_identifier = String::from("integer");
+        let new_identifier: String = if final_value == final_value.floor() {
+            String::from("integer")
         } else {
-            new_identifier = String::from("float");
+            String::from("float")
         };
         let factor: Option<Value> = Some(Value::new_number(
             new_identifier,

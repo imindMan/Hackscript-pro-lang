@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 // INFO: MAINLY FOR THE LEXER
 // These tests will check if the lexer is working or not
 use hackscript::run;

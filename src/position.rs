@@ -53,10 +53,8 @@ pub fn valid_pos(check_pos: Position, pos_start: Position, pos_end: Position) ->
         } else if pos_end.row == check_pos.row && pos_end.col >= check_pos.col {
             return true;
         }
-    } else {
-        if pos_start.col <= check_pos.col && check_pos.col <= pos_end.col {
-            return true;
-        }
+    } else if pos_start.col <= check_pos.col && check_pos.col <= pos_end.col {
+        return true;
     }
     false
 }

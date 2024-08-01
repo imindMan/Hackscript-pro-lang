@@ -2,9 +2,9 @@
 //  Lexer will parse through every characters and create tokens
 //  So tokens can be defined in here, too
 
-use crate::error_handling::Error;
-use crate::hacktypes::*;
-use crate::position::Position;
+pub use crate::error_handling::Error;
+pub use crate::hacktypes::*;
+pub use crate::position::Position;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
