@@ -2,8 +2,9 @@
 //  Lexer will parse through every characters and create tokens
 //  So tokens can be defined in here, too
 
-use error_handling::Error;
-use position::Position;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::position::Position;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
@@ -147,7 +148,7 @@ impl Lexer {
             );
         }
         let tok: Option<Token> = Some(Token::new(
-            String::from(hacktypes::STRING),
+            String::from(STRING),
             value,
             pos_start,
             self.curr_pos.clone(),
@@ -160,17 +161,15 @@ impl Lexer {
         let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
 
-        while self.curr_char.is_some() && hacktypes::NUMBERLIST.contains(self.curr_char.unwrap()) {
-            if hacktypes::NUMBERLIST.contains(self.curr_char.unwrap())
-                && self.curr_char.unwrap() != '.'
-            {
+        while self.curr_char.is_some() && NUMBERLIST.contains(self.curr_char.unwrap()) {
+            if NUMBERLIST.contains(self.curr_char.unwrap()) && self.curr_char.unwrap() != '.' {
                 value.push(self.curr_char.unwrap());
                 self.advance();
             } else if self.curr_char.unwrap() == '.' {
                 value.push(self.curr_char.unwrap());
                 self.advance();
                 if self.curr_char.is_none()
-                    || !hacktypes::NUMBERLIST.contains(self.curr_char.unwrap())
+                    || !NUMBERLIST.contains(self.curr_char.unwrap())
                     || self.curr_char.unwrap() == '.'
                 {
                     // disadvance the position to match the real position of the error-taking token
@@ -195,7 +194,7 @@ impl Lexer {
             }
         }
         let tok: Option<Token> = Some(Token::new(
-            String::from(hacktypes::NUMBER),
+            String::from(NUMBER),
             value,
             pos_start,
             self.curr_pos.clone(),
@@ -207,9 +206,7 @@ impl Lexer {
     fn make_word(&mut self) -> (String, Position) {
         let pos_start: Position = self.curr_pos.clone();
         let mut word: String = String::new();
-        while self.curr_char.is_some()
-            && hacktypes::AVAILABLE_CHARACTERS.contains(self.curr_char.unwrap())
-        {
+        while self.curr_char.is_some() && AVAILABLE_CHARACTERS.contains(self.curr_char.unwrap()) {
             word.push(self.curr_char.unwrap());
             self.advance();
         }
@@ -223,7 +220,7 @@ impl Lexer {
     pub fn make_tokens(&mut self) -> (Option<Vec<Token>>, Option<Error>) {
         let mut tokens: Option<Vec<Token>> = Some(Vec::new());
         let mut err: Option<Error> = None;
-        let keywords: HashMap<&str, &str> = hacktypes::AVAILABLE_KEYWORDS.iter().cloned().collect();
+        let keywords: HashMap<&str, &str> = AVAILABLE_KEYWORDS.iter().cloned().collect();
         while self.curr_char.is_some() {
             // basically a match pattern to check the current character in the lexer,
             // then create a token based on that current token
@@ -233,7 +230,7 @@ impl Lexer {
                 }
                 '+' => {
                     let token: Token = Token::new(
-                        String::from(hacktypes::PLUS),
+                        String::from(PLUS),
                         String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
@@ -243,7 +240,7 @@ impl Lexer {
                 }
                 '-' => {
                     let token: Token = Token::new(
-                        String::from(hacktypes::MINUS),
+                        String::from(MINUS),
                         String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
@@ -253,7 +250,7 @@ impl Lexer {
                 }
                 '*' => {
                     let token: Token = Token::new(
-                        String::from(hacktypes::MULTIPLY),
+                        String::from(MULTIPLY),
                         String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
@@ -263,7 +260,7 @@ impl Lexer {
                 }
                 '/' => {
                     let token: Token = Token::new(
-                        String::from(hacktypes::DIVIDE),
+                        String::from(DIVIDE),
                         String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
@@ -274,7 +271,7 @@ impl Lexer {
 
                 '(' => {
                     let token: Token = Token::new(
-                        String::from(hacktypes::PARENTHESE_OPEN),
+                        String::from(PARENTHESE_OPEN),
                         String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
@@ -284,7 +281,7 @@ impl Lexer {
                 }
                 ')' => {
                     let token: Token = Token::new(
-                        String::from(hacktypes::PARENTHESE_CLOSE),
+                        String::from(PARENTHESE_CLOSE),
                         String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
@@ -314,7 +311,7 @@ impl Lexer {
                         );
                     } else {
                         let token: Token = Token::new(
-                            String::from(hacktypes::AND),
+                            String::from(AND),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -335,7 +332,7 @@ impl Lexer {
                         );
                     } else {
                         let token: Token = Token::new(
-                            String::from(hacktypes::OR),
+                            String::from(OR),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -367,7 +364,7 @@ impl Lexer {
                         );
                     } else {
                         let token: Token = Token::new(
-                            String::from(hacktypes::EQUAL),
+                            String::from(EQUAL),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -388,7 +385,7 @@ impl Lexer {
                         );
                     } else {
                         let token: Token = Token::new(
-                            String::from(hacktypes::NOT_EQUAL),
+                            String::from(NOT_EQUAL),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -402,7 +399,7 @@ impl Lexer {
                     self.advance();
                     if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
                         let token: Token = Token::new(
-                            String::from(hacktypes::LESS),
+                            String::from(LESS),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -411,7 +408,7 @@ impl Lexer {
                         self.advance();
                     } else {
                         let token: Token = Token::new(
-                            String::from(hacktypes::LESS_OR_EQUAL),
+                            String::from(LESS_OR_EQUAL),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -425,7 +422,7 @@ impl Lexer {
                     self.advance();
                     if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
                         let token: Token = Token::new(
-                            String::from(hacktypes::GREATER),
+                            String::from(GREATER),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -434,7 +431,7 @@ impl Lexer {
                         self.advance();
                     } else {
                         let token: Token = Token::new(
-                            String::from(hacktypes::GREATER_OR_EQUAL),
+                            String::from(GREATER_OR_EQUAL),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
@@ -491,14 +488,14 @@ impl Lexer {
                     .pos_end
                     .clone();
                 tokens.as_mut().unwrap().push(Token::new(
-                    String::from(hacktypes::EOF),
+                    String::from(EOF),
                     String::new(),
                     pos_start.clone(),
                     pos_end.clone(),
                 ));
             } else {
                 tokens.as_mut().unwrap().push(Token::new(
-                    String::from(hacktypes::EOF),
+                    String::from(EOF),
                     String::new(),
                     self.curr_pos.clone(),
                     self.curr_pos.clone(),

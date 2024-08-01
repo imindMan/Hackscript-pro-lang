@@ -6,10 +6,11 @@ pub mod null;
 pub mod number;
 pub mod string;
 pub mod value_trait;
-use crate::value_trait::ValueTrait;
-use error_handling::Error;
-use position::Position;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::position::Position;
 use std::fmt::Display;
+use value_trait::ValueTrait;
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -121,53 +122,53 @@ impl ValueTrait for Value {
     // Note that every single data type value (as soon they can support plus method) can
     // universally use this function to perform the plus operation
     fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::PLUS)
+        self.operation(value, PLUS)
     }
     // INFO: This function performs minus operation
     // Note that every single data type value (as soon they can support minus method) can
     // universally use this function to perform the minus operation
 
     fn subtract_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::MINUS)
+        self.operation(value, MINUS)
     }
     // INFO: This function performs multiply operation
     // Note that every single data type value (as soon they can support multiply method) can
     // universally use this function to perform the multiply operation
 
     fn multiply_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::MULTIPLY)
+        self.operation(value, MULTIPLY)
     }
     // INFO: This function performs divide operation
     // Note that every single data type value (as soon they can support divide method) can
     // universally use this function to perform the divide operation
 
     fn divide_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::DIVIDE)
+        self.operation(value, DIVIDE)
     }
 
     fn greater(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::GREATER)
+        self.operation(value, GREATER)
     }
     fn greater_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::GREATER_OR_EQUAL)
+        self.operation(value, GREATER_OR_EQUAL)
     }
     fn less(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::LESS)
+        self.operation(value, LESS)
     }
     fn less_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::LESS_OR_EQUAL)
+        self.operation(value, LESS_OR_EQUAL)
     }
     fn equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::EQUAL)
+        self.operation(value, EQUAL)
     }
     fn not_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::NOT_EQUAL)
+        self.operation(value, NOT_EQUAL)
     }
     fn and(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::AND)
+        self.operation(value, AND)
     }
     fn or(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.operation(value, hacktypes::OR)
+        self.operation(value, OR)
     }
 }
 
@@ -203,20 +204,20 @@ impl Value {
         instruction: &str,
     ) -> (Option<Value>, Option<Error>) {
         match instruction {
-            hacktypes::PLUS => value_origin.add_to(value_other.clone()),
-            hacktypes::MINUS => value_origin.subtract_to(value_other.clone()),
-            hacktypes::MULTIPLY => value_origin.multiply_by(value_other.clone()),
-            hacktypes::DIVIDE => value_origin.divide_by(value_other.clone()),
+            PLUS => value_origin.add_to(value_other.clone()),
+            MINUS => value_origin.subtract_to(value_other.clone()),
+            MULTIPLY => value_origin.multiply_by(value_other.clone()),
+            DIVIDE => value_origin.divide_by(value_other.clone()),
 
-            hacktypes::GREATER => value_origin.greater(value_other.clone()),
-            hacktypes::GREATER_OR_EQUAL => value_origin.greater_or_equal(value_other.clone()),
+            GREATER => value_origin.greater(value_other.clone()),
+            GREATER_OR_EQUAL => value_origin.greater_or_equal(value_other.clone()),
 
-            hacktypes::LESS => value_origin.less(value_other.clone()),
-            hacktypes::LESS_OR_EQUAL => value_origin.less_or_equal(value_other.clone()),
-            hacktypes::EQUAL => value_origin.equal(value_other.clone()),
-            hacktypes::NOT_EQUAL => value_origin.not_equal(value_other.clone()),
-            hacktypes::AND => value_origin.and(value_other.clone()),
-            hacktypes::OR => value_origin.or(value_other.clone()),
+            LESS => value_origin.less(value_other.clone()),
+            LESS_OR_EQUAL => value_origin.less_or_equal(value_other.clone()),
+            EQUAL => value_origin.equal(value_other.clone()),
+            NOT_EQUAL => value_origin.not_equal(value_other.clone()),
+            AND => value_origin.and(value_other.clone()),
+            OR => value_origin.or(value_other.clone()),
             _ => {
                 return self.generate_error(
                     "TypeError".to_string(),

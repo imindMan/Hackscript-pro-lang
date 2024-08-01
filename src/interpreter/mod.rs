@@ -1,12 +1,13 @@
 // INFO: First start of an interpreter, the main part of the whole project
 // It just basically scans (or visits) all the AST nodes and then return the result
 
-use ast::AST;
-use error_handling::Error;
-use lexer::Token;
-use position::Position;
-use value::value_trait::ValueTrait;
-use value::Value;
+use crate::ast::AST;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::lexer::Token;
+use crate::position::Position;
+use crate::value::value_trait::ValueTrait;
+use crate::value::Value;
 
 pub struct Interpreter {
     ast: AST,
@@ -115,7 +116,7 @@ impl Interpreter {
             Value::Number(number) => {
                 let mut final_value: String = number.value.clone();
                 // check if the number should be in an opposite sign or not
-                if sign.as_str() == hacktypes::MINUS {
+                if sign.as_str() == MINUS {
                     match number.identifier.as_str() {
                         "integer" => {
                             let mut number_value: i32 = number.value.parse().unwrap();
@@ -171,18 +172,18 @@ impl Interpreter {
         };
 
         let (res, err) = match real_operator.as_str() {
-            hacktypes::PLUS => value1.unwrap().add_to(value2.unwrap()),
-            hacktypes::MINUS => value1.unwrap().subtract_to(value2.unwrap()),
-            hacktypes::MULTIPLY => value1.unwrap().multiply_by(value2.unwrap()),
-            hacktypes::DIVIDE => value1.unwrap().divide_by(value2.unwrap()),
-            hacktypes::GREATER => value1.unwrap().greater(value2.unwrap()),
-            hacktypes::GREATER_OR_EQUAL => value1.unwrap().greater_or_equal(value2.unwrap()),
-            hacktypes::LESS => value1.unwrap().less(value2.unwrap()),
-            hacktypes::LESS_OR_EQUAL => value1.unwrap().less_or_equal(value2.unwrap()),
-            hacktypes::EQUAL => value1.unwrap().equal(value2.unwrap()),
-            hacktypes::NOT_EQUAL => value1.unwrap().not_equal(value2.unwrap()),
-            hacktypes::AND => value1.unwrap().and(value2.unwrap()),
-            hacktypes::OR => value1.unwrap().or(value2.unwrap()),
+            PLUS => value1.unwrap().add_to(value2.unwrap()),
+            MINUS => value1.unwrap().subtract_to(value2.unwrap()),
+            MULTIPLY => value1.unwrap().multiply_by(value2.unwrap()),
+            DIVIDE => value1.unwrap().divide_by(value2.unwrap()),
+            GREATER => value1.unwrap().greater(value2.unwrap()),
+            GREATER_OR_EQUAL => value1.unwrap().greater_or_equal(value2.unwrap()),
+            LESS => value1.unwrap().less(value2.unwrap()),
+            LESS_OR_EQUAL => value1.unwrap().less_or_equal(value2.unwrap()),
+            EQUAL => value1.unwrap().equal(value2.unwrap()),
+            NOT_EQUAL => value1.unwrap().not_equal(value2.unwrap()),
+            AND => value1.unwrap().and(value2.unwrap()),
+            OR => value1.unwrap().or(value2.unwrap()),
             &_ => panic!("No existing operator, failed unexpected"),
         };
 
@@ -196,8 +197,8 @@ impl Interpreter {
     ) -> (Option<Value>, Option<Error>) {
         let bool: Option<Value> = Some(Value::new_boolean(
             match value.as_str() {
-                hacktypes::TRUE => true,
-                hacktypes::FALSE => false,
+                TRUE => true,
+                FALSE => false,
                 _ => panic!("Pass in TRUE or FALSE value, dev"),
             },
             pos_start,

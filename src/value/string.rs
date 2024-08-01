@@ -1,8 +1,9 @@
 // INFO: HackString initialization
-use crate::Value;
-use crate::ValueTrait;
-use error_handling::Error;
-use position::Position;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::position::Position;
+use crate::value::Value;
+use crate::value::ValueTrait;
 use std::fmt::Display;
 
 #[derive(Debug, Clone)]
@@ -68,10 +69,10 @@ impl ValueTrait for HackString {
         }
     }
     fn equal(&self, string: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(string, hacktypes::EQUAL)
+        self.comparison_operation(string, EQUAL)
     }
     fn not_equal(&self, string: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(string, hacktypes::NOT_EQUAL)
+        self.comparison_operation(string, NOT_EQUAL)
     }
 }
 
@@ -92,8 +93,8 @@ impl HackString {
     ) -> (Option<Value>, Option<Error>) {
         let Value::String(string_value) = string.clone() else {return self.type_generate_error(string)};
         let check: bool = match instruction {
-            hacktypes::EQUAL => self.value == string_value.value,
-            hacktypes::NOT_EQUAL => self.value != string_value.value,
+            EQUAL => self.value == string_value.value,
+            NOT_EQUAL => self.value != string_value.value,
             _ => {
                 return self.generate_error(
                     "TypeError".to_string(),

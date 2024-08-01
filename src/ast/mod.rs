@@ -1,8 +1,8 @@
 // INFO: This is the file for the AST
 // NOTE: To understand what are the roles of those nodes in the AST, head over to src/parser/lib.rs
 //
-use lexer::Token;
-use position::Position;
+use crate::lexer::Token;
+use crate::position::Position;
 
 #[derive(Debug, Clone)]
 pub enum AST {

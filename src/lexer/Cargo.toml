@@ -1,9 +1,0 @@
-[package]
-name = "lexer"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-error_handling = {path = "../error_handling" }
-position = { path = "../position"}
-hacktypes = {path = "../hacktypes/"}

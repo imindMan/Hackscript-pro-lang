@@ -1,7 +1,8 @@
-use crate::value_trait::ValueTrait;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::position::Position;
+use crate::value::ValueTrait;
 use crate::Value;
-use error_handling::Error;
-use position::Position;
 
 #[derive(Debug, Clone)]
 pub struct Null {
@@ -16,10 +17,10 @@ impl ValueTrait for Null {
     }
 
     fn equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(value, hacktypes::EQUAL)
+        self.comparison_operation(value, EQUAL)
     }
     fn not_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(value, hacktypes::NOT_EQUAL)
+        self.comparison_operation(value, NOT_EQUAL)
     }
 }
 
@@ -40,8 +41,8 @@ impl Null {
         let value_origin: &str = self.value.as_str();
         let value_other: &str = bool.value.as_str();
         let check: bool = match instruction {
-            hacktypes::EQUAL => value_origin == value_other,
-            hacktypes::NOT_EQUAL => value_origin != value_other,
+            EQUAL => value_origin == value_other,
+            NOT_EQUAL => value_origin != value_other,
             _ => {
                 return self.generate_error(
                     "OperatorError".to_string(),

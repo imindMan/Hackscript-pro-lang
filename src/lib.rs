@@ -9,6 +9,15 @@
 // INFO: Main function
 // For now, this function is going to take user's inputs then print the result out,
 // just like Python.
+
+pub mod ast;
+pub mod error_handling;
+pub mod hacktypes;
+pub mod interpreter;
+pub mod lexer;
+pub mod parser;
+pub mod position;
+pub mod value;
 use error_handling::Error;
 use interpreter::Interpreter;
 use lexer::Lexer;

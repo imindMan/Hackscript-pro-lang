@@ -4,8 +4,8 @@
  * */
 
 pub mod error_typing;
+use crate::position::*;
 use inline_colorization::*;
-use position::Position;
 use std::fmt::Display;
 
 #[derive(Debug)]
@@ -111,7 +111,7 @@ impl Error {
                 error_message.push_str(format!("{}", color_red).as_str()); // adding some color code
                                                                            // now this is the main part of the highlighting
                 while check_pos.col < buffer_col {
-                    if !position::valid_pos(check_pos.clone(), pos_start.clone(), pos_end.clone()) {
+                    if !valid_pos(check_pos.clone(), pos_start.clone(), pos_end.clone()) {
                         error_message.push(' ');
                         check_pos.col += 1;
                     } else {

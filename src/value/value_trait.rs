@@ -1,10 +1,10 @@
-use crate::boolean::Boolean;
-use crate::null::Null;
-use crate::number::Number;
-use crate::string::HackString;
+use crate::error_handling::Error;
+use crate::position::Position;
+use crate::value::boolean::Boolean;
+use crate::value::null::Null;
+use crate::value::number::Number;
+use crate::value::string::HackString;
 use crate::Value;
-use error_handling::Error;
-use position::Position;
 
 pub trait ValueTrait {
     fn generate_error(

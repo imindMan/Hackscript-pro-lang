@@ -6,11 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-lexer = {path = "src/lexer"}
-parser = {path = "src/parser"}
-interpreter = {path = "./src/interpreter"}
-value = {path = "./src/value"}
-error_handling = {path = "./src/error_handling/"}
+inline_colorization = "0.1.6"
 
 [[bin]]
 name = "lib"

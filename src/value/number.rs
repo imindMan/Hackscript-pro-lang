@@ -1,9 +1,9 @@
 // INFO: Number initialization
-use crate::value_trait::ValueTrait;
-use crate::Value;
-use error_handling::Error;
-use hacktypes;
-use position::Position;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::position::Position;
+use crate::value::Value;
+use crate::value::ValueTrait;
 use std::fmt::Display;
 
 #[derive(Debug, Clone)]
@@ -26,19 +26,19 @@ impl ValueTrait for Number {
     // NOTE: This is the plus operation of the Number
     // Cannot use this for direct plus operation, we have to go through the Value enum
     fn add_to(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.arithmetic_function(number, hacktypes::PLUS)
+        self.arithmetic_function(number, PLUS)
     }
     // NOTE: This is the minus operation of the Number
     // Cannot use this for direct minus operation, we have to go through the Value enum
 
     fn subtract_to(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.arithmetic_function(number, hacktypes::MINUS)
+        self.arithmetic_function(number, MINUS)
     }
     // NOTE: This is the multiply operation of the Number
     // Cannot use this for direct multiply operation, we have to go through the Value enum
 
     fn multiply_by(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.arithmetic_function(number, hacktypes::MULTIPLY)
+        self.arithmetic_function(number, MULTIPLY)
     }
     // NOTE: This is the divide operation of the Number
     // Cannot use this for direct divide operation, we have to go through the Value enum
@@ -58,28 +58,28 @@ impl ValueTrait for Number {
                 );
             };
 
-            self.arithmetic_function(number, hacktypes::DIVIDE)
+            self.arithmetic_function(number, DIVIDE)
         }
     }
     // NOTE: This is the greater operation of the Number
     fn greater(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::GREATER)
+        self.comparison_operation(number, GREATER)
     }
     // NOTE: This is the greater or equal operation of the Number
     fn greater_or_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::GREATER_OR_EQUAL)
+        self.comparison_operation(number, GREATER_OR_EQUAL)
     } // NOTE: This is the less operation of the Number
     fn less(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::LESS)
+        self.comparison_operation(number, LESS)
     } // NOTE: This is the less or equal operation of the Number
     fn less_or_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::LESS_OR_EQUAL)
+        self.comparison_operation(number, LESS_OR_EQUAL)
     } // NOTE: This is the equal operation of the Number
     fn equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::EQUAL)
+        self.comparison_operation(number, EQUAL)
     } // NOTE: This is the not equal operation of the Number
     fn not_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(number, hacktypes::NOT_EQUAL)
+        self.comparison_operation(number, NOT_EQUAL)
     }
 }
 impl Number {
@@ -124,15 +124,15 @@ impl Number {
         // of the factors, but rather the result
         let Value::Number(value_other) = number.clone() else { return self.type_generate_error(number)};
         if (self.identifier.as_str() == "float" || value_other.identifier.as_str() == "float")
-            && operation != hacktypes::DIVIDE
+            && operation != DIVIDE
         {
             let number1: f32 = self.value.parse().unwrap();
             let number2: f32 = value_other.value.parse().unwrap();
 
             let final_res: f32 = match operation {
-                hacktypes::PLUS => number1 + number2,
-                hacktypes::MINUS => number1 - number2,
-                hacktypes::MULTIPLY => number1 * number2,
+                PLUS => number1 + number2,
+                MINUS => number1 - number2,
+                MULTIPLY => number1 * number2,
                 &_ => panic!("Invalid instruction"),
             };
 
@@ -145,15 +145,15 @@ impl Number {
             (final_num, err)
         } else if self.identifier.as_str() == "integer"
             && value_other.identifier.as_str() == "integer"
-            && operation != hacktypes::DIVIDE
+            && operation != DIVIDE
         {
             let number1: i32 = self.value.parse().unwrap();
             let number2: i32 = value_other.value.parse().unwrap();
 
             let final_res: i32 = match operation {
-                hacktypes::PLUS => number1 + number2,
-                hacktypes::MINUS => number1 - number2,
-                hacktypes::MULTIPLY => number1 * number2,
+                PLUS => number1 + number2,
+                MINUS => number1 - number2,
+                MULTIPLY => number1 * number2,
                 &_ => panic!("Invalid instruction"),
             };
 
@@ -173,10 +173,10 @@ impl Number {
             let number2: f32 = value_other.value.parse().unwrap();
 
             let final_res: f32 = match operation {
-                hacktypes::PLUS => number1 + number2,
-                hacktypes::MINUS => number1 - number2,
-                hacktypes::MULTIPLY => number1 * number2,
-                hacktypes::DIVIDE => number1 / number2,
+                PLUS => number1 + number2,
+                MINUS => number1 - number2,
+                MULTIPLY => number1 * number2,
+                DIVIDE => number1 / number2,
                 &_ => panic!("No existing instruction"),
             };
 
@@ -224,12 +224,12 @@ impl Number {
             let value_other: f32 = value_other.value.parse().unwrap();
 
             let check: bool = match instruction {
-                hacktypes::GREATER => value_origin > value_other,
-                hacktypes::GREATER_OR_EQUAL => value_origin >= value_other,
-                hacktypes::LESS => value_origin < value_other,
-                hacktypes::LESS_OR_EQUAL => value_origin <= value_other,
-                hacktypes::EQUAL => value_origin == value_other,
-                hacktypes::NOT_EQUAL => value_origin != value_other,
+                GREATER => value_origin > value_other,
+                GREATER_OR_EQUAL => value_origin >= value_other,
+                LESS => value_origin < value_other,
+                LESS_OR_EQUAL => value_origin <= value_other,
+                EQUAL => value_origin == value_other,
+                NOT_EQUAL => value_origin != value_other,
                 _ => {
                     return self.generate_error(
                         "TypeError".to_string(),
@@ -252,12 +252,12 @@ impl Number {
             let value_other: i32 = value_other.value.parse().unwrap();
 
             let check: bool = match instruction {
-                hacktypes::GREATER => value_origin > value_other,
-                hacktypes::GREATER_OR_EQUAL => value_origin >= value_other,
-                hacktypes::LESS => value_origin < value_other,
-                hacktypes::LESS_OR_EQUAL => value_origin <= value_other,
-                hacktypes::EQUAL => value_origin == value_other,
-                hacktypes::NOT_EQUAL => value_origin != value_other,
+                GREATER => value_origin > value_other,
+                GREATER_OR_EQUAL => value_origin >= value_other,
+                LESS => value_origin < value_other,
+                LESS_OR_EQUAL => value_origin <= value_other,
+                EQUAL => value_origin == value_other,
+                NOT_EQUAL => value_origin != value_other,
                 _ => {
                     return self.generate_error(
                         "TypeError".to_string(),

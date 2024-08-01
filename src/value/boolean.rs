@@ -1,9 +1,10 @@
 // INFO: First start of the boolean
 // and contain the Null attribute, too
-use crate::Value;
-use crate::ValueTrait;
-use error_handling::Error;
-use position::Position;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::position::Position;
+use crate::value::Value;
+use crate::value::ValueTrait;
 use std::fmt::Display;
 // In Hackscript, to make it simple, I'll refer Null as boolean, too
 
@@ -33,16 +34,16 @@ impl ValueTrait for Boolean {
         self.pos_start.clone()
     }
     fn equal(&self, bool: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::EQUAL)
+        self.comparison_operation(bool, EQUAL)
     }
     fn not_equal(&self, bool: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::NOT_EQUAL)
+        self.comparison_operation(bool, NOT_EQUAL)
     }
     fn and(&self, bool: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::AND)
+        self.comparison_operation(bool, AND)
     }
     fn or(&self, bool: Value) -> (Option<Value>, Option<Error>) {
-        self.comparison_operation(bool, hacktypes::OR)
+        self.comparison_operation(bool, OR)
     }
 }
 
@@ -61,10 +62,10 @@ impl Boolean {
     ) -> (Option<Value>, Option<Error>) {
         let Value::Boolean(bool) = bool_value.clone() else {return self.type_generate_error(bool_value)};
         let check: bool = match instruction {
-            hacktypes::EQUAL => self.boolean == bool.boolean,
-            hacktypes::NOT_EQUAL => self.boolean != bool.boolean,
-            hacktypes::AND => self.boolean && bool.boolean,
-            hacktypes::OR => self.boolean || bool.boolean,
+            EQUAL => self.boolean == bool.boolean,
+            NOT_EQUAL => self.boolean != bool.boolean,
+            AND => self.boolean && bool.boolean,
+            OR => self.boolean || bool.boolean,
             _ => {
                 return self.generate_error(
                     "OperatorError".to_string(),

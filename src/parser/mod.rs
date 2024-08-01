@@ -1,7 +1,8 @@
-use ast::AST;
-use error_handling::Error;
-use lexer::Token;
-use position::Position;
+use crate::ast::AST;
+use crate::error_handling::Error;
+use crate::hacktypes::*;
+use crate::lexer::Token;
+use crate::position::Position;
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -40,7 +41,7 @@ impl Parser {
     // INFO: After initializing the parser, this function will parse the tokens and return the AST
     // for the interpreter
     pub fn parse(&mut self) -> (Option<AST>, Option<Error>) {
-        if self.curr_tok._type == hacktypes::EOF {
+        if self.curr_tok._type == EOF {
             let expr: Option<AST> = Some(AST::Nil);
             let err: Option<Error> = None;
             return (expr, err);
@@ -48,7 +49,7 @@ impl Parser {
 
         // for now the FormingCalc AST (see the src/ast for more information) is the top node
         let (expr, err) = self.expr();
-        if err.is_none() && self.curr_tok._type != hacktypes::EOF {
+        if err.is_none() && self.curr_tok._type != EOF {
             return self.generate_error(
                 "Expect".to_string(),
                 "an operator like '+', '-', '*' or '/'".to_string(),
@@ -155,7 +156,7 @@ impl Parser {
         let (factor, err) = self.expr();
         if err.is_some() {
             (factor, err)
-        } else if self.curr_tok._type != hacktypes::PARENTHESE_CLOSE {
+        } else if self.curr_tok._type != PARENTHESE_CLOSE {
             self.generate_error(
                 "Expect".to_string(),
                 "the expression should be closed by a ')' (close parenthese) -> endless expression"
@@ -186,17 +187,17 @@ impl Parser {
     // ------------------------------------------------------
 
     fn factor(&mut self) -> (Option<AST>, Option<Error>) {
-        if self.curr_tok._type == hacktypes::NUMBER {
+        if self.curr_tok._type == NUMBER {
             return self.number_making();
-        } else if self.curr_tok._type == hacktypes::STRING {
+        } else if self.curr_tok._type == STRING {
             return self.string_making();
-        } else if [hacktypes::PLUS, hacktypes::MINUS].contains(&self.curr_tok._type.as_str()) {
+        } else if [PLUS, MINUS].contains(&self.curr_tok._type.as_str()) {
             return self.unary_factor_making();
-        } else if self.curr_tok._type == hacktypes::PARENTHESE_OPEN {
+        } else if self.curr_tok._type == PARENTHESE_OPEN {
             return self.in_parentheses_expr();
-        } else if [hacktypes::TRUE, hacktypes::FALSE].contains(&self.curr_tok._type.as_str()) {
+        } else if [TRUE, FALSE].contains(&self.curr_tok._type.as_str()) {
             return self.make_booleans();
-        } else if self.curr_tok._type.as_str() == hacktypes::NULL {
+        } else if self.curr_tok._type.as_str() == NULL {
             return self.make_null();
         } else {
             return self.generate_error(
@@ -249,26 +250,26 @@ impl Parser {
     }
 
     fn term(&mut self) -> (Option<AST>, Option<Error>) {
-        self.bin_op(Parser::factor, vec![hacktypes::MULTIPLY, hacktypes::DIVIDE])
+        self.bin_op(Parser::factor, vec![MULTIPLY, DIVIDE])
     }
 
     fn arithmetic_expr(&mut self) -> (Option<AST>, Option<Error>) {
-        self.bin_op(Parser::term, vec![hacktypes::PLUS, hacktypes::MINUS])
+        self.bin_op(Parser::term, vec![PLUS, MINUS])
     }
     fn comp_expr(&mut self) -> (Option<AST>, Option<Error>) {
         self.bin_op(
             Parser::arithmetic_expr,
             vec![
-                hacktypes::GREATER,
-                hacktypes::LESS,
-                hacktypes::GREATER_OR_EQUAL,
-                hacktypes::LESS_OR_EQUAL,
-                hacktypes::EQUAL,
-                hacktypes::NOT_EQUAL,
+                GREATER,
+                LESS,
+                GREATER_OR_EQUAL,
+                LESS_OR_EQUAL,
+                EQUAL,
+                NOT_EQUAL,
             ],
         )
     }
     fn expr(&mut self) -> (Option<AST>, Option<Error>) {
-        self.bin_op(Parser::comp_expr, vec![hacktypes::AND, hacktypes::OR])
+        self.bin_op(Parser::comp_expr, vec![AND, OR])
     }
 }
