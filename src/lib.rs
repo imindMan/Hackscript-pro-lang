@@ -6,10 +6,6 @@
 // https://github.com/imindMan/Hackscript-pro-lang
 // Rebuild in Rust
 
-// INFO: Main function
-// For now, this function is going to take user's inputs then print the result out,
-// just like Python.
-
 pub mod ast_implementation;
 pub mod error_handling;
 pub mod hacktypes;
@@ -22,6 +18,10 @@ use error_handling::Error;
 use interpreter::Interpreter;
 use std::io::{self, Write};
 use value::Value;
+
+// INFO: Main function
+// For now, this function is going to take user's inputs then print the result out,
+// just like Python.
 
 fn main() -> Result<(), io::Error> {
     loop {
