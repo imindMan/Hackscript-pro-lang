@@ -16,10 +16,10 @@ impl ValueTrait for Null {
         self.pos_start.clone()
     }
 
-    fn equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn equal(&self, value: Value) -> Result<Value, Error> {
         self.comparison_operation(value, EQUAL)
     }
-    fn not_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn not_equal(&self, value: Value) -> Result<Value, Error> {
         self.comparison_operation(value, NOT_EQUAL)
     }
 }
@@ -32,11 +32,7 @@ impl Null {
             pos_end,
         }
     }
-    fn comparison_operation(
-        &self,
-        other_value: Value,
-        instruction: &str,
-    ) -> (Option<Value>, Option<Error>) {
+    fn comparison_operation(&self, other_value: Value, instruction: &str) -> Result<Value, Error> {
         let Value::Null(bool) = other_value.clone() else {return self.type_generate_error(other_value)};
         let value_origin: &str = self.value.as_str();
         let value_other: &str = bool.value.as_str();
@@ -52,12 +48,10 @@ impl Null {
                 )
             }
         };
-        let final_boolean: Option<Value> = Some(Value::new_boolean(
+        Ok(Value::new_boolean(
             check,
             self.pos_start.clone(),
             bool.pos_end.clone(),
-        ));
-        let err: Option<Error> = None;
-        (final_boolean, err)
+        ))
     }
 }

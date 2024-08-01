@@ -10,16 +10,16 @@
 // For now, this function is going to take user's inputs then print the result out,
 // just like Python.
 
+pub mod ast_implementation;
 pub mod error_handling;
 pub mod hacktypes;
 pub mod interpreter;
-pub mod parser;
 pub mod position;
 pub mod value;
+use ast_implementation::Lexer;
+use ast_implementation::Parser;
 use error_handling::Error;
 use interpreter::Interpreter;
-use parser::Lexer;
-use parser::Parser;
 use std::io::{self, Write};
 use value::Value;
 
@@ -46,25 +46,13 @@ fn main() -> Result<(), io::Error> {
 pub fn run(command: String) -> Result<Value, Error> {
     // Lexing part
     let mut lexer = Lexer::new(String::from("stdin"), command);
-    let (tokens, error_lexer) = lexer.make_tokens();
-    if let Some(error_lexer_result) = error_lexer {
-        Err(error_lexer_result)
-    } else {
-        // Parsing part
-        let mut parser = Parser::new(tokens.unwrap());
-        let (ast, error_parser) = parser.parse();
-        if let Some(error_parser_result) = error_parser {
-            Err(error_parser_result)
-        } else {
-            // Interpreting part
-            let interpreter = Interpreter::new(ast.unwrap());
-            let (value, error_interpreter) = interpreter.interpret();
+    let tokens = lexer.make_tokens()?;
+    // Parsing part
+    let mut parser = Parser::new(tokens);
+    let ast = parser.parse()?;
+    // Interpreting part
+    let interpreter = Interpreter::new(ast);
+    let value = interpreter.interpret()?;
 
-            if let Some(error_interpreter_result) = error_interpreter {
-                Err(error_interpreter_result)
-            } else {
-                Ok(value.unwrap())
-            }
-        }
-    }
+    Ok(value)
 }

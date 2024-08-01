@@ -59,7 +59,7 @@ impl ValueTrait for Value {
             _ => panic!("Invalid operation"),
         }
     }
-    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn type_generate_error(&self, value: Value) -> Result<Value, Error> {
         let pos_start: Position = match self {
             Value::Number(number::Number {
                 value: _,
@@ -121,53 +121,53 @@ impl ValueTrait for Value {
     // INFO: This function performs plus operation
     // Note that every single data type value (as soon they can support plus method) can
     // universally use this function to perform the plus operation
-    fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn add_to(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, PLUS)
     }
     // INFO: This function performs minus operation
     // Note that every single data type value (as soon they can support minus method) can
     // universally use this function to perform the minus operation
 
-    fn subtract_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn subtract_to(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, MINUS)
     }
     // INFO: This function performs multiply operation
     // Note that every single data type value (as soon they can support multiply method) can
     // universally use this function to perform the multiply operation
 
-    fn multiply_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn multiply_by(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, MULTIPLY)
     }
     // INFO: This function performs divide operation
     // Note that every single data type value (as soon they can support divide method) can
     // universally use this function to perform the divide operation
 
-    fn divide_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn divide_by(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, DIVIDE)
     }
 
-    fn greater(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn greater(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, GREATER)
     }
-    fn greater_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn greater_or_equal(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, GREATER_OR_EQUAL)
     }
-    fn less(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn less(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, LESS)
     }
-    fn less_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn less_or_equal(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, LESS_OR_EQUAL)
     }
-    fn equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn equal(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, EQUAL)
     }
-    fn not_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn not_equal(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, NOT_EQUAL)
     }
-    fn and(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn and(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, AND)
     }
-    fn or(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn or(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, OR)
     }
 }
@@ -202,7 +202,7 @@ impl Value {
         value_origin: T,
         value_other: Value,
         instruction: &str,
-    ) -> (Option<Value>, Option<Error>) {
+    ) -> Result<Value, Error> {
         match instruction {
             PLUS => value_origin.add_to(value_other.clone()),
             MINUS => value_origin.subtract_to(value_other.clone()),
@@ -228,7 +228,7 @@ impl Value {
             }
         }
     }
-    fn operation(&self, value: Value, instruction: &str) -> (Option<Value>, Option<Error>) {
+    fn operation(&self, value: Value, instruction: &str) -> Result<Value, Error> {
         match self {
             Value::Number(value_origin) => {
                 self.handling_operation(value_origin.clone(), value, instruction)

@@ -20,29 +20,19 @@ impl Display for Boolean {
     }
 }
 impl ValueTrait for Boolean {
-    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
-        let pos_start: Position = self.get_pos_start();
-        let pos_end: Position = self.get_pos_end(value);
-        self.generate_error(
-            "TypeError".to_string(),
-            "Invalid types for such an operation".to_string(),
-            pos_start,
-            pos_end,
-        )
-    }
     fn get_pos_start(&self) -> Position {
         self.pos_start.clone()
     }
-    fn equal(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+    fn equal(&self, bool: Value) -> Result<Value, Error> {
         self.comparison_operation(bool, EQUAL)
     }
-    fn not_equal(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+    fn not_equal(&self, bool: Value) -> Result<Value, Error> {
         self.comparison_operation(bool, NOT_EQUAL)
     }
-    fn and(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+    fn and(&self, bool: Value) -> Result<Value, Error> {
         self.comparison_operation(bool, AND)
     }
-    fn or(&self, bool: Value) -> (Option<Value>, Option<Error>) {
+    fn or(&self, bool: Value) -> Result<Value, Error> {
         self.comparison_operation(bool, OR)
     }
 }
@@ -55,11 +45,7 @@ impl Boolean {
             pos_end,
         }
     }
-    fn comparison_operation(
-        &self,
-        bool_value: Value,
-        instruction: &str,
-    ) -> (Option<Value>, Option<Error>) {
+    fn comparison_operation(&self, bool_value: Value, instruction: &str) -> Result<Value, Error> {
         let Value::Boolean(bool) = bool_value.clone() else {return self.type_generate_error(bool_value)};
         let check: bool = match instruction {
             EQUAL => self.boolean == bool.boolean,
@@ -76,12 +62,10 @@ impl Boolean {
             }
         };
 
-        let final_boolean: Option<Value> = Some(Value::new_boolean(
+        Ok(Value::new_boolean(
             check,
             self.pos_start.clone(),
             bool.pos_end.clone(),
-        ));
-        let err: Option<Error> = None;
-        (final_boolean, err)
+        ))
     }
 }

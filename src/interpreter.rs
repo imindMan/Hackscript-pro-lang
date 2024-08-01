@@ -1,10 +1,10 @@
 // INFO: First start of an interpreter, the main part of the whole project
 // It just basically scans (or visits) all the AST nodes and then return the result
 
+use crate::ast_implementation::Token;
+use crate::ast_implementation::AST;
 use crate::error_handling::Error;
 use crate::hacktypes::*;
-use crate::parser::Token;
-use crate::parser::AST;
 use crate::position::Position;
 use crate::value::value_trait::ValueTrait;
 use crate::value::Value;
@@ -20,11 +20,11 @@ impl Interpreter {
 
     // INFO: Main idea: the Interpreter will visit every single nodes in the AST and then
     // execute the code based on that nodes
-    pub fn interpret(&self) -> (Option<Value>, Option<Error>) {
+    pub fn interpret(&self) -> Result<Value, Error> {
         self.visit(self.ast.clone())
     }
 
-    fn visit(&self, ast: AST) -> (Option<Value>, Option<Error>) {
+    fn visit(&self, ast: AST) -> Result<Value, Error> {
         match ast {
             AST::FormingCalc {
                 node1,
@@ -59,11 +59,7 @@ impl Interpreter {
                 pos_start,
                 pos_end,
             } => self.visit_null(value, pos_start, pos_end),
-            AST::Nil => {
-                let factor: Option<Value> = Some(Value::new());
-                let err: Option<Error> = None;
-                (factor, err)
-            }
+            AST::Nil => Ok(Value::new()),
         }
     }
 
@@ -72,7 +68,7 @@ impl Interpreter {
         value: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<Value>, Option<Error>) {
+    ) -> Result<Value, Error> {
         // quick initialization for the number value
         let final_value: f32 = value.parse().unwrap();
         let new_identifier: String = if final_value == final_value.floor() {
@@ -80,38 +76,29 @@ impl Interpreter {
         } else {
             String::from("float")
         };
-        let factor: Option<Value> = Some(Value::new_number(
+        Ok(Value::new_number(
             new_identifier,
             final_value.to_string(),
             pos_start,
             pos_end,
-        ));
-        let err: Option<Error> = None;
-
-        (factor, err)
+        ))
     }
     fn visit_string(
         &self,
         value: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<Value>, Option<Error>) {
-        let string: Option<Value> = Some(Value::new_string(value, pos_start, pos_end));
-        let err: Option<Error> = None;
-
-        (string, err)
+    ) -> Result<Value, Error> {
+        Ok(Value::new_string(value, pos_start, pos_end))
     }
     fn visit_unary(
         &self,
         sign: String,
         value: Box<AST>,
         pos_start: Position,
-    ) -> (Option<Value>, Option<Error>) {
-        let (factor, err) = self.visit(*value);
-        if err.is_some() {
-            return (factor, err);
-        }
-        match factor.unwrap() {
+    ) -> Result<Value, Error> {
+        let factor = self.visit(*value)?;
+        match factor {
             Value::Number(number) => {
                 let mut final_value: String = number.value.clone();
                 // check if the number should be in an opposite sign or not
@@ -131,21 +118,14 @@ impl Interpreter {
                     };
                 };
                 // then return that number
-                let final_number: Option<Value> = Some(Value::new_number(
+                Ok(Value::new_number(
                     number.identifier,
                     final_value,
                     pos_start,
                     number.pos_end,
-                ));
-                let err: Option<Error> = None;
-
-                (final_number, err)
+                ))
             }
-            Value::Nil => {
-                let final_val: Option<Value> = Some(Value::new());
-                let err: Option<Error> = None;
-                (final_val, err)
-            }
+            Value::Nil => Ok(Value::new()),
             _ => panic!("Expect passing the parser"),
         }
     }
@@ -155,46 +135,41 @@ impl Interpreter {
         node1: Box<AST>,
         operator: Option<Token>,
         node2: Box<AST>,
-    ) -> (Option<Value>, Option<Error>) {
-        let (value1, err1) = self.visit(*node1);
+    ) -> Result<Value, Error> {
+        let value1 = self.visit(*node1)?;
 
         // if an operator is none, it means that the next node2 must be none, too (according to the
         // parser), that's why we don't need to check next and just return te result we got
-        if err1.is_some() || operator.is_none() {
-            return (value1, err1);
+        if operator.is_none() {
+            return Ok(value1);
         }
 
         let real_operator = operator.unwrap()._type;
-        let (value2, err2) = self.visit(*node2);
-        if err2.is_some() {
-            return (value2, err2);
-        };
+        let value2 = self.visit(*node2)?;
 
-        let (res, err) = match real_operator.as_str() {
-            PLUS => value1.unwrap().add_to(value2.unwrap()),
-            MINUS => value1.unwrap().subtract_to(value2.unwrap()),
-            MULTIPLY => value1.unwrap().multiply_by(value2.unwrap()),
-            DIVIDE => value1.unwrap().divide_by(value2.unwrap()),
-            GREATER => value1.unwrap().greater(value2.unwrap()),
-            GREATER_OR_EQUAL => value1.unwrap().greater_or_equal(value2.unwrap()),
-            LESS => value1.unwrap().less(value2.unwrap()),
-            LESS_OR_EQUAL => value1.unwrap().less_or_equal(value2.unwrap()),
-            EQUAL => value1.unwrap().equal(value2.unwrap()),
-            NOT_EQUAL => value1.unwrap().not_equal(value2.unwrap()),
-            AND => value1.unwrap().and(value2.unwrap()),
-            OR => value1.unwrap().or(value2.unwrap()),
+        Ok(match real_operator.as_str() {
+            PLUS => value1.add_to(value2)?,
+            MINUS => value1.subtract_to(value2)?,
+            MULTIPLY => value1.multiply_by(value2)?,
+            DIVIDE => value1.divide_by(value2)?,
+            GREATER => value1.greater(value2)?,
+            GREATER_OR_EQUAL => value1.greater_or_equal(value2)?,
+            LESS => value1.less(value2)?,
+            LESS_OR_EQUAL => value1.less_or_equal(value2)?,
+            EQUAL => value1.equal(value2)?,
+            NOT_EQUAL => value1.not_equal(value2)?,
+            AND => value1.and(value2)?,
+            OR => value1.or(value2)?,
             &_ => panic!("No existing operator, failed unexpected"),
-        };
-
-        (res, err)
+        })
     }
     fn visit_boolean(
         &self,
         value: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<Value>, Option<Error>) {
-        let bool: Option<Value> = Some(Value::new_boolean(
+    ) -> Result<Value, Error> {
+        Ok(Value::new_boolean(
             match value.as_str() {
                 TRUE => true,
                 FALSE => false,
@@ -202,19 +177,14 @@ impl Interpreter {
             },
             pos_start,
             pos_end,
-        ));
-        let err: Option<Error> = None;
-
-        (bool, err)
+        ))
     }
     fn visit_null(
         &self,
         value: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<Value>, Option<Error>) {
-        let null_val: Option<Value> = Some(Value::new_null(value, pos_start, pos_end));
-        let err: Option<Error> = None;
-        (null_val, err)
+    ) -> Result<Value, Error> {
+        Ok(Value::new_null(value, pos_start, pos_end))
     }
 }

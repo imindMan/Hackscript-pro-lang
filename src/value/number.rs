@@ -25,25 +25,25 @@ impl ValueTrait for Number {
     }
     // NOTE: This is the plus operation of the Number
     // Cannot use this for direct plus operation, we have to go through the Value enum
-    fn add_to(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn add_to(&self, number: Value) -> Result<Value, Error> {
         self.arithmetic_function(number, PLUS)
     }
     // NOTE: This is the minus operation of the Number
     // Cannot use this for direct minus operation, we have to go through the Value enum
 
-    fn subtract_to(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn subtract_to(&self, number: Value) -> Result<Value, Error> {
         self.arithmetic_function(number, MINUS)
     }
     // NOTE: This is the multiply operation of the Number
     // Cannot use this for direct multiply operation, we have to go through the Value enum
 
-    fn multiply_by(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn multiply_by(&self, number: Value) -> Result<Value, Error> {
         self.arithmetic_function(number, MULTIPLY)
     }
     // NOTE: This is the divide operation of the Number
     // Cannot use this for direct divide operation, we have to go through the Value enum
 
-    fn divide_by(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn divide_by(&self, number: Value) -> Result<Value, Error> {
         if !matches!(number, Value::Number(_)) {
             self.type_generate_error(number)
         } else {
@@ -62,23 +62,23 @@ impl ValueTrait for Number {
         }
     }
     // NOTE: This is the greater operation of the Number
-    fn greater(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn greater(&self, number: Value) -> Result<Value, Error> {
         self.comparison_operation(number, GREATER)
     }
     // NOTE: This is the greater or equal operation of the Number
-    fn greater_or_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn greater_or_equal(&self, number: Value) -> Result<Value, Error> {
         self.comparison_operation(number, GREATER_OR_EQUAL)
     } // NOTE: This is the less operation of the Number
-    fn less(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn less(&self, number: Value) -> Result<Value, Error> {
         self.comparison_operation(number, LESS)
     } // NOTE: This is the less or equal operation of the Number
-    fn less_or_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn less_or_equal(&self, number: Value) -> Result<Value, Error> {
         self.comparison_operation(number, LESS_OR_EQUAL)
     } // NOTE: This is the equal operation of the Number
-    fn equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn equal(&self, number: Value) -> Result<Value, Error> {
         self.comparison_operation(number, EQUAL)
     } // NOTE: This is the not equal operation of the Number
-    fn not_equal(&self, number: Value) -> (Option<Value>, Option<Error>) {
+    fn not_equal(&self, number: Value) -> Result<Value, Error> {
         self.comparison_operation(number, NOT_EQUAL)
     }
 }
@@ -98,11 +98,7 @@ impl Number {
         }
     }
 
-    fn arithmetic_function(
-        &self,
-        number: Value,
-        operation: &str,
-    ) -> (Option<Value>, Option<Error>) {
+    fn arithmetic_function(&self, number: Value, operation: &str) -> Result<Value, Error> {
         // since Hackscript doesn't differ integer or float, it just treats everything as
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
@@ -136,13 +132,12 @@ impl Number {
                 &_ => panic!("Invalid instruction"),
             };
 
-            let final_num: Option<Value> = Some(Value::new_number(
+            Ok(Value::new_number(
                 "float".to_string(),
                 format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
-            ));
-            (final_num, err)
+            ))
         } else if self.identifier.as_str() == "integer"
             && value_other.identifier.as_str() == "integer"
             && operation != DIVIDE
@@ -157,13 +152,12 @@ impl Number {
                 &_ => panic!("Invalid instruction"),
             };
 
-            let final_num: Option<Value> = Some(Value::new_number(
+            Ok(Value::new_number(
                 "integer".to_string(),
                 format!("{}", final_res),
                 self.pos_start.clone(),
                 self.pos_end.clone(),
-            ));
-            (final_num, err)
+            ))
         }
         // After checking for every single possible cases, we end up in the final case: division.
         // In this case we just need to convert every number to f32 then divide it like normal.
@@ -185,31 +179,23 @@ impl Number {
             if final_res == final_res.floor() {
                 let final_result = final_res.floor() as i32;
 
-                let final_number: Option<Value> = Some(Value::new_number(
+                Ok(Value::new_number(
                     "integer".to_string(),
                     format!("{}", final_result),
                     self.pos_start.clone(),
                     self.pos_end.clone(),
-                ));
-                let err: Option<Error> = None;
-                (final_number, err)
+                ))
             } else {
-                let final_number: Option<Value> = Some(Value::new_number(
+                Ok(Value::new_number(
                     "float".to_string(),
                     format!("{}", final_res),
                     self.pos_start.clone(),
                     self.pos_end.clone(),
-                ));
-                let err: Option<Error> = None;
-                (final_number, err)
+                ))
             }
         }
     }
-    fn comparison_operation(
-        &self,
-        number: Value,
-        instruction: &str,
-    ) -> (Option<Value>, Option<Error>) {
+    fn comparison_operation(&self, number: Value, instruction: &str) -> Result<Value, Error> {
         // Idea: since we have to deal with two cases: the same types or not the same types of
         // number, in this case, int or float, we gonna need two different checks for it.
         // For the same case: convert all the numbers to that data types (int or float), and then
@@ -240,13 +226,11 @@ impl Number {
                 }
             };
 
-            let final_bool: Option<Value> = Some(Value::new_boolean(
+            Ok(Value::new_boolean(
                 check,
                 self.pos_start.clone(),
                 self.get_pos_end(number),
-            ));
-            let err: Option<Error> = None;
-            (final_bool, err)
+            ))
         } else {
             let value_origin: i32 = self.value.parse().unwrap();
             let value_other: i32 = value_other.value.parse().unwrap();
@@ -268,13 +252,11 @@ impl Number {
                 }
             };
 
-            let final_bool: Option<Value> = Some(Value::new_boolean(
+            Ok(Value::new_boolean(
                 check,
                 self.pos_start.clone(),
                 self.get_pos_end(number),
-            ));
-            let err: Option<Error> = None;
-            (final_bool, err)
+            ))
         }
     }
 }

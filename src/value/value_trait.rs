@@ -13,15 +13,13 @@ pub trait ValueTrait {
         extra_string: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<Value>, Option<Error>) {
-        let number: Option<Value> = None;
-        let error: Option<Error> = Some(Error::new(
+    ) -> Result<Value, Error> {
+        Err(Error::new(
             kind,
             extra_string,
             pos_start.clone(),
             pos_end.clone(),
-        ));
-        (number, error)
+        ))
     }
     fn get_pos_end(&self, value: Value) -> Position {
         match value {
@@ -50,7 +48,7 @@ pub trait ValueTrait {
         }
     }
     fn get_pos_start(&self) -> Position;
-    fn type_generate_error(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn type_generate_error(&self, value: Value) -> Result<Value, Error> {
         let pos_start: Position = self.get_pos_start();
         let pos_end: Position = self.get_pos_end(value);
         self.generate_error(
@@ -60,40 +58,40 @@ pub trait ValueTrait {
             pos_end,
         )
     }
-    fn add_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn add_to(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn subtract_to(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn subtract_to(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn multiply_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn multiply_by(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn divide_by(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn divide_by(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn greater(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn greater(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn greater_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn greater_or_equal(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn less(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn less(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn less_or_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn less_or_equal(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn equal(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn not_equal(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn not_equal(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn and(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn and(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
-    fn or(&self, value: Value) -> (Option<Value>, Option<Error>) {
+    fn or(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
 }

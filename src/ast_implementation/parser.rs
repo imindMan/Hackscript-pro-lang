@@ -1,7 +1,7 @@
+use crate::ast_implementation::Token;
+use crate::ast_implementation::AST;
 use crate::error_handling::Error;
 use crate::hacktypes::*;
-use crate::parser::Token;
-use crate::parser::AST;
 use crate::position::Position;
 
 pub struct Parser {
@@ -40,16 +40,14 @@ impl Parser {
 
     // INFO: After initializing the parser, this function will parse the tokens and return the AST
     // for the interpreter
-    pub fn parse(&mut self) -> (Option<AST>, Option<Error>) {
+    pub fn parse(&mut self) -> Result<AST, Error> {
         if self.curr_tok._type == EOF {
-            let expr: Option<AST> = Some(AST::Nil);
-            let err: Option<Error> = None;
-            return (expr, err);
+            return Ok(AST::Nil);
         }
 
         // for now the FormingCalc AST (see the src/ast for more information) is the top node
-        let (expr, err) = self.expr();
-        if err.is_none() && self.curr_tok._type != EOF {
+        let expr = self.expr()?;
+        if self.curr_tok._type != EOF {
             return self.generate_error(
                 "Expect".to_string(),
                 "an operator like '+', '-', '*' or '/'".to_string(),
@@ -57,7 +55,7 @@ impl Parser {
                 self.curr_tok.pos_end.clone(),
             );
         }
-        (expr, err)
+        Ok(expr)
     }
 
     // ------------------------------------------------------------------
@@ -79,10 +77,8 @@ impl Parser {
         extra_string: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<AST>, Option<Error>) {
-        let ast: Option<AST> = Some(AST::Nil);
-        let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
-        (ast, err)
+    ) -> Result<AST, Error> {
+        Err(Error::new(r#type, extra_string, pos_start, pos_end))
     }
 
     // ----------------------------------------------------
@@ -98,65 +94,52 @@ impl Parser {
     // of the code
     // ----------------------------------------------------
     //
-    fn number_making(&mut self) -> (Option<AST>, Option<Error>) {
-        let factor: Option<AST> = Some(AST::new_number(self.curr_tok.clone()));
-        let err: Option<Error> = None;
+    fn number_making(&mut self) -> Result<AST, Error> {
+        let number = AST::new_number(self.curr_tok.clone());
         self.advance();
-        (factor, err)
+        Ok(number)
     }
-    fn string_making(&mut self) -> (Option<AST>, Option<Error>) {
-        let factor: Option<AST> = Some(AST::new_string(self.curr_tok.clone()));
-        let err: Option<Error> = None;
+    fn string_making(&mut self) -> Result<AST, Error> {
+        let string = AST::new_string(self.curr_tok.clone());
         self.advance();
-        (factor, err)
+        Ok(string)
     }
 
-    fn unary_factor_making(&mut self) -> (Option<AST>, Option<Error>) {
+    fn unary_factor_making(&mut self) -> Result<AST, Error> {
         let sign = self.curr_tok.clone();
         let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
-        let (factor, err) = self.factor();
-        if err.is_some() {
-            return (factor, err);
-        }
+        let factor = self.factor()?;
         match factor {
-            Some(AST::Number {
+            AST::Number {
                 identifier: _,
                 value: _,
                 pos_start: _,
                 pos_end: _,
-            })
-            | Some(AST::UnaryNumber {
+            }
+            | AST::UnaryNumber {
                 sign: _,
                 value: _,
                 pos_start: _,
                 pos_end: _,
-            })
-            | Some(AST::FormingCalc {
+            }
+            | AST::FormingCalc {
                 node1: _,
                 operator: _,
                 node2: _,
                 pos_start: _,
                 pos_end: _,
-            }) => {
-                let unary: Option<AST> = Some(AST::new_unaryfactor(
-                    sign,
-                    Box::new(factor.unwrap().clone()),
-                ));
-                return (unary, err);
-            }
+            } => Ok(AST::new_unaryfactor(sign, Box::new(factor.clone()))),
             _ => {
-                return self.generate_error("OperatorError".to_string(), "Bad operator for the operation (because this operator doesn't technically work for the non-algebraic expression)".to_string(), pos_start, self.curr_tok.pos_end.clone());
+                self.generate_error("OperatorError".to_string(), "Bad operator for the operation (because this operator doesn't technically work for the non-algebraic expression)".to_string(), pos_start, self.curr_tok.pos_end.clone())
             }
         }
     }
-    fn in_parentheses_expr(&mut self) -> (Option<AST>, Option<Error>) {
+    fn in_parentheses_expr(&mut self) -> Result<AST, Error> {
         let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
-        let (factor, err) = self.expr();
-        if err.is_some() {
-            (factor, err)
-        } else if self.curr_tok._type != PARENTHESE_CLOSE {
+        let factor = self.expr()?;
+        if self.curr_tok._type != PARENTHESE_CLOSE {
             self.generate_error(
                 "Expect".to_string(),
                 "the expression should be closed by a ')' (close parenthese) -> endless expression"
@@ -166,97 +149,78 @@ impl Parser {
             )
         } else {
             self.advance();
-            (factor, err)
+            Ok(factor)
         }
     }
-    fn make_booleans(&mut self) -> (Option<AST>, Option<Error>) {
-        let factor: Option<AST> = Some(AST::new_boolean(self.curr_tok.clone()));
-        let err: Option<Error> = None;
+    fn make_booleans(&mut self) -> Result<AST, Error> {
+        let bool = AST::new_boolean(self.curr_tok.clone());
         self.advance();
-        (factor, err)
+        Ok(bool)
     }
-    fn make_null(&mut self) -> (Option<AST>, Option<Error>) {
-        let factor: Option<AST> = Some(AST::new_null(self.curr_tok.clone()));
-        let err: Option<Error> = None;
+    fn make_null(&mut self) -> Result<AST, Error> {
+        let null = AST::new_null(self.curr_tok.clone());
         self.advance();
-        (factor, err)
+        Ok(null)
     }
 
     // ------------------------------------------------------
     // INFO: THIS IS THE MAIN PART OF THE PARSER
     // ------------------------------------------------------
 
-    fn factor(&mut self) -> (Option<AST>, Option<Error>) {
+    fn factor(&mut self) -> Result<AST, Error> {
         if self.curr_tok._type == NUMBER {
-            return self.number_making();
+            self.number_making()
         } else if self.curr_tok._type == STRING {
-            return self.string_making();
+            self.string_making()
         } else if [PLUS, MINUS].contains(&self.curr_tok._type.as_str()) {
-            return self.unary_factor_making();
+            self.unary_factor_making()
         } else if self.curr_tok._type == PARENTHESE_OPEN {
-            return self.in_parentheses_expr();
+            self.in_parentheses_expr()
         } else if [TRUE, FALSE].contains(&self.curr_tok._type.as_str()) {
-            return self.make_booleans();
+            self.make_booleans()
         } else if self.curr_tok._type.as_str() == NULL {
-            return self.make_null();
+            self.make_null()
         } else {
-            return self.generate_error(
+            self.generate_error(
                 "Expect".to_string(),
                 "a number type token, a string type token, '+', '-', and '('".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
-            );
+            )
         }
     }
     fn bin_op(
         &mut self,
-        func: fn(&mut Self) -> (Option<AST>, Option<Error>),
+        func: fn(&mut Self) -> Result<AST, Error>,
         list_to_use: Vec<&str>,
-    ) -> (Option<AST>, Option<Error>) {
+    ) -> Result<AST, Error> {
         // Parse the first part
-        let (node1, err1) = func(self);
-        if err1.is_some() {
-            return (node1, err1);
-        }
-        let mut high: Option<AST> = node1;
-
-        // Parse the second part
+        let node1 = func(self)?;
+        let mut high: AST = node1; // Parse the second part
 
         while list_to_use.contains(&self.curr_tok._type.as_str()) {
             let operator: Option<Token> = Some(self.curr_tok.clone());
             self.advance();
-            let (low, err2) = func(self);
-            if err2.is_some() {
-                return (low, err2);
-            } else {
-                high = Some(AST::new_formingcalc(
-                    Box::new(high.unwrap()),
-                    operator,
-                    Box::new(low.unwrap()),
-                ));
-            };
+            let low = func(self)?;
+            high = AST::new_formingcalc(Box::new(high), operator, Box::new(low));
         }
 
         let operator: Option<Token> = None;
-        if high.is_none() {
-            high = Some(AST::new_formingcalc(
-                Box::new(high.unwrap()),
-                operator,
-                Box::new(AST::new()),
-            ));
-        }
-        let err: Option<Error> = None;
-        (high, err)
+        Ok(AST::new_formingcalc(
+            Box::new(high),
+            operator,
+            Box::new(AST::new()),
+        ))
     }
 
-    fn term(&mut self) -> (Option<AST>, Option<Error>) {
+    fn term(&mut self) -> Result<AST, Error> {
         self.bin_op(Parser::factor, vec![MULTIPLY, DIVIDE])
     }
 
-    fn arithmetic_expr(&mut self) -> (Option<AST>, Option<Error>) {
+    fn arithmetic_expr(&mut self) -> Result<AST, Error> {
         self.bin_op(Parser::term, vec![PLUS, MINUS])
     }
-    fn comp_expr(&mut self) -> (Option<AST>, Option<Error>) {
+    fn comp_expr(&mut self) -> Result<AST, Error> {
         self.bin_op(
             Parser::arithmetic_expr,
             vec![
@@ -269,7 +233,7 @@ impl Parser {
             ],
         )
     }
-    fn expr(&mut self) -> (Option<AST>, Option<Error>) {
+    fn expr(&mut self) -> Result<AST, Error> {
         self.bin_op(Parser::comp_expr, vec![AND, OR])
     }
 }

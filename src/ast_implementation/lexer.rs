@@ -36,10 +36,7 @@ impl Lexer {
     // INFO: This is the Initialization method of Lexer
     pub fn new(fname: String, fcontent: String) -> Lexer {
         Lexer {
-            curr_char: match fcontent.clone().as_str().chars().next() {
-                Some(char) => Some(char),
-                _ => None,
-            },
+            curr_char: fcontent.clone().as_str().chars().next(),
             fcontent: fcontent.clone(),
             curr_pos: Position::new(0, 0, 0, fname, fcontent),
         }
@@ -56,10 +53,8 @@ impl Lexer {
         extra_string: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<Vec<Token>>, Option<Error>) {
-        let tok: Option<Vec<Token>> = None;
-        let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
-        (tok, err)
+    ) -> Result<Vec<Token>, Error> {
+        Err(Error::new(r#type, extra_string, pos_start, pos_end))
     }
     // This function is for only Token item, since we are working with two main objects:
     // Vec<Token> and Token (the real reason is to serve for the number_token() to work)
@@ -69,10 +64,8 @@ impl Lexer {
         extra_string: String,
         pos_start: Position,
         pos_end: Position,
-    ) -> (Option<Token>, Option<Error>) {
-        let tok: Option<Token> = None;
-        let err: Option<Error> = Some(Error::new(r#type, extra_string, pos_start, pos_end));
-        (tok, err)
+    ) -> Result<Token, Error> {
+        Err(Error::new(r#type, extra_string, pos_start, pos_end))
     }
     // 'advance' is actually to iterate to the next token
     fn advance(&mut self) {
@@ -99,40 +92,32 @@ impl Lexer {
             self.curr_char = None;
         }
     }
-    fn implement_trailing_characters(&mut self) -> (char, Option<Error>) {
-        let mut err: Option<Error> = None;
+    fn implement_trailing_characters(&mut self) -> Result<char, Error> {
         match self.curr_char.unwrap() {
-            'n' => ('\n', err),
-            't' => ('\t', err),
-            '\\' => ('\\', err),
-            '\"' => ('\"', err),
-            _ => {
-                err = Some(Error::new(
-                    "UnknownTrailingCharacter".to_string(),
-                    format!(
-                        "Doesn't exist this '\\{}' character",
-                        self.curr_char.unwrap()
-                    ),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                ));
-                return (' ', err);
-            }
+            'n' => Ok('\n'),
+            't' => Ok('\t'),
+            '\\' => Ok('\\'),
+            '\"' => Ok('\"'),
+            _ => Err(Error::new(
+                "UnknownTrailingCharacter".to_string(),
+                format!(
+                    "Doesn't exist this '\\{}' character",
+                    self.curr_char.unwrap()
+                ),
+                self.curr_pos.clone(),
+                self.curr_pos.clone(),
+            )),
         }
     }
 
-    fn string_token(&mut self) -> (Option<Token>, Option<Error>) {
+    fn string_token(&mut self) -> Result<Token, Error> {
         let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
         self.advance();
         while self.curr_char.is_some() && self.curr_char.unwrap() != '\"' {
             if self.curr_char.unwrap() == '\\' {
                 self.advance();
-                let (char, err) = self.implement_trailing_characters();
-                if err.is_some() {
-                    let tok: Option<Token> = None;
-                    return (tok, err);
-                }
+                let char = self.implement_trailing_characters()?;
                 value.push(char);
             } else {
                 value.push(self.curr_char.unwrap());
@@ -147,17 +132,16 @@ impl Lexer {
                 self.curr_pos.clone(),
             );
         }
-        let tok: Option<Token> = Some(Token::new(
+        self.advance();
+        Ok(Token::new(
             String::from(STRING),
             value,
             pos_start,
             self.curr_pos.clone(),
-        ));
-        let err: Option<Error> = None;
-        (tok, err)
+        ))
     }
 
-    fn number_token(&mut self) -> (Option<Token>, Option<Error>) {
+    fn number_token(&mut self) -> Result<Token, Error> {
         let pos_start = self.curr_pos.clone();
         let mut value: String = String::new();
 
@@ -193,14 +177,12 @@ impl Lexer {
                 }
             }
         }
-        let tok: Option<Token> = Some(Token::new(
+        Ok(Token::new(
             String::from(NUMBER),
             value,
             pos_start,
             self.curr_pos.clone(),
-        ));
-        let err: Option<Error> = None;
-        (tok, err)
+        ))
     }
 
     fn make_word(&mut self) -> (String, Position) {
@@ -217,9 +199,8 @@ impl Lexer {
     // INFO: make some tokens
     // After initializing the lexer with the proper fname and fcontent, now we can call this function
     // to create tokens from fcontent
-    pub fn make_tokens(&mut self) -> (Option<Vec<Token>>, Option<Error>) {
-        let mut tokens: Option<Vec<Token>> = Some(Vec::new());
-        let mut err: Option<Error> = None;
+    pub fn make_tokens(&mut self) -> Result<Vec<Token>, Error> {
+        let mut tokens: Vec<Token> = Vec::new();
         let keywords: HashMap<&str, &str> = AVAILABLE_KEYWORDS.iter().cloned().collect();
         while self.curr_char.is_some() {
             // basically a match pattern to check the current character in the lexer,
@@ -235,7 +216,7 @@ impl Lexer {
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
-                    tokens.as_mut().unwrap().push(token);
+                    tokens.push(token);
                     self.advance();
                 }
                 '-' => {
@@ -245,7 +226,7 @@ impl Lexer {
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
-                    tokens.as_mut().unwrap().push(token);
+                    tokens.push(token);
                     self.advance();
                 }
                 '*' => {
@@ -255,7 +236,7 @@ impl Lexer {
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
-                    tokens.as_mut().unwrap().push(token);
+                    tokens.push(token);
                     self.advance();
                 }
                 '/' => {
@@ -265,7 +246,7 @@ impl Lexer {
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
-                    tokens.as_mut().unwrap().push(token);
+                    tokens.push(token);
                     self.advance();
                 }
 
@@ -276,7 +257,7 @@ impl Lexer {
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
-                    tokens.as_mut().unwrap().push(token);
+                    tokens.push(token);
                     self.advance();
                 }
                 ')' => {
@@ -286,18 +267,12 @@ impl Lexer {
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),
                     );
-                    tokens.as_mut().unwrap().push(token);
+                    tokens.push(token);
                     self.advance();
                 }
                 '0'..='9' | '.' => {
-                    let (token, error) = self.number_token();
-                    if error.is_some() {
-                        tokens = None;
-                        err = error;
-                        break;
-                    } else {
-                        tokens.as_mut().unwrap().push(token.unwrap());
-                    }
+                    let token = self.number_token()?;
+                    tokens.push(token);
                 }
                 '&' => {
                     let pos_start: Position = self.curr_pos.clone();
@@ -316,7 +291,7 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance()
                     }
                 }
@@ -337,20 +312,13 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance()
                     }
                 }
                 '\"' => {
-                    let (token, error) = self.string_token();
-                    if error.is_some() {
-                        tokens = None;
-                        err = error;
-                        break;
-                    } else {
-                        tokens.as_mut().unwrap().push(token.unwrap());
-                        self.advance();
-                    }
+                    let token = self.string_token()?;
+                    tokens.push(token);
                 }
                 '=' => {
                     let pos_start: Position = self.curr_pos.clone();
@@ -369,7 +337,7 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance();
                     }
                 }
@@ -390,7 +358,7 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance();
                     }
                 }
@@ -404,7 +372,7 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance();
                     } else {
                         let token: Token = Token::new(
@@ -413,7 +381,7 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance();
                     }
                 }
@@ -427,7 +395,7 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance();
                     } else {
                         let token: Token = Token::new(
@@ -436,7 +404,7 @@ impl Lexer {
                             pos_start,
                             self.curr_pos.clone(),
                         );
-                        tokens.as_mut().unwrap().push(token);
+                        tokens.push(token);
                         self.advance();
                     }
                 }
@@ -451,7 +419,7 @@ impl Lexer {
                                 pos_start,
                                 self.curr_pos.clone(),
                             );
-                            tokens.as_mut().unwrap().push(token);
+                            tokens.push(token);
                         }
                         None => {
                             return self.generate_error(
@@ -466,46 +434,25 @@ impl Lexer {
             };
         }
 
-        if err.is_none() {
-            // create an EOF token
-            if !tokens
-                .as_ref()
-                .expect("Something went wrong with the tokens")
-                .is_empty()
-            {
-                let pos_start: Position = tokens
-                    .as_mut()
-                    .expect("Something went wrong with the pos_start")
-                    .last()
-                    .unwrap()
-                    .pos_start
-                    .clone();
-                let pos_end: Position = tokens
-                    .as_mut()
-                    .expect("Something went wrong with the pos_end")
-                    .last()
-                    .unwrap()
-                    .pos_end
-                    .clone();
-                tokens.as_mut().unwrap().push(Token::new(
-                    String::from(EOF),
-                    String::new(),
-                    pos_start.clone(),
-                    pos_end.clone(),
-                ));
-            } else {
-                tokens.as_mut().unwrap().push(Token::new(
-                    String::from(EOF),
-                    String::new(),
-                    self.curr_pos.clone(),
-                    self.curr_pos.clone(),
-                ));
-            }
-
-            // then return it
-            (tokens, err)
+        // create an EOF token
+        if !tokens.is_empty() {
+            let pos_start: Position = tokens.last().unwrap().pos_start.clone();
+            let pos_end: Position = tokens.last().unwrap().pos_end.clone();
+            tokens.push(Token::new(
+                String::from(EOF),
+                String::new(),
+                pos_start.clone(),
+                pos_end.clone(),
+            ));
         } else {
-            (tokens, err)
+            tokens.push(Token::new(
+                String::from(EOF),
+                String::new(),
+                self.curr_pos.clone(),
+                self.curr_pos.clone(),
+            ));
         }
+
+        Ok(tokens)
     }
 }

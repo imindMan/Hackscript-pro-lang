@@ -1,7 +1,7 @@
 // INFO: This is the file for the AST
 // NOTE: To understand what are the roles of those nodes in the AST, head over to src/parser/lib.rs
 //
-use crate::parser::Token;
+use crate::ast_implementation::Token;
 use crate::position::Position;
 
 #[derive(Debug, Clone)]
