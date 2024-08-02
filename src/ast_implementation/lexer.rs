@@ -30,7 +30,6 @@ impl Token {
 pub struct Lexer {
     curr_char: Option<char>,
     curr_pos: Position,
-    fcontent: String,
 }
 
 impl Lexer {
@@ -38,7 +37,6 @@ impl Lexer {
     pub fn new(fname: String, fcontent: String) -> Lexer {
         Lexer {
             curr_char: fcontent.clone().as_str().chars().next(),
-            fcontent: fcontent.clone(),
             curr_pos: Position::new(0, 0, 0, fname, fcontent),
         }
     }
