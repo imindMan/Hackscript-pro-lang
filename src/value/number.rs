@@ -50,12 +50,12 @@ impl ValueTrait for Number {
             let Value::Number(number_to_test) = number.clone() else { panic!("Should work!")};
             let number_test: f32 = number_to_test.value.parse().unwrap();
             if number_test == 0.0 {
-                return self.generate_error(
+                return Err(Error::new(
                     "DivisionByZero".to_string(),
                     "Cannot divide a number to zero, based on basic math".to_string(),
                     self.pos_start.clone(),
                     self.get_pos_end(number),
-                );
+                ));
             };
 
             self.arithmetic_function(number, DIVIDE)
@@ -103,8 +103,6 @@ impl Number {
         // "numbers", but Rust does treat them differently, so we'll have to build our simple
         // "smart" detector to check the final number is int or float. Ofc there are more than
         // this, but Hackscript is simple in its core but confusing anyway :))
-
-        let err: Option<Error> = None;
 
         // first thing to do is to define the data type of the final number value.
         // In such operations like addition, subtraction and multiplication, it's ideal
@@ -217,12 +215,12 @@ impl Number {
                 EQUAL => value_origin == value_other,
                 NOT_EQUAL => value_origin != value_other,
                 _ => {
-                    return self.generate_error(
+                    return Err(Error::new(
                         "TypeError".to_string(),
                         "Invalid types for such an operation".to_string(),
                         self.pos_start.clone(),
                         self.get_pos_end(number),
-                    )
+                    ))
                 }
             };
 
@@ -243,12 +241,12 @@ impl Number {
                 EQUAL => value_origin == value_other,
                 NOT_EQUAL => value_origin != value_other,
                 _ => {
-                    return self.generate_error(
+                    return Err(Error::new(
                         "TypeError".to_string(),
                         "Invalid types for such an operation".to_string(),
                         self.pos_start.clone(),
                         self.get_pos_end(number),
-                    )
+                    ))
                 }
             };
 

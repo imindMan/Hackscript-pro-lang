@@ -34,23 +34,23 @@ impl ValueTrait for HackString {
     fn multiply_by(&self, number_value: Value) -> Result<Value, Error> {
         let Value::Number(number) = number_value.clone() else {return self.type_generate_error(number_value)};
         if number.identifier.as_str() == "float" {
-            return self.generate_error(
+            return Err(Error::new(
                 "TypeError".to_string(),
                 "Cannot multiply a string with a float".to_string(),
                 self.pos_start.clone(),
                 number.pos_end.clone(),
-            );
+            ));
         } else {
             let value_number: i32 = number.value.parse().unwrap();
             if value_number < 0 {
-                return self.generate_error(
+                return Err(Error::new(
                     "TypeError".to_string(),
                     "Cannot multiply a string with a negative number".to_string(),
                     self.pos_start.clone(),
                     number.pos_end.clone(),
-                );
+                ));
             } else if value_number == 0 {
-                return self.generate_error("ValueError".to_string(), "Cannot multiply a string with '0'. If you want to empty the string, use an already existed module for string implementation".to_string(), self.pos_start.clone(), number.pos_end.clone());
+                return Err(Error::new("ValueError".to_string(), "Cannot multiply a string with '0'. If you want to empty the string, use an already existed module for string implementation".to_string(), self.pos_start.clone(), number.pos_end.clone()));
             } else {
                 let mut value_string: String = String::new();
                 for _i in 0..value_number {
@@ -88,12 +88,12 @@ impl HackString {
             EQUAL => self.value == string_value.value,
             NOT_EQUAL => self.value != string_value.value,
             _ => {
-                return self.generate_error(
+                return Err(Error::new(
                     "TypeError".to_string(),
                     "Invalid types for such an operation".to_string(),
                     self.pos_start.clone(),
                     self.get_pos_end(string),
-                )
+                ))
             }
         };
 

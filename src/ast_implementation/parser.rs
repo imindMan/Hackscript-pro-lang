@@ -2,7 +2,6 @@ use crate::ast_implementation::Token;
 use crate::ast_implementation::AST;
 use crate::error_handling::Error;
 use crate::hacktypes::*;
-use crate::position::Position;
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -48,12 +47,12 @@ impl Parser {
         // for now the FormingCalc AST (see the src/ast for more information) is the top node
         let expr = self.expr()?;
         if self.curr_tok._type != EOF {
-            return self.generate_error(
+            return Err(Error::new(
                 "Expect".to_string(),
                 "an operator like '+', '-', '*' or '/'".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
-            );
+            ));
         }
         Ok(expr)
     }
@@ -69,16 +68,6 @@ impl Parser {
             panic!("Cannot advance more to make the AST");
         }
         self.curr_tok = self.tokens[self.curr_index].clone();
-    }
-
-    fn generate_error(
-        &mut self,
-        r#type: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> Result<AST, Error> {
-        Err(Error::new(r#type, extra_string, pos_start, pos_end))
     }
 
     // ----------------------------------------------------
@@ -131,7 +120,7 @@ impl Parser {
                 pos_end: _,
             } => Ok(AST::new_unaryfactor(sign, Box::new(factor.clone()))),
             _ => {
-                self.generate_error("OperatorError".to_string(), "Bad operator for the operation (because this operator doesn't technically work for the non-algebraic expression)".to_string(), pos_start, self.curr_tok.pos_end.clone())
+                Err(Error::new("OperatorError".to_string(), "Bad operator for the operation (because this operator doesn't technically work for the non-algebraic expression)".to_string(), pos_start, self.curr_tok.pos_end.clone()))
             }
         }
     }
@@ -140,13 +129,13 @@ impl Parser {
         self.advance();
         let factor = self.expr()?;
         if self.curr_tok._type != PARENTHESE_CLOSE {
-            self.generate_error(
+            Err(Error::new(
                 "Expect".to_string(),
                 "the expression should be closed by a ')' (close parenthese) -> endless expression"
                     .to_string(),
                 pos_start,
                 self.curr_tok.pos_end.clone(),
-            )
+            ))
         } else {
             self.advance();
             Ok(factor)
@@ -181,12 +170,12 @@ impl Parser {
         } else if self.curr_tok._type.as_str() == NULL {
             self.make_null()
         } else {
-            self.generate_error(
+            Err(Error::new(
                 "Expect".to_string(),
                 "a number type token, a string type token, '+', '-', and '('".to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
-            )
+            ))
         }
     }
     fn bin_op(

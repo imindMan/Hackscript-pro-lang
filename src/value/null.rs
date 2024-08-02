@@ -40,12 +40,12 @@ impl Null {
             EQUAL => value_origin == value_other,
             NOT_EQUAL => value_origin != value_other,
             _ => {
-                return self.generate_error(
+                return Err(Error::new(
                     "OperatorError".to_string(),
                     "Invalid type for such an operation".to_string(),
                     self.pos_start.clone(),
                     bool.pos_end.clone(),
-                )
+                ))
             }
         };
         Ok(Value::new_boolean(

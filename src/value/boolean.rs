@@ -53,12 +53,12 @@ impl Boolean {
             AND => self.boolean && bool.boolean,
             OR => self.boolean || bool.boolean,
             _ => {
-                return self.generate_error(
+                return Err(Error::new(
                     "OperatorError".to_string(),
                     "Invalid type for such an operation".to_string(),
                     self.pos_start.clone(),
                     bool.pos_end.clone(),
-                )
+                ))
             }
         };
 

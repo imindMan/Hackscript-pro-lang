@@ -84,37 +84,14 @@ impl ValueTrait for Value {
             }) => pos_start.clone(),
             _ => panic!("Invalid operation"),
         };
-        let pos_end: Position = match value {
-            Value::Number(number::Number {
-                value: _,
-                identifier: _,
-                pos_start: _,
-                pos_end,
-            }) => pos_end.clone(),
-            Value::String(string::HackString {
-                value: _,
-                pos_start: _,
-                pos_end,
-            }) => pos_end.clone(),
-            Value::Boolean(boolean::Boolean {
-                boolean: _,
-                pos_start: _,
-                pos_end,
-            }) => pos_end.clone(),
-            Value::Null(null::Null {
-                value: _,
-                pos_start: _,
-                pos_end,
-            }) => pos_end.clone(),
-            _ => panic!("Invalid operation"),
-        };
+        let pos_end: Position = self.get_pos_end(value);
 
-        self.generate_error(
+        Err(Error::new(
             "TypeError".to_string(),
             "Invalid types for such an operation".to_string(),
             pos_start,
             pos_end,
-        )
+        ))
     }
     // INFO: All of the operation below are substances of the arithmetic_operating function
 
@@ -218,14 +195,12 @@ impl Value {
             NOT_EQUAL => value_origin.not_equal(value_other.clone()),
             AND => value_origin.and(value_other.clone()),
             OR => value_origin.or(value_other.clone()),
-            _ => {
-                return self.generate_error(
-                    "TypeError".to_string(),
-                    "Invalid types for such an operation".to_string(),
-                    self.get_pos_start(),
-                    self.get_pos_end(value_other),
-                )
-            }
+            _ => Err(Error::new(
+                "TypeError".to_string(),
+                "Invalid types for such an operation".to_string(),
+                self.get_pos_start(),
+                self.get_pos_end(value_other),
+            )),
         }
     }
     fn operation(&self, value: Value, instruction: &str) -> Result<Value, Error> {
@@ -242,7 +217,7 @@ impl Value {
             Value::Null(value_origin) => {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
-            _ => return self.type_generate_error(value),
+            _ => self.type_generate_error(value),
         }
     }
 }

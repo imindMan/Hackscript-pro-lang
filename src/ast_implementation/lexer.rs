@@ -8,6 +8,7 @@ pub use crate::position::Position;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
+/*WARNING: This struct is globally accessible everywhere */
 pub struct Token {
     pub _type: String,
     pub value: String,
@@ -45,52 +46,9 @@ impl Lexer {
     // INFO: Below are some methods that are frequently used in the lexer
     // ------------------------------------------------------------------
 
-    // This function is for the whole Vec<Token>, since we are working with two main objects:
-    // Vec<Token> and Token (the real reason is to serve for the number_token() to work)
-    fn generate_error(
-        &self,
-        r#type: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> Result<Vec<Token>, Error> {
-        Err(Error::new(r#type, extra_string, pos_start, pos_end))
-    }
-    // This function is for only Token item, since we are working with two main objects:
-    // Vec<Token> and Token (the real reason is to serve for the number_token() to work)
-    fn generate_individual_error(
-        &self,
-        r#type: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> Result<Token, Error> {
-        Err(Error::new(r#type, extra_string, pos_start, pos_end))
-    }
     // 'advance' is actually to iterate to the next token
     fn advance(&mut self) {
-        let temp_pos = self.curr_pos.literal_pos + 1;
-        let curr_char: Option<char> = self
-            .fcontent
-            .clone()
-            .as_str()
-            .chars()
-            .nth(temp_pos.try_into().unwrap());
-
-        if curr_char.is_some() {
-            // change the current position
-            self.curr_pos.literal_pos += 1;
-
-            if self.curr_char.unwrap() == '\n' {
-                self.curr_pos.col += 1;
-                self.curr_pos.row = 0;
-            } else {
-                self.curr_pos.col += 1;
-            };
-            self.curr_char = Some(curr_char.unwrap());
-        } else {
-            self.curr_char = None;
-        }
+        self.curr_char = self.curr_pos.advance();
     }
     fn implement_trailing_characters(&mut self) -> Result<char, Error> {
         match self.curr_char.unwrap() {
@@ -125,12 +83,12 @@ impl Lexer {
             self.advance();
         }
         if self.curr_char.is_none() {
-            return self.generate_individual_error(
+            return Err(Error::new(
                 "Expect".to_string(),
                 "a \" to end the string. Found nothing -> endless string".to_string(),
                 pos_start,
                 self.curr_pos.clone(),
-            );
+            ));
         }
         self.advance();
         Ok(Token::new(
@@ -156,21 +114,14 @@ impl Lexer {
                     || !NUMBERLIST.contains(self.curr_char.unwrap())
                     || self.curr_char.unwrap() == '.'
                 {
-                    // disadvance the position to match the real position of the error-taking token
-                    self.curr_pos.literal_pos -= 1;
-                    if self.curr_char.is_some() && self.curr_char.unwrap() == '\n' {
-                        self.curr_pos.col -= 1;
-                        self.curr_pos.row = 0;
-                    } else {
-                        self.curr_pos.col -= 1;
-                    };
+                    let _char = self.curr_pos.disadvance();
 
-                    return self.generate_individual_error(
+                    return Err(Error::new(
                         "Number error".to_string(),
                         value,
                         pos_start,
                         self.curr_pos.clone(),
-                    );
+                    ));
                 } else {
                     value.push(self.curr_char.unwrap());
                     self.advance();
@@ -278,12 +229,12 @@ impl Lexer {
                     let pos_start: Position = self.curr_pos.clone();
                     self.advance();
                     if self.curr_char.is_none() || self.curr_char.unwrap() != '&' {
-                        return self.generate_error(
+                        return Err(Error::new(
                             "UnidentifiedIdentifier".to_string(),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
-                        );
+                        ));
                     } else {
                         let token: Token = Token::new(
                             String::from(AND),
@@ -299,12 +250,12 @@ impl Lexer {
                     let pos_start: Position = self.curr_pos.clone();
                     self.advance();
                     if self.curr_char.is_none() || self.curr_char.unwrap() != '|' {
-                        return self.generate_error(
+                        return Err(Error::new(
                             "UnidentifiedIdentifier".to_string(),
                             String::new(),
                             pos_start,
                             self.curr_pos.clone(),
-                        );
+                        ));
                     } else {
                         let token: Token = Token::new(
                             String::from(OR),
@@ -324,12 +275,12 @@ impl Lexer {
                     let pos_start: Position = self.curr_pos.clone();
                     self.advance();
                     if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
-                        return self.generate_error(
+                        return Err(Error::new(
                             "UnidentifiedIdentifier".to_string(),
                             String::from("="),
                             pos_start,
                             self.curr_pos.clone(),
-                        );
+                        ));
                     } else {
                         let token: Token = Token::new(
                             String::from(EQUAL),
@@ -345,12 +296,12 @@ impl Lexer {
                     let pos_start: Position = self.curr_pos.clone();
                     self.advance();
                     if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
-                        return self.generate_error(
+                        return Err(Error::new(
                             "UnidentifiedIdentifier".to_string(),
                             String::from("!"),
                             pos_start,
                             self.curr_pos.clone(),
-                        );
+                        ));
                     } else {
                         let token: Token = Token::new(
                             String::from(NOT_EQUAL),
@@ -422,12 +373,12 @@ impl Lexer {
                             tokens.push(token);
                         }
                         None => {
-                            return self.generate_error(
+                            return Err(Error::new(
                                 "UnidentifiedIdentifier".to_string(),
                                 keyword,
                                 pos_start,
                                 self.curr_pos.clone(),
-                            );
+                            ));
                         }
                     }
                 }

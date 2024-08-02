@@ -7,20 +7,6 @@ use crate::value::string::HackString;
 use crate::Value;
 
 pub trait ValueTrait {
-    fn generate_error(
-        &self,
-        kind: String,
-        extra_string: String,
-        pos_start: Position,
-        pos_end: Position,
-    ) -> Result<Value, Error> {
-        Err(Error::new(
-            kind,
-            extra_string,
-            pos_start.clone(),
-            pos_end.clone(),
-        ))
-    }
     fn get_pos_end(&self, value: Value) -> Position {
         match value {
             Value::Number(Number {
@@ -51,12 +37,12 @@ pub trait ValueTrait {
     fn type_generate_error(&self, value: Value) -> Result<Value, Error> {
         let pos_start: Position = self.get_pos_start();
         let pos_end: Position = self.get_pos_end(value);
-        self.generate_error(
+        Err(Error::new(
             "TypeError".to_string(),
             "Invalid types for such an operation".to_string(),
             pos_start,
             pos_end,
-        )
+        ))
     }
     fn add_to(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)

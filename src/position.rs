@@ -2,8 +2,10 @@
  * Position implementation
  * Use mainly for error handling
  * **/
+
 use std::fmt::Display;
 
+/*WARNING: This struct is totally accessible everywhere*/
 #[derive(Debug, Clone)]
 pub struct Position {
     pub col: i32,
@@ -31,6 +33,50 @@ impl Position {
             fname,
             fcontent,
         }
+    }
+    pub fn advance(&mut self) -> Option<char> {
+        let temp_pos = self.literal_pos + 1;
+        let curr_char: Option<char> = self
+            .fcontent
+            .clone()
+            .as_str()
+            .chars()
+            .nth(temp_pos.try_into().unwrap());
+
+        if curr_char.is_some() {
+            // change the current position
+            self.literal_pos += 1;
+
+            if curr_char.unwrap() == '\n' {
+                self.col += 1;
+                self.row = 0;
+            } else {
+                self.col += 1;
+            };
+        }
+        curr_char
+    }
+    pub fn disadvance(&mut self) -> Option<char> {
+        let temp_pos = self.literal_pos - 1;
+        let curr_char: Option<char> = self
+            .fcontent
+            .clone()
+            .as_str()
+            .chars()
+            .nth(temp_pos.try_into().unwrap());
+
+        if curr_char.is_some() {
+            // change the current position
+            self.literal_pos -= 1;
+
+            if curr_char.unwrap() == '\n' {
+                self.col -= 1;
+                self.row = 0;
+            } else {
+                self.col -= 1;
+            };
+        }
+        curr_char
     }
 }
 
