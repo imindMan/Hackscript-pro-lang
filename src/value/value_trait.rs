@@ -80,4 +80,11 @@ pub trait ValueTrait {
     fn or(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
+
+    fn append(&self, value: Value) -> Result<Value, Error> {
+        self.type_generate_error(value)
+    }
+    fn indexing(&self, value: Value) -> Result<Value, Error> {
+        self.type_generate_error(value)
+    }
 }

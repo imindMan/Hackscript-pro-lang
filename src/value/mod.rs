@@ -1,10 +1,10 @@
 // INFO: This is the Value enum, which represents the values in Hackscript language.
 // Because Hackscript is an interpreted language meaning there's no distinction between data types.
-
-pub mod boolean;
-pub mod null;
-pub mod number;
-pub mod string;
+mod boolean;
+mod null;
+mod number;
+mod string;
+mod tuple;
 pub mod value_trait;
 use crate::error_handling::Error;
 use crate::hacktypes::*;
@@ -18,6 +18,7 @@ pub enum Value {
     String(string::HackString),
     Boolean(boolean::Boolean),
     Null(null::Null),
+    Tuple(tuple::Tuple),
     Nil,
 }
 
@@ -28,6 +29,7 @@ impl Display for Value {
             Value::String(string) => write!(f, "{}", string),
             Value::Boolean(bool) => write!(f, "{}", bool),
             Value::Null(_null) => write!(f, "null"),
+            Value::Tuple(tuple) => write!(f, "{}", tuple),
             Value::Nil => write!(f, ""),
         }
     }
@@ -51,6 +53,11 @@ impl ValueTrait for Value {
                 pos_start,
                 pos_end: _,
             }) => pos_start.clone(),
+            Value::Tuple(tuple::Tuple {
+                value: _,
+                pos_end: _,
+                pos_start,
+            }) => pos_start.clone(),
             Value::Null(null::Null {
                 value: _,
                 pos_start,
@@ -60,30 +67,7 @@ impl ValueTrait for Value {
         }
     }
     fn type_generate_error(&self, value: Value) -> Result<Value, Error> {
-        let pos_start: Position = match self {
-            Value::Number(number::Number {
-                value: _,
-                identifier: _,
-                pos_start,
-                pos_end: _,
-            }) => pos_start.clone(),
-            Value::String(string::HackString {
-                value: _,
-                pos_start,
-                pos_end: _,
-            }) => pos_start.clone(),
-            Value::Boolean(boolean::Boolean {
-                boolean: _,
-                pos_start,
-                pos_end: _,
-            }) => pos_start.clone(),
-            Value::Null(null::Null {
-                value: _,
-                pos_start,
-                pos_end: _,
-            }) => pos_start.clone(),
-            _ => panic!("Invalid operation"),
-        };
+        let pos_start: Position = self.get_pos_start();
         let pos_end: Position = self.get_pos_end(value);
 
         Err(Error::new(
@@ -147,6 +131,12 @@ impl ValueTrait for Value {
     fn or(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, OR)
     }
+    fn append(&self, value: Value) -> Result<Value, Error> {
+        self.operation(value, APPEND)
+    }
+    fn indexing(&self, value: Value) -> Result<Value, Error> {
+        self.operation(value, INDEXING)
+    }
 }
 
 impl Value {
@@ -174,6 +164,10 @@ impl Value {
     pub fn new_null(value: String, pos_start: Position, pos_end: Position) -> Value {
         Value::Null(null::Null::new(value, pos_start, pos_end))
     }
+
+    pub fn new_tuple(value: Vec<Value>, pos_start: Position, pos_end: Position) -> Value {
+        Value::Tuple(tuple::Tuple::new(value, pos_start, pos_end))
+    }
     fn handling_operation<T: ValueTrait>(
         &self,
         value_origin: T,
@@ -195,6 +189,8 @@ impl Value {
             NOT_EQUAL => value_origin.not_equal(value_other.clone()),
             AND => value_origin.and(value_other.clone()),
             OR => value_origin.or(value_other.clone()),
+            APPEND => value_origin.append(value_other.clone()),
+            INDEXING => value_origin.indexing(value_other.clone()),
             _ => Err(Error::new(
                 "TypeError".to_string(),
                 "Invalid types for such an operation".to_string(),
@@ -212,6 +208,9 @@ impl Value {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
             Value::Boolean(value_origin) => {
+                self.handling_operation(value_origin.clone(), value, instruction)
+            }
+            Value::Tuple(value_origin) => {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
             Value::Null(value_origin) => {

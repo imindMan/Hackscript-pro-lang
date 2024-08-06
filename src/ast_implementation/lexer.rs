@@ -8,7 +8,7 @@ pub use crate::position::Position;
 use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
-/*WARNING: This struct is globally accessible everywhere */
+/* WARNING: This struct is globally accessible everywhere */
 pub struct Token {
     pub _type: String,
     pub value: String,
@@ -36,7 +36,7 @@ impl Lexer {
     // INFO: This is the Initialization method of Lexer
     pub fn new(fname: String, fcontent: String) -> Lexer {
         Lexer {
-            curr_char: fcontent.clone().as_str().chars().next(),
+            curr_char: fcontent.as_str().chars().next(),
             curr_pos: Position::new(0, 0, 0, fname, fcontent),
         }
     }
@@ -159,14 +159,27 @@ impl Lexer {
                     self.advance();
                 }
                 '+' => {
-                    let token: Token = Token::new(
-                        String::from(PLUS),
-                        String::new(),
-                        self.curr_pos.clone(),
-                        self.curr_pos.clone(),
-                    );
-                    tokens.push(token);
+                    let pos_start: Position = self.curr_pos.clone();
                     self.advance();
+                    if self.curr_char.is_none() || self.curr_char.unwrap() != '#' {
+                        let token: Token = Token::new(
+                            String::from(PLUS),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.push(token);
+                        self.advance()
+                    } else {
+                        let token: Token = Token::new(
+                            String::from(APPEND),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.push(token);
+                        self.advance()
+                    }
                 }
                 '-' => {
                     let token: Token = Token::new(
@@ -212,6 +225,66 @@ impl Lexer {
                 ')' => {
                     let token: Token = Token::new(
                         String::from(PARENTHESE_CLOSE),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
+                ',' => {
+                    let token: Token = Token::new(
+                        String::from(COMMA),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
+                '[' => {
+                    let token: Token = Token::new(
+                        String::from(SQUARE_BRACKET_LEFT),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
+                ']' => {
+                    let token: Token = Token::new(
+                        String::from(SQUARE_BRACKET_RIGHT),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
+                '{' => {
+                    let token: Token = Token::new(
+                        String::from(CURLY_BRACKET_LEFT),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
+                '}' => {
+                    let token: Token = Token::new(
+                        String::from(CURLY_BRACKET_RIGHT),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
+                ':' => {
+                    let token: Token = Token::new(
+                        String::from(COLONS),
                         String::new(),
                         self.curr_pos.clone(),
                         self.curr_pos.clone(),

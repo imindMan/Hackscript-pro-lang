@@ -17,6 +17,7 @@ pub fn error_type_handling(info: (String, String)) -> String {
         "ValueError" => valueerror(info.0.clone(), info.1.clone()),
         "UnidentifiedIdentifier" => unidentifiedidentifier(info.0.clone(), info.1.clone()),
         "OperatorError" => operatorerror(info.0.clone(), info.1.clone()),
+        "IndexError" => indexerror(info.0.clone(), info.1.clone()),
         _ => panic!("Unspecified error type"),
     }
 }
@@ -127,7 +128,17 @@ fn valueerror(_type: String, string: String) -> String {
         + &string;
     error_string
 }
-
+fn indexerror(_type: String, string: String) -> String {
+    let error_string: String = format!(
+        "{}{}Error type: {}{}",
+        style_bold, color_red, style_reset, color_reset
+    ) + style_underline
+        + &_type
+        + style_reset
+        + ". "
+        + &string;
+    error_string
+}
 fn unidentifiedidentifier(_type: String, identifier_not_defined: String) -> String {
     let error_string: String = format!(
         "{}{}Error type: {}{}",

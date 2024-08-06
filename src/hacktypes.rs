@@ -50,3 +50,15 @@ pub const AND: &str = "AND";
 pub const OR: &str = "OR";
 // all the available keyword for the programming language right now
 pub const AVAILABLE_KEYWORDS: &[(&str, &str)] = &[("true", TRUE), ("false", FALSE), ("null", NULL)];
+
+// Symbols
+pub const COMMA: &str = "COMMA";
+pub const SQUARE_BRACKET_LEFT: &str = "SQUARE_BRACKET_LEFT";
+pub const SQUARE_BRACKET_RIGHT: &str = "SQUARE_BRACKET_RIGHT";
+pub const CURLY_BRACKET_LEFT: &str = "CURLY_BRACKER_LEFT";
+pub const CURLY_BRACKET_RIGHT: &str = "CURLY_BRACKER_RIGHT";
+pub const COLONS: &str = "COLONS";
+
+// List operator
+pub const APPEND: &str = "APPEND";
+pub const INDEXING: &str = "INDEXING";

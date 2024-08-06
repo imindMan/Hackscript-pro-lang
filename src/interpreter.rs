@@ -59,6 +59,11 @@ impl Interpreter {
                 pos_start,
                 pos_end,
             } => self.visit_null(value, pos_start, pos_end),
+            AST::Tuple {
+                value,
+                pos_start,
+                pos_end,
+            } => self.visit_tuple(value, pos_start, pos_end),
             AST::Nil => Ok(Value::new()),
         }
     }
@@ -160,6 +165,8 @@ impl Interpreter {
             NOT_EQUAL => value1.not_equal(value2)?,
             AND => value1.and(value2)?,
             OR => value1.or(value2)?,
+            APPEND => value1.append(value2)?,
+            INDEXING => value1.indexing(value2)?,
             &_ => panic!("No existing operator, failed unexpected"),
         })
     }
@@ -186,5 +193,18 @@ impl Interpreter {
         pos_end: Position,
     ) -> Result<Value, Error> {
         Ok(Value::new_null(value, pos_start, pos_end))
+    }
+    fn visit_tuple(
+        &self,
+        value: Vec<AST>,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> Result<Value, Error> {
+        let mut final_vec: Vec<Value> = Vec::new();
+        for i in value {
+            final_vec.push(self.visit(i)?);
+        }
+
+        Ok(Value::new_tuple(final_vec, pos_start, pos_end))
     }
 }

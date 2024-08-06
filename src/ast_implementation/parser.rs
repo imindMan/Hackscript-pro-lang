@@ -13,14 +13,13 @@ pub struct Parser {
 // Hackscript
 // Factor (the smallest unit of Hackscript): Number
 //         Unary: (PLUS||MINUS)((PLUS|MINUS) Number)*
-//         LEFT_PAREN expr RIGHT_PAREN
+//         LEFT_PAREN Expr (COMMA Expr)* RIGHT_PAREN
 //         String
 //         booleans (true, false)
 // Term: Factor ((MUL||DIV) Factor)*
 // Arithmetic_expr: Term ((PLUS||MINUS) Term)*
 // Comp_expr: Arithmetic_expr ((GREATER|LESS|GREATER_OR_EQUAL|LESS_OR_EQUAL|EQUAL|NOT_EQUAL) Arithmetic_expr)*
 // *Expr: Comp_expr ((AND|OR) Comp_expr)*
-// Parse checkpoint: Expr
 
 impl Parser {
     // INFO: This is the initialization method of the Parser
@@ -127,7 +126,20 @@ impl Parser {
     fn in_parentheses_expr(&mut self) -> Result<AST, Error> {
         let pos_start = self.curr_tok.pos_start.clone();
         self.advance();
-        let factor = self.expr()?;
+
+        let node1 = self.expr()?;
+        let mut vec_tuple: Vec<AST> = vec![node1];
+        let mut pass_tuple: bool = false;
+
+        while self.curr_tok._type == COMMA {
+            pass_tuple = true;
+            self.advance();
+            let low = self.expr();
+            match low {
+                Ok(_) => vec_tuple.push(low?),
+                Err(_) => break,
+            }
+        }
         if self.curr_tok._type != PARENTHESE_CLOSE {
             Err(Error::new(
                 "Expect".to_string(),
@@ -138,7 +150,57 @@ impl Parser {
             ))
         } else {
             self.advance();
-            Ok(factor)
+            if self.curr_tok._type == SQUARE_BRACKET_LEFT {
+                let index_pos_start = self.curr_tok.pos_start.clone();
+                self.advance();
+                // check for indexing
+                let index = self.expr()?;
+                if self.curr_tok._type != SQUARE_BRACKET_RIGHT {
+                    Err(Error::new(
+                        "Expect".to_string(),
+                        "the expression should be closed by a ']' (close parentheses) -> endless expression".to_string(),
+                        index_pos_start,
+                        self.curr_tok.pos_end.clone(),
+                ))
+                } else {
+                    self.advance();
+                    match pass_tuple {
+                        false => Ok(AST::new_formingcalc(
+                            Box::new(vec_tuple.first().unwrap().clone()),
+                            Some(Token::new(
+                                String::from(INDEXING),
+                                String::new(),
+                                index_pos_start,
+                                self.curr_tok.pos_end.clone(),
+                            )),
+                            Box::new(index),
+                        )),
+                        true => Ok(AST::new_formingcalc(
+                            Box::new(AST::new_tuple(
+                                vec_tuple,
+                                pos_start,
+                                index_pos_start.clone(),
+                            )),
+                            Some(Token::new(
+                                String::from(INDEXING),
+                                String::new(),
+                                index_pos_start,
+                                self.curr_tok.pos_end.clone(),
+                            )),
+                            Box::new(index),
+                        )),
+                    }
+                }
+            } else {
+                match pass_tuple {
+                    false => Ok(vec_tuple.first().unwrap().clone()),
+                    true => Ok(AST::new_tuple(
+                        vec_tuple,
+                        pos_start,
+                        self.curr_tok.pos_end.clone(),
+                    )),
+                }
+            }
         }
     }
     fn make_booleans(&mut self) -> Result<AST, Error> {
@@ -207,7 +269,7 @@ impl Parser {
     }
 
     fn arithmetic_expr(&mut self) -> Result<AST, Error> {
-        self.bin_op(Parser::term, vec![PLUS, MINUS])
+        self.bin_op(Parser::term, vec![PLUS, MINUS, APPEND])
     }
     fn comp_expr(&mut self) -> Result<AST, Error> {
         self.bin_op(
