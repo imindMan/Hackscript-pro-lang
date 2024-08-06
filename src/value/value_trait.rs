@@ -81,7 +81,7 @@ pub trait ValueTrait {
         self.type_generate_error(value)
     }
 
-    fn append(&self, value: Value) -> Result<Value, Error> {
+    fn append(&mut self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }
     fn indexing(&self, value: Value) -> Result<Value, Error> {

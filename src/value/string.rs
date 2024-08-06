@@ -6,7 +6,7 @@ use crate::value::Value;
 use crate::value::ValueTrait;
 use std::fmt::Display;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct HackString {
     pub value: String,
     pub pos_start: Position,

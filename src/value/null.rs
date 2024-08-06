@@ -4,7 +4,7 @@ use crate::position::Position;
 use crate::value::ValueTrait;
 use crate::Value;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Null {
     pub value: String,
     pub pos_start: Position,

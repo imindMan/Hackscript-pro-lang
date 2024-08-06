@@ -3,6 +3,7 @@
 mod boolean;
 mod null;
 mod number;
+mod set;
 mod string;
 mod tuple;
 pub mod value_trait;
@@ -12,13 +13,14 @@ use crate::position::Position;
 use std::fmt::Display;
 use value_trait::ValueTrait;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Value {
     Number(number::Number),
     String(string::HackString),
     Boolean(boolean::Boolean),
     Null(null::Null),
     Tuple(tuple::Tuple),
+    Set(set::Set),
     Nil,
 }
 
@@ -30,6 +32,7 @@ impl Display for Value {
             Value::Boolean(bool) => write!(f, "{}", bool),
             Value::Null(_null) => write!(f, "null"),
             Value::Tuple(tuple) => write!(f, "{}", tuple),
+            Value::Set(set) => write!(f, "{}", set),
             Value::Nil => write!(f, ""),
         }
     }
@@ -57,6 +60,11 @@ impl ValueTrait for Value {
                 value: _,
                 pos_end: _,
                 pos_start,
+            }) => pos_start.clone(),
+            Value::Set(set::Set {
+                value: _,
+                pos_start,
+                pos_end: _,
             }) => pos_start.clone(),
             Value::Null(null::Null {
                 value: _,
@@ -131,8 +139,14 @@ impl ValueTrait for Value {
     fn or(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, OR)
     }
-    fn append(&self, value: Value) -> Result<Value, Error> {
-        self.operation(value, APPEND)
+    fn append(&mut self, value: Value) -> Result<Value, Error> {
+        match self {
+            Value::Set(value_origin) => {
+                let _ = value_origin.append(value);
+                Ok(self.clone())
+            }
+            _ => self.type_generate_error(value),
+        }
     }
     fn indexing(&self, value: Value) -> Result<Value, Error> {
         self.operation(value, INDEXING)
@@ -168,6 +182,10 @@ impl Value {
     pub fn new_tuple(value: Vec<Value>, pos_start: Position, pos_end: Position) -> Value {
         Value::Tuple(tuple::Tuple::new(value, pos_start, pos_end))
     }
+
+    pub fn new_set(value: Vec<Value>, pos_start: Position, pos_end: Position) -> Value {
+        Value::Set(set::Set::new(value, pos_start, pos_end))
+    }
     fn handling_operation<T: ValueTrait>(
         &self,
         value_origin: T,
@@ -189,7 +207,6 @@ impl Value {
             NOT_EQUAL => value_origin.not_equal(value_other.clone()),
             AND => value_origin.and(value_other.clone()),
             OR => value_origin.or(value_other.clone()),
-            APPEND => value_origin.append(value_other.clone()),
             INDEXING => value_origin.indexing(value_other.clone()),
             _ => Err(Error::new(
                 "TypeError".to_string(),
@@ -211,6 +228,9 @@ impl Value {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
             Value::Tuple(value_origin) => {
+                self.handling_operation(value_origin.clone(), value, instruction)
+            }
+            Value::Set(value_origin) => {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
             Value::Null(value_origin) => {

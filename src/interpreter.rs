@@ -8,7 +8,7 @@ use crate::hacktypes::*;
 use crate::position::Position;
 use crate::value::value_trait::ValueTrait;
 use crate::value::Value;
-
+use std::collections::HashSet;
 pub struct Interpreter {
     ast: AST,
 }
@@ -64,6 +64,11 @@ impl Interpreter {
                 pos_start,
                 pos_end,
             } => self.visit_tuple(value, pos_start, pos_end),
+            AST::Set {
+                value,
+                pos_start,
+                pos_end,
+            } => self.visit_set(value, pos_start, pos_end),
             AST::Nil => Ok(Value::new()),
         }
     }
@@ -141,7 +146,7 @@ impl Interpreter {
         operator: Option<Token>,
         node2: Box<AST>,
     ) -> Result<Value, Error> {
-        let value1 = self.visit(*node1)?;
+        let mut value1 = self.visit(*node1)?;
 
         // if an operator is none, it means that the next node2 must be none, too (according to the
         // parser), that's why we don't need to check next and just return te result we got
@@ -206,5 +211,22 @@ impl Interpreter {
         }
 
         Ok(Value::new_tuple(final_vec, pos_start, pos_end))
+    }
+    fn visit_set(
+        &self,
+        value: Vec<AST>,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> Result<Value, Error> {
+        let mut final_vec: Vec<Value> = Vec::new();
+        for i in value {
+            final_vec.push(self.visit(i)?);
+        }
+        let vec_pass = final_vec
+            .into_iter()
+            .collect::<HashSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>();
+        Ok(Value::new_set(vec_pass, pos_start, pos_end))
     }
 }

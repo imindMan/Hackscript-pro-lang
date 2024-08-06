@@ -47,6 +47,11 @@ pub enum AST {
         pos_start: Position,
         pos_end: Position,
     },
+    Set {
+        value: Vec<AST>,
+        pos_start: Position,
+        pos_end: Position,
+    },
     Nil,
 }
 
@@ -135,6 +140,13 @@ impl AST {
             pos_end,
         }
     }
+    pub fn new_set(value: Vec<AST>, pos_start: Position, pos_end: Position) -> AST {
+        AST::Set {
+            value,
+            pos_start,
+            pos_end,
+        }
+    }
 }
 fn get_pos_start(node: &AST) -> Position {
     match node.clone() {
@@ -173,6 +185,11 @@ fn get_pos_start(node: &AST) -> Position {
             pos_end: _,
         } => pos_start,
         AST::Tuple {
+            value: _,
+            pos_start,
+            pos_end: _,
+        } => pos_start,
+        AST::Set {
             value: _,
             pos_start,
             pos_end: _,
@@ -219,6 +236,11 @@ fn get_pos_end(node: &AST) -> Option<Position> {
             pos_end,
         } => Some(pos_end),
         AST::Tuple {
+            value: _,
+            pos_start: _,
+            pos_end,
+        } => Some(pos_end),
+        AST::Set {
             value: _,
             pos_start: _,
             pos_end,

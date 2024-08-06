@@ -6,7 +6,7 @@
 use std::fmt::Display;
 
 /*WARNING: This struct is totally accessible everywhere*/
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Position {
     pub col: i32,
     pub row: i32,

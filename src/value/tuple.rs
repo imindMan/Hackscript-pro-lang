@@ -4,13 +4,12 @@ use crate::value::value_trait::ValueTrait;
 use crate::Value;
 use std::fmt::Display;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Tuple {
     pub value: Vec<Value>,
     pub pos_start: Position,
     pub pos_end: Position,
 }
-
 impl Display for Tuple {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut output: String = String::new();

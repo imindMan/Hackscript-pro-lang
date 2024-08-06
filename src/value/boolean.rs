@@ -6,9 +6,8 @@ use crate::position::Position;
 use crate::value::Value;
 use crate::value::ValueTrait;
 use std::fmt::Display;
-// In Hackscript, to make it simple, I'll refer Null as boolean, too
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Boolean {
     pub boolean: bool,
     pub pos_start: Position,
