@@ -262,6 +262,66 @@ impl Parser {
             }
         }
     }
+    fn make_array(&mut self) -> Result<AST, Error> {
+        let pos_start = self.curr_tok.pos_start.clone();
+        self.advance();
+
+        let node1 = self.expr()?;
+        let mut vec_set: Vec<AST> = vec![node1];
+
+        while self.curr_tok._type == COMMA {
+            self.advance();
+            let low = self.expr();
+            match low {
+                Ok(_) => vec_set.push(low?),
+                Err(_) => break,
+            }
+        }
+        if self.curr_tok._type != CURLY_BRACKET_RIGHT {
+            Err(Error::new(
+                "Expect".to_string(),
+                "the expression should be closed by a '}' (close parenthese) -> endless expression"
+                    .to_string(),
+                pos_start,
+                self.curr_tok.pos_end.clone(),
+            ))
+        } else {
+            self.advance();
+            if self.curr_tok._type == SQUARE_BRACKET_LEFT {
+                let index_pos_start = self.curr_tok.pos_start.clone();
+                self.advance();
+                // check for indexing
+                let index = self.expr()?;
+                if self.curr_tok._type != SQUARE_BRACKET_RIGHT {
+                    Err(Error::new(
+                        "Expect".to_string(),
+                        "the expression should be closed by a ']' (close parentheses) -> endless expression".to_string(),
+                        index_pos_start,
+                        self.curr_tok.pos_end.clone(),
+                ))
+                } else {
+                    self.advance();
+                    Ok(AST::new_formingcalc(
+                        Box::new(AST::new_array(vec_set, pos_start, index_pos_start.clone())),
+                        Some(Token::new(
+                            String::from(INDEXING),
+                            String::new(),
+                            index_pos_start,
+                            self.curr_tok.pos_end.clone(),
+                        )),
+                        Box::new(index),
+                    ))
+                }
+            } else {
+                Ok(AST::new_array(
+                    vec_set,
+                    pos_start,
+                    self.curr_tok.pos_end.clone(),
+                ))
+            }
+        }
+    }
+
     fn make_booleans(&mut self) -> Result<AST, Error> {
         let bool = AST::new_boolean(self.curr_tok.clone());
         self.advance();
@@ -290,12 +350,15 @@ impl Parser {
             self.make_booleans()
         } else if self.curr_tok._type.as_str() == SQUARE_BRACKET_LEFT {
             self.make_set()
+        } else if self.curr_tok._type.as_str() == CURLY_BRACKET_LEFT {
+            self.make_array()
         } else if self.curr_tok._type.as_str() == NULL {
             self.make_null()
         } else {
             Err(Error::new(
                 "Expect".to_string(),
-                "a number type token, a string type token, '+', '-', and '('".to_string(),
+                "a number type token, a string type token, an array, a set, a tuple, null"
+                    .to_string(),
                 self.curr_tok.pos_start.clone(),
                 self.curr_tok.pos_end.clone(),
             ))

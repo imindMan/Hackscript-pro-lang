@@ -1,5 +1,6 @@
 // INFO: This is the Value enum, which represents the values in Hackscript language.
 // Because Hackscript is an interpreted language meaning there's no distinction between data types.
+mod array;
 mod boolean;
 mod null;
 mod number;
@@ -21,6 +22,7 @@ pub enum Value {
     Null(null::Null),
     Tuple(tuple::Tuple),
     Set(set::Set),
+    Array(array::Array),
     Nil,
 }
 
@@ -33,6 +35,7 @@ impl Display for Value {
             Value::Null(_null) => write!(f, "null"),
             Value::Tuple(tuple) => write!(f, "{}", tuple),
             Value::Set(set) => write!(f, "{}", set),
+            Value::Array(array) => write!(f, "{}", array),
             Value::Nil => write!(f, ""),
         }
     }
@@ -66,12 +69,29 @@ impl ValueTrait for Value {
                 pos_start,
                 pos_end: _,
             }) => pos_start.clone(),
+            Value::Array(array::Array {
+                value: _,
+                pos_start,
+                pos_end: _,
+            }) => pos_start.clone(),
             Value::Null(null::Null {
                 value: _,
                 pos_start,
                 pos_end: _,
             }) => pos_start.clone(),
             _ => panic!("Invalid operation"),
+        }
+    }
+    fn raw_checking(&self) -> String {
+        match self {
+            Value::Number(number) => number.raw_checking(),
+            Value::String(string) => string.raw_checking(),
+            Value::Boolean(bool) => bool.raw_checking(),
+            Value::Null(null) => null.raw_checking(),
+            Value::Tuple(tuple) => tuple.raw_checking(),
+            Value::Array(array) => array.raw_checking(),
+            Value::Set(set) => set.raw_checking(),
+            Value::Nil => String::new(),
         }
     }
     fn type_generate_error(&self, value: Value) -> Result<Value, Error> {
@@ -142,6 +162,7 @@ impl ValueTrait for Value {
     fn append(&mut self, value: Value) -> Result<Value, Error> {
         match self {
             Value::Set(value_origin) => value_origin.append(value),
+            Value::Array(value_origin) => value_origin.append(value),
             _ => self.type_generate_error(value),
         }
     }
@@ -182,6 +203,9 @@ impl Value {
 
     pub fn new_set(value: Vec<Value>, pos_start: Position, pos_end: Position) -> Value {
         Value::Set(set::Set::new(value, pos_start, pos_end))
+    }
+    pub fn new_array(value: Vec<Value>, pos_start: Position, pos_end: Position) -> Value {
+        Value::Array(array::Array::new(value, pos_start, pos_end))
     }
     fn handling_operation<T: ValueTrait>(
         &self,
@@ -228,6 +252,9 @@ impl Value {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
             Value::Set(value_origin) => {
+                self.handling_operation(value_origin.clone(), value, instruction)
+            }
+            Value::Array(value_origin) => {
                 self.handling_operation(value_origin.clone(), value, instruction)
             }
             Value::Null(value_origin) => {

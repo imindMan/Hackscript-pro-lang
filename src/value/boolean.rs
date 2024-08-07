@@ -22,6 +22,9 @@ impl ValueTrait for Boolean {
     fn get_pos_start(&self) -> Position {
         self.pos_start.clone()
     }
+    fn raw_checking(&self) -> String {
+        format!("bool {}", self)
+    }
     fn equal(&self, bool: Value) -> Result<Value, Error> {
         self.comparison_operation(bool, EQUAL)
     }

@@ -23,6 +23,9 @@ impl ValueTrait for Number {
     fn get_pos_start(&self) -> Position {
         self.pos_start.clone()
     }
+    fn raw_checking(&self) -> String {
+        format!("number {} {}", self.identifier, self.value)
+    }
     // NOTE: This is the plus operation of the Number
     // Cannot use this for direct plus operation, we have to go through the Value enum
     fn add_to(&self, number: Value) -> Result<Value, Error> {

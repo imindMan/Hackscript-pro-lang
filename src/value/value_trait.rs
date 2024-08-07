@@ -1,9 +1,12 @@
 use crate::error_handling::Error;
 use crate::position::Position;
+use crate::value::array::Array;
 use crate::value::boolean::Boolean;
 use crate::value::null::Null;
 use crate::value::number::Number;
+use crate::value::set::Set;
 use crate::value::string::HackString;
+use crate::value::tuple::Tuple;
 use crate::Value;
 
 pub trait ValueTrait {
@@ -30,6 +33,21 @@ pub trait ValueTrait {
                 pos_start: _,
                 pos_end,
             }) => pos_end.clone(),
+            Value::Array(Array {
+                value: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
+            Value::Set(Set {
+                value: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
+            Value::Tuple(Tuple {
+                value: _,
+                pos_start: _,
+                pos_end,
+            }) => pos_end.clone(),
             _ => panic!("Invalid operation"),
         }
     }
@@ -44,6 +62,7 @@ pub trait ValueTrait {
             pos_end,
         ))
     }
+    fn raw_checking(&self) -> String;
     fn add_to(&self, value: Value) -> Result<Value, Error> {
         self.type_generate_error(value)
     }

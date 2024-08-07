@@ -5,29 +5,38 @@ use crate::Value;
 use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Tuple {
+pub struct Array {
     pub value: Vec<Value>,
     pub pos_start: Position,
     pub pos_end: Position,
 }
-impl Display for Tuple {
+impl Display for Array {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut output: String = String::new();
-        output.push('(');
+        output.push('{');
         for i in &self.value {
             output.push_str(&format!("{}, ", &i));
         }
-        output += ")";
+        output += "}";
         write!(f, "{}", output)
     }
 }
 
-impl ValueTrait for Tuple {
+impl ValueTrait for Array {
     fn get_pos_start(&self) -> Position {
         self.pos_start.clone()
     }
     fn raw_checking(&self) -> String {
-        format!("tuple {}", self)
+        format!("array {}", self)
+    }
+    fn append(&mut self, value: Value) -> Result<Value, Error> {
+        self.value.push(value);
+
+        Ok(Value::new_array(
+            self.value.clone(),
+            self.pos_start.clone(),
+            self.pos_end.clone(),
+        ))
     }
     fn indexing(&self, value: Value) -> Result<Value, Error> {
         let Value::Number(index) = value.clone() else {return Err(Error::new(
@@ -58,9 +67,9 @@ impl ValueTrait for Tuple {
     }
 }
 
-impl Tuple {
-    pub fn new(value: Vec<Value>, pos_start: Position, pos_end: Position) -> Tuple {
-        Tuple {
+impl Array {
+    pub fn new(value: Vec<Value>, pos_start: Position, pos_end: Position) -> Array {
+        Array {
             value,
             pos_start,
             pos_end,

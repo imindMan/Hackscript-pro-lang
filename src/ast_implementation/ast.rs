@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 // INFO: This is the file for the AST
 // NOTE: To understand what are the roles of those nodes in the AST, head over to src/parser/lib.rs
 //
@@ -50,6 +48,11 @@ pub enum AST {
         pos_end: Position,
     },
     Set {
+        value: Vec<AST>,
+        pos_start: Position,
+        pos_end: Position,
+    },
+    Array {
         value: Vec<AST>,
         pos_start: Position,
         pos_end: Position,
@@ -149,6 +152,13 @@ impl AST {
             pos_end,
         }
     }
+    pub fn new_array(value: Vec<AST>, pos_start: Position, pos_end: Position) -> AST {
+        AST::Array {
+            value,
+            pos_start,
+            pos_end,
+        }
+    }
 }
 fn get_pos_start(node: &AST) -> Position {
     match node.clone() {
@@ -192,6 +202,11 @@ fn get_pos_start(node: &AST) -> Position {
             pos_end: _,
         } => pos_start,
         AST::Set {
+            value: _,
+            pos_start,
+            pos_end: _,
+        } => pos_start,
+        AST::Array {
             value: _,
             pos_start,
             pos_end: _,
@@ -243,6 +258,11 @@ fn get_pos_end(node: &AST) -> Option<Position> {
             pos_end,
         } => Some(pos_end),
         AST::Set {
+            value: _,
+            pos_start: _,
+            pos_end,
+        } => Some(pos_end),
+        AST::Array {
             value: _,
             pos_start: _,
             pos_end,

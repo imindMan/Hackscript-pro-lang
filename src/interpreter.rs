@@ -8,7 +8,7 @@ use crate::hacktypes::*;
 use crate::position::Position;
 use crate::value::value_trait::ValueTrait;
 use crate::value::Value;
-use std::collections::HashSet;
+
 pub struct Interpreter {
     ast: AST,
 }
@@ -69,6 +69,11 @@ impl Interpreter {
                 pos_start,
                 pos_end,
             } => self.visit_set(value, pos_start, pos_end),
+            AST::Array {
+                value,
+                pos_start,
+                pos_end,
+            } => self.visit_array(value, pos_start, pos_end),
             AST::Nil => Ok(Value::new()),
         }
     }
@@ -218,11 +223,28 @@ impl Interpreter {
         pos_start: Position,
         pos_end: Position,
     ) -> Result<Value, Error> {
+        let mut check_vec: Vec<String> = Vec::new();
+        let mut final_vec: Vec<Value> = Vec::new();
+        for i in value {
+            let element = self.visit(i)?;
+            if !check_vec.contains(&element.raw_checking()) {
+                check_vec.push(element.raw_checking());
+                final_vec.push(element);
+            }
+        }
+
+        Ok(Value::new_set(final_vec, pos_start, pos_end))
+    }
+    fn visit_array(
+        &self,
+        value: Vec<AST>,
+        pos_start: Position,
+        pos_end: Position,
+    ) -> Result<Value, Error> {
         let mut final_vec: Vec<Value> = Vec::new();
         for i in value {
             final_vec.push(self.visit(i)?);
         }
-
-        Ok(Value::new_set(final_vec, pos_start, pos_end))
+        Ok(Value::new_array(final_vec, pos_start, pos_end))
     }
 }
