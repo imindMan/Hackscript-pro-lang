@@ -222,11 +222,7 @@ impl Interpreter {
         for i in value {
             final_vec.push(self.visit(i)?);
         }
-        let vec_pass = final_vec
-            .into_iter()
-            .collect::<HashSet<_>>()
-            .into_iter()
-            .collect::<Vec<_>>();
-        Ok(Value::new_set(vec_pass, pos_start, pos_end))
+
+        Ok(Value::new_set(final_vec, pos_start, pos_end))
     }
 }

@@ -27,8 +27,21 @@ impl ValueTrait for Set {
         self.pos_start.clone()
     }
     fn append(&mut self, value: Value) -> Result<Value, Error> {
-        self.value.push(value);
-        Ok(Value::Nil)
+        if !self.check_contain(&value) {
+            self.value.push(value);
+
+            Ok(Value::new_set(
+                self.value.clone(),
+                self.pos_start.clone(),
+                self.pos_end.clone(),
+            ))
+        } else {
+            Ok(Value::new_set(
+                self.value.clone(),
+                self.pos_start.clone(),
+                self.pos_end.clone(),
+            ))
+        }
     }
 }
 
@@ -39,5 +52,13 @@ impl Set {
             pos_start,
             pos_end,
         }
+    }
+    fn check_contain(&self, value: &Value) -> bool {
+        let test_vector = self
+            .value
+            .iter()
+            .map(|x| format!("{}", x))
+            .collect::<Vec<String>>();
+        test_vector.contains(&format!("{}", value))
     }
 }

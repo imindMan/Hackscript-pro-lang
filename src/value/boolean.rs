@@ -9,13 +9,13 @@ use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Boolean {
-    pub boolean: bool,
+    pub value: bool,
     pub pos_start: Position,
     pub pos_end: Position,
 }
 impl Display for Boolean {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.boolean)
+        write!(f, "{}", self.value)
     }
 }
 impl ValueTrait for Boolean {
@@ -39,7 +39,7 @@ impl ValueTrait for Boolean {
 impl Boolean {
     pub fn new(boolean: bool, pos_start: Position, pos_end: Position) -> Boolean {
         Boolean {
-            boolean,
+            value: boolean,
             pos_start,
             pos_end,
         }
@@ -47,10 +47,10 @@ impl Boolean {
     fn comparison_operation(&self, bool_value: Value, instruction: &str) -> Result<Value, Error> {
         let Value::Boolean(bool) = bool_value.clone() else {return self.type_generate_error(bool_value)};
         let check: bool = match instruction {
-            EQUAL => self.boolean == bool.boolean,
-            NOT_EQUAL => self.boolean != bool.boolean,
-            AND => self.boolean && bool.boolean,
-            OR => self.boolean || bool.boolean,
+            EQUAL => self.value == bool.value,
+            NOT_EQUAL => self.value != bool.value,
+            AND => self.value && bool.value,
+            OR => self.value || bool.value,
             _ => {
                 return Err(Error::new(
                     "OperatorError".to_string(),

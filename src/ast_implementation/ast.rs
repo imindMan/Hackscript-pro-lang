@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 // INFO: This is the file for the AST
 // NOTE: To understand what are the roles of those nodes in the AST, head over to src/parser/lib.rs
 //

@@ -15,7 +15,6 @@ impl ValueTrait for Null {
     fn get_pos_start(&self) -> Position {
         self.pos_start.clone()
     }
-
     fn equal(&self, value: Value) -> Result<Value, Error> {
         self.comparison_operation(value, EQUAL)
     }

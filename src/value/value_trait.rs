@@ -21,7 +21,7 @@ pub trait ValueTrait {
                 pos_end,
             }) => pos_end.clone(),
             Value::Boolean(Boolean {
-                boolean: _,
+                value: _,
                 pos_start: _,
                 pos_end,
             }) => pos_end.clone(),
