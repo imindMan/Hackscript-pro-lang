@@ -1,5 +1,6 @@
 use crate::error_handling::Error;
 use crate::position::Position;
+use crate::value::string;
 use crate::value::value_trait::ValueTrait;
 use crate::Value;
 use std::fmt::Display;
@@ -15,7 +16,14 @@ impl Display for Set {
         let mut output: String = String::new();
         output.push('{');
         for i in &self.value {
-            output.push_str(&format!("{}, ", &i));
+            match i {
+                Value::String(string::HackString {
+                    value,
+                    pos_start: _,
+                    pos_end: _,
+                }) => output.push_str(&format!("\"{}\"", value)),
+                _ => output.push_str(&format!("{}, ", &i)),
+            }
         }
         output.push('}');
         write!(f, "{}", output)
