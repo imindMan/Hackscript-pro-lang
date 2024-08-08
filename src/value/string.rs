@@ -15,7 +15,7 @@ pub struct HackString {
 }
 impl Display for HackString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "\"{}\"", self.value)
+        write!(f, "{}", self.value)
     }
 }
 impl ValueTrait for HackString {
@@ -47,7 +47,7 @@ impl ValueTrait for HackString {
         } else {
             let value_number: i32 = number.value.parse().unwrap();
             match value_number.cmp(&0) { 
-                Ordering::Greater => Err(Error::new(
+                Ordering::Less => Err(Error::new(
                     "TypeError".to_string(),
                     "Cannot multiply a string with a negative number".to_string(),
                     self.pos_start.clone(),
