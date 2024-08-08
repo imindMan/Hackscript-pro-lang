@@ -218,7 +218,7 @@ impl Parser {
                 Err(_) => break,
             }
         }
-        if self.curr_tok._type != SQUARE_BRACKET_RIGHT {
+        if self.curr_tok._type != CURLY_BRACKET_RIGHT {
             Err(Error::new(
                 "Expect".to_string(),
                 "the expression should be closed by a ']' (close parenthese) -> endless expression"
@@ -277,7 +277,7 @@ impl Parser {
                 Err(_) => break,
             }
         }
-        if self.curr_tok._type != CURLY_BRACKET_RIGHT {
+        if self.curr_tok._type != SQUARE_BRACKET_RIGHT {
             Err(Error::new(
                 "Expect".to_string(),
                 "the expression should be closed by a '}' (close parenthese) -> endless expression"
@@ -348,9 +348,9 @@ impl Parser {
             self.in_parentheses_expr()
         } else if [TRUE, FALSE].contains(&self.curr_tok._type.as_str()) {
             self.make_booleans()
-        } else if self.curr_tok._type.as_str() == SQUARE_BRACKET_LEFT {
-            self.make_set()
         } else if self.curr_tok._type.as_str() == CURLY_BRACKET_LEFT {
+            self.make_set()
+        } else if self.curr_tok._type.as_str() == SQUARE_BRACKET_LEFT {
             self.make_array()
         } else if self.curr_tok._type.as_str() == NULL {
             self.make_null()

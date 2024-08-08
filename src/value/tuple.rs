@@ -17,7 +17,7 @@ impl Display for Tuple {
         for i in &self.value {
             output.push_str(&format!("{}, ", &i));
         }
-        output += ")";
+        output.push(')');
         write!(f, "{}", output)
     }
 }

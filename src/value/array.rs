@@ -13,11 +13,11 @@ pub struct Array {
 impl Display for Array {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut output: String = String::new();
-        output.push('{');
+        output.push('[');
         for i in &self.value {
             output.push_str(&format!("{}, ", &i));
         }
-        output += "}";
+        output.push(']');
         write!(f, "{}", output)
     }
 }
