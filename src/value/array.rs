@@ -21,7 +21,7 @@ impl Display for Array {
                     value,
                     pos_start: _,
                     pos_end: _,
-                }) => output.push_str(&format!("\"{}\"", value)),
+                }) => output.push_str(&format!("\"{}\", ", value)),
                 _ => output.push_str(&format!("{}, ", &i)),
             }
         }
