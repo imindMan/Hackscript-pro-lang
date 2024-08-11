@@ -346,12 +346,14 @@ impl Lexer {
                     let pos_start: Position = self.curr_pos.clone();
                     self.advance();
                     if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
-                        return Err(Error::new(
-                            "UnidentifiedIdentifier".to_string(),
-                            String::from("="),
+                        let token: Token = Token::new(
+                            String::from(VARIABLE_DECLARATION),
+                            String::new(),
                             pos_start,
                             self.curr_pos.clone(),
-                        ));
+                        );
+                        tokens.push(token);
+                        self.advance();
                     } else {
                         let token: Token = Token::new(
                             String::from(EQUAL),
@@ -363,17 +365,30 @@ impl Lexer {
                         self.advance();
                     }
                 }
+                '#' => {
+                    let token: Token = Token::new(
+                        String::from(LOOSING_VARIABLE),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
+                '$' => {
+                    let token: Token = Token::new(
+                        String::from(BOOKMARKING),
+                        String::new(),
+                        self.curr_pos.clone(),
+                        self.curr_pos.clone(),
+                    );
+                    tokens.push(token);
+                    self.advance();
+                }
                 '!' => {
                     let pos_start: Position = self.curr_pos.clone();
                     self.advance();
-                    if self.curr_char.is_none() || self.curr_char.unwrap() != '=' {
-                        return Err(Error::new(
-                            "UnidentifiedIdentifier".to_string(),
-                            String::from("!"),
-                            pos_start,
-                            self.curr_pos.clone(),
-                        ));
-                    } else {
+                    if self.curr_char.unwrap() == '=' {
                         let token: Token = Token::new(
                             String::from(NOT_EQUAL),
                             String::new(),
@@ -382,6 +397,22 @@ impl Lexer {
                         );
                         tokens.push(token);
                         self.advance();
+                    } else if self.curr_char.unwrap() == '#' {
+                        let token: Token = Token::new(
+                            String::from(CONSTANT),
+                            String::new(),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        );
+                        tokens.push(token);
+                        self.advance();
+                    } else {
+                        return Err(Error::new(
+                            "UnidentifiedIdentifier".to_string(),
+                            String::from("!"),
+                            pos_start,
+                            self.curr_pos.clone(),
+                        ));
                     }
                 }
                 '<' => {
@@ -443,14 +474,12 @@ impl Lexer {
                             );
                             tokens.push(token);
                         }
-                        None => {
-                            return Err(Error::new(
-                                "UnidentifiedIdentifier".to_string(),
-                                keyword,
-                                pos_start,
-                                self.curr_pos.clone(),
-                            ));
-                        }
+                        None => tokens.push(Token::new(
+                            String::from(IDENTIFIER),
+                            keyword,
+                            pos_start,
+                            self.curr_pos.clone(),
+                        )),
                     }
                 }
             };

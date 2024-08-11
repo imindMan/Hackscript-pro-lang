@@ -62,3 +62,12 @@ pub const COLONS: &str = "COLONS";
 // List operator
 pub const APPEND: &str = "APPEND";
 pub const INDEXING: &str = "INDEXING";
+
+// Identifier
+pub const IDENTIFIER: &str = "IDENTIFIER";
+
+// Variable declaration
+pub const VARIABLE_DECLARATION: &str = "VARIABLE_DECLARATION";
+pub const CONSTANT: &str = "CONSTANT";
+pub const LOOSING_VARIABLE: &str = "LOOSING_VARIABLE";
+pub const BOOKMARKING: &str = "BOOKMARKING";

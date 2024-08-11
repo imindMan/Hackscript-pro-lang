@@ -12,7 +12,7 @@ This is quite like Python. It supports multiple assignments and also multi swapp
 
 Another thing that I would like to add is the quick `bookmarkings`. Quite like this.
 
-`$?<number_id><var_name> = <var_value>`
+`$<number_id_optional><var_name> = <var_value>`
 
 So when we want to refer them quickly, we can use some kind of references like this for quicker syntax.
 
