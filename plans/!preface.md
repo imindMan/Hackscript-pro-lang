@@ -12,6 +12,8 @@ Hackscript can change, but the core concepts of the Hackscript philosophy will n
 
 The Hackscript philosophy is called "HACKSCRIPT IN GENERAL", and it just received an update for the version 2.0. Don't really think there will be more updates for that, so I'll just leave here for reference.
 
+(Inspire by: The Zen of Python)
+
 ```
 HACKSCRIPT IN GENERAL (v2.0.0):
 When you come to the world of Hackscript, you must know those rules to obey them. Or else, your code will f**k itself
