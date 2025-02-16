@@ -1,4 +1,4 @@
-use hackscript::run;
+use hackscript::run::run;
 
 #[test]
 fn indexing_out_of_range() -> Result<(), String> {

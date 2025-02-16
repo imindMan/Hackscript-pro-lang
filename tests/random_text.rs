@@ -1,6 +1,6 @@
 // INFO: MAINLY FOR THE LEXER
 // These tests will check if the lexer is working or not
-use hackscript::run;
+use hackscript::run::run;
 
 #[test]
 fn empty_string() {

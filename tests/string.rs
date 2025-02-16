@@ -1,5 +1,5 @@
 // error checking for the string first
-use hackscript::run;
+use hackscript::run::run;
 
 #[test]
 fn endless_string_error() -> Result<(), String> {

@@ -2,7 +2,7 @@
 // (For now, it's just Numbers, but in the future, there will be more)
 // arithmetic here is just **exclusively** for plus, minus, multiply, and divide
 // operation
-use hackscript::run;
+use hackscript::run::run;
 
 #[test]
 fn lexer_err_checking_unknown_character() -> Result<(), String> {

@@ -1,4 +1,4 @@
-use hackscript::run;
+use hackscript::run::run;
 
 #[test]
 fn and_operator_check_for_number() -> Result<(), String> {

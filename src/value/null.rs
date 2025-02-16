@@ -1,8 +1,8 @@
 use crate::error_handling::Error;
 use crate::hacktypes::*;
 use crate::position::Position;
+use crate::value::Value;
 use crate::value::ValueTrait;
-use crate::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Null {

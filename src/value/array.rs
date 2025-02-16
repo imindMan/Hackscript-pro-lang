@@ -2,7 +2,7 @@ use crate::error_handling::Error;
 use crate::position::Position;
 use crate::value::string;
 use crate::value::value_trait::ValueTrait;
-use crate::Value;
+use crate::value::Value;
 use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

@@ -7,7 +7,7 @@ use crate::value::number::Number;
 use crate::value::set::Set;
 use crate::value::string::HackString;
 use crate::value::tuple::Tuple;
-use crate::Value;
+use crate::value::Value;
 
 pub trait ValueTrait {
     fn get_pos_end(&self, value: Value) -> Position {
